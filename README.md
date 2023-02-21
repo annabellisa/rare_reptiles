@@ -1,4 +1,4 @@
-# rare_reptiles
+# Fire and rarity in reptile communities
 
 R scripts for analysing the influence of fire on rarity and dominance in reptile communities
 
