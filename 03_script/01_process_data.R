@@ -1,3 +1,17 @@
+# Ideas for Amber's project
+# Feb 2023
+
+# what can we tell about the influence of fire on rare species from comparing species richness to diversity estimates?
+
+# how do diversity estimates which differ in their quantification of dominance and rarity compare? For example, is there stronger effects on the estimates which prioritise rarity?
+
+# how does fire influence the overall abundance (pooled abundance) of 'rare' reptile species, classed as those with fewer than x captures?
+
+# how does fire influence phylogenetic diversity? For example, are there a greater number of reptile families in unburnt mallee than burnt mallee? Does fire drive a phylogenetic simplification?
+
+# how does fire influence functional rarity (sensu Violle et al. 2017, TREE)? We might not get this far... Just noting it down as an interesting aspect. 
+
+
 # For community ecology lecture
 # March 2020
 
