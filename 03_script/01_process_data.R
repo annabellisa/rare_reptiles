@@ -21,7 +21,7 @@
 
 # Set up the data:
 
-dat1<-read.table("sp_summaries.txt",header=T)
+dat1<-read.table("01_data/sp_summaries.txt",header=T)
 dat1$TSF2<-dat1$TSF^2
 dat1$TSFscale<-scale(dat1$TSF,center=T,scale=T)
 dat1$TSF2scale<-scale(dat1$TSF^2,center=T,scale=T)
@@ -161,7 +161,7 @@ diversity(rel_abund[,c(which(colnames(rel_abund)=="A_ina"):which(colnames(rel_ab
 
 # full data set:
 
-dat2<-read.table("all_reptile_data.txt",header=T)
+dat2<-read.table("01_data/all_reptile_data.txt",header=T)
 head(dat2)
 
 # species abundance data:
@@ -177,6 +177,7 @@ xdat$site; xdat$season
 unique(dat2$season)
 head(xdat, 3); dim(xdat)
 
+# combine seasons 5 and 6. Aggregate of effort by sites + seasons
 eft<-data.frame(aggregate(xdat$effort~xdat$site, FUN=sum))
 colnames(eft)<-c("site","effort")
 eft
@@ -186,7 +187,7 @@ rownames(sp_div)==as.character(eft$site)
 
 sdiv<-sp_div
 
-# captures / 1000 trap nights
+# captures / 1000 trap nights. Scaling up to 2 seasons.
 sp_div2<-round(apply(sdiv, 2, function(x) (x/eft$effort)*1000),0)
 head(sp_div2, 3); dim(sp_div2)
 
