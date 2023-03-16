@@ -4,6 +4,11 @@
 
 load("04_workspaces/processed_data.RData")
 
+library("MASS")
+
+# captures / 1000 trap nights. 2 seasons of data combined
+head(sp_div2, 3); dim(sp_div2)
+
 # processed data of 14 sites with species diversity metrics
 head(sum_dat, 6);dim(sum_dat)
 
@@ -19,8 +24,8 @@ plot(sum_dat$simps_ind2, sum_dat$even, xlab="", las=1, ylab="Evenness", pch=20)
 title(xlab="Simpson's Index",mgp=c(2.5,1,0))
 
 ### shannon's index:
-
-quartz("", 8,8, dpi=80, pointsize=16)
+#quartz("", 8,8, dpi=80, pointsize=16)
+dev.new(height = 8, width = 8, noRStudioGD = T, dpi=80, pointsize=16)
 par(mfrow=c(2,2), mar=c(4,4,0.5,0.5), mgp=c(2.9,1,0))
 
 plot(sum_dat$fire_cat, sum_dat$sp_rich, xlab="", las=1, ylab="Number of species")
@@ -32,9 +37,33 @@ plot(sum_dat$fire_cat, sum_dat$even2, xlab="", las=1, ylab="Evenness")
 plot(sum_dat$shann_ind, sum_dat$even2, xlab="", las=1, ylab="Evenness", pch=20)
 title(xlab="Shannon's Index",mgp=c(2.5,1,0))
 
-# compare simpson and shannon:
+head(sum_dat, 6);dim(sum_dat)
+str(sum_dat)
 
-quartz("", 6,6, dpi=70, pointsize=20)
+# determining type of data for different statistical analysis types
+# sp_rich data = count; appropriate model is negative binomial distribution
+summary(sum_dat$sp_rich)
+
+summary(sum_dat$simps_ind2)
+
+summary(sum_dat$even)
+
+summary(sum_dat$shann_ind)
+
+# species richness as a function of fire category (generalized linear model with negative binomial linear structure). Statistical model = no negative results because count data
+m1 <- glm.nb(sp_rich~fire_cat,data = sum_dat)
+summary(m1)
+anova(m1)
+
+m2 <- lm(sp_rich~fire_cat,data = sum_dat)
+summary(m2)
+anova(m2)
+
+
+# compare simpson and shannon:
+#quartz("", 6,6, dpi=70, pointsize=20)
+
+dev.new(height = 8, width = 8, noRStudioGD = T, dpi=80, pointsize=16)
 par(mfrow=c(1,1), mar=c(4,4,1,1))
 plot(sum_dat$simps_ind2, sum_dat$shann_ind, xlab="", las=1, ylab="Shannon's Index", pch=20)
 text(4, 2.4,paste("r = ",round(cor.test(sum_dat$simps_ind2, sum_dat$shann_ind)$estimate,2),sep=""), adj=0)
@@ -47,7 +76,7 @@ title(xlab="Simpson's Index",mgp=c(2.5,1,0))
 cor.test(sum_dat$simps_ind2, sum_dat$sp_rich)
 cor.test(sum_dat$shann_ind, sum_dat$sp_rich)
 
-quartz("", 8,4, dpi=80, pointsize=16)
+dev.new(height = 8, width = 8, noRStudioGD = T, dpi=80, pointsize=16)
 par(mfrow=c(1,2), mar=c(4,4,0.5,0.5), mgp=c(2.9,1,0))
 
 plot(sum_dat$sp_rich, sum_dat$simps_ind2)
@@ -72,11 +101,21 @@ sp_abund<-sp_abund[order(sp_abund$total_abund),]
 rownames(sp_abund)<-1:nrow(sp_abund)
 head(sp_abund); dim(sp_abund)
 
-quartz("",12,4,pointsize=16)
-par(mar=c(4,4,1,1), mgp=c(2.5,1,0))
+#quartz("",12,4,pointsize=16)
+dev.new(height = 10, width = 14, noRStudioGD = T, dpi=80, pointsize=16)
+par(mfrow = c(2,2), mar=c(4,4,1,1), mgp=c(2.5,1,0))
+
 hist(sp_abund$total_abund, breaks=seq(0,500,by=10), main="", ylab="Number of species", xlab="",las=1, col="grey80")
 title(xlab="Abundance", mgp=c(2.5,1,0))
 
+hist(sp_abund$total_abund[sp_abund$total_abund<100], breaks=seq(0,100,by=10), main="", ylab="Number of species", xlab="",las=1, col="grey80")
+title(xlab="Abundance", mgp=c(2.5,1,0))
+
+hist(sp_abund$total_abund[sp_abund$total_abund<20], breaks=seq(0,20,by=1), main="", ylab="Number of species", xlab="",las=1, col="grey80")
+title(xlab="Abundance", mgp=c(2.5,1,0))
+
+hist(sp_abund$total_abund[sp_abund$total_abund<10], breaks=seq(0,10,by=1), main="", ylab="Number of species", xlab="",las=1, col="grey80")
+title(xlab="Abundance", mgp=c(2.5,1,0))
 
 # how many rare species in each fire category?
 rare_sp<-as.character(sp_abund$species[sp_abund$total_abund<5])
