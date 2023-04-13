@@ -103,19 +103,27 @@ head(sp_abund); dim(sp_abund)
 
 #quartz("",12,4,pointsize=16)
 dev.new(height = 10, width = 14, noRStudioGD = T, dpi=80, pointsize=16)
-par(mfrow = c(2,2), mar=c(4,4,1,1), mgp=c(2.5,1,0))
+par(mfrow = c(2,2), mar=c(5,5,1,1), mgp=c(2.5,1,0))
 
-hist(sp_abund$total_abund, breaks=seq(0,500,by=10), main="", ylab="Number of species", xlab="",las=1, col="grey80")
-title(xlab="Abundance", mgp=c(2.5,1,0))
+hist(sp_abund$total_abund, breaks=seq(0,500,by=10), main = "", ylab="Number of species", xlab="",las=1, col="grey80")
+title(xlab="Abundance", mgp=c(2,1,0))
+title(main="(a) All Data", mgp=c(2,1,0), adj = 0, font.main = 1)
 
 hist(sp_abund$total_abund[sp_abund$total_abund<100], breaks=seq(0,100,by=10), main="", ylab="Number of species", xlab="",las=1, col="grey80")
-title(xlab="Abundance", mgp=c(2.5,1,0))
+title(xlab="Abundance", mgp=c(2,1,0))
+title(main="(b) Less than 100", mgp=c(2,1,0), adj = 0, font.main = 1)
 
-hist(sp_abund$total_abund[sp_abund$total_abund<20], breaks=seq(0,20,by=1), main="", ylab="Number of species", xlab="",las=1, col="grey80")
-title(xlab="Abundance", mgp=c(2.5,1,0))
+hist(sp_abund$total_abund[sp_abund$total_abund<20], breaks=seq(0,20,by=1), main="", ylab="Number of species", xlab="",las=1, col="grey80", adj = 0)
+title(xlab="Abundance", mgp=c(2,1,0))
+title(main="(c) Less than 20", mgp=c(2,1,0), adj = 0,font.main = 1)
 
-hist(sp_abund$total_abund[sp_abund$total_abund<10], breaks=seq(0,10,by=1), main="", ylab="Number of species", xlab="",las=1, col="grey80")
-title(xlab="Abundance", mgp=c(2.5,1,0))
+hist(sp_abund$total_abund[sp_abund$total_abund<10], breaks=seq(0,10,by=1), main="", ylab="Number of species", xlab="",las=1, col="grey80", adj = 0)
+title(xlab="Abundance", mgp=c(2,1,0))
+title(main="(d) Less than 10", mgp=c(2,1,0), adj = 0, font.main = 1)
+
+less3 <- sp_abund$species[sp_abund$total_abund<3]
+less9 <- sp_abund$species[sp_abund$total_abund<9]
+
 
 # how many rare species in each fire category?
 rare_sp<-as.character(sp_abund$species[sp_abund$total_abund<5])
