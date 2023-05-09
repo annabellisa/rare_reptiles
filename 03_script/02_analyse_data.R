@@ -6,11 +6,48 @@ load("04_workspaces/processed_data.RData")
 
 library("MASS")
 
+# species matrix into data frame for processing
+sp_div2 <- as.data.frame(sp_div2)
+#save.image("04_workspaces/processed_data.RData")
+
 # captures / 1000 trap nights. 2 seasons of data combined
 head(sp_div2, 3); dim(sp_div2)
 
+# rearranging so unburnt is baseline
+sum_dat$fire_cat <- factor(sum_dat$fire_cat, levels = c("Unburnt", "Medium", "Burnt"))
+
+# making site a factor
+sum_dat$site <- as.factor(sum_dat$site)
+
+#List of 14 sites, taking site column and calling "H" to create 2 different variables for site, either "H" or "P"
+sum_dat$location <- NA
+sum_dat$location[which(unlist(gregexpr("H", sum_dat$site)) == 1)] <- "H"
+sum_dat$location[which(unlist(gregexpr("H", sum_dat$site)) == -1)] <- "P"
+
 # processed data of 14 sites with species diversity metrics
 head(sum_dat, 6);dim(sum_dat)
+
+#list of species
+colnames(sp_div2)
+
+#summing columns
+sum(sp_div2$A_nor)
+sp_sum <- data.frame(sp=names(apply(sp_div2, MARGIN = 2, FUN = sum)),abundance=apply(sp_div2, MARGIN = 2, FUN = sum))
+row.names(sp_sum) <- 1:nrow(sp_sum)
+#write.table(sp_sum, file="SpeciesAbundance.txt", row.names = F, sep = "\t", quote = F)
+
+
+
+
+
+# species richness as a function of fire category (generalized linear model with negative binomial linear structure). Statistical model = no negative results because count data
+m1 <- glm.nb(sp_rich~fire_cat,data = sum_dat)
+summary(m1)
+anova(m1)
+
+m2 <- lm(sp_rich~fire_cat,data = sum_dat)
+summary(m2)
+anova(m2)
 
 ### simpson's index:
 
@@ -49,16 +86,6 @@ summary(sum_dat$simps_ind2)
 summary(sum_dat$even)
 
 summary(sum_dat$shann_ind)
-
-# species richness as a function of fire category (generalized linear model with negative binomial linear structure). Statistical model = no negative results because count data
-m1 <- glm.nb(sp_rich~fire_cat,data = sum_dat)
-summary(m1)
-anova(m1)
-
-m2 <- lm(sp_rich~fire_cat,data = sum_dat)
-summary(m2)
-anova(m2)
-
 
 # compare simpson and shannon:
 #quartz("", 6,6, dpi=70, pointsize=20)
