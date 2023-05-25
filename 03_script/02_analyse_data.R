@@ -36,18 +36,81 @@ sp_sum <- data.frame(sp=names(apply(sp_div2, MARGIN = 2, FUN = sum)),abundance=a
 row.names(sp_sum) <- 1:nrow(sp_sum)
 #write.table(sp_sum, file="SpeciesAbundance.txt", row.names = F, sep = "\t", quote = F)
 
+head(sp_sum);dim(sp_sum)
 
+# reading in species data, quantifying based on proportion of species (25%) vs maximum (5%)
+dir()
+sp_sum2 <- read.table("01_data/R_species_list.txt", header =T)
 
+head(sp_sum2);dim(sp_sum2)
 
+sum_dat$location<-NA
+sum_dat$location[grep("H",sum_dat$site)]<-"Hincks"
+sum_dat$location[grep("P",sum_dat$site)]<-"Pinks"
+sum_dat$location <- as.factor(sum_dat$location)
+sum_dat$fire_cat <- factor(sum_dat$fire_cat, levels = c("Unburnt", "Medium", "Burnt"))
 
-# species richness as a function of fire category (generalized linear model with negative binomial linear structure). Statistical model = no negative results because count data
-m1 <- glm.nb(sp_rich~fire_cat,data = sum_dat)
-summary(m1)
-anova(m1)
+head(sp_div2, 3); dim(sp_div2)
 
-m2 <- lm(sp_rich~fire_cat,data = sum_dat)
-summary(m2)
-anova(m2)
+sp_25 <- sp_sum2$Species_Code[which(sp_sum2$sum_method_25 == "r")]
+
+sp_5 <- sp_sum2$Species_Code[which(sp_sum2$max_5 == "r")]
+
+#pulling out data set for rare 25% species
+sp_div_25 <- sp_div2[,which(colnames(sp_div2)%in%sp_25)]
+head(sp_div_25, 3); dim(sp_div_25)
+
+#pulling out data set for rare 5% species
+sp_div_5 <- sp_div2[,which(colnames(sp_div2)%in%sp_5)]
+head(sp_div_5, 3); dim(sp_div_5)
+
+rare.data <- data.frame(site=names(rowSums(sp_div_25)), abund_25 = rowSums(sp_div_25), pres_25 = ifelse(rowSums(sp_div_25) == 0, 0, 1), abund_5 = rowSums(sp_div_5), pres_5 = ifelse(rowSums(sp_div_5) == 0, 0, 1))
+
+row.names(rare.data) <- 1:nrow(rare.data)
+head(sum_dat, 6);dim(sum_dat)
+
+#combining data sets into sum_dat
+sum_dat <- merge(sum_dat, rare.data, by="site", all.x = T, all.y = F)
+
+#data fully processed and ready to process 9th May 2023 in sum_dat
+
+# species richness as a function of fire category (generalized linear model with negative binomial linear structure). Statistical model = no negative results because count data. 
+#Effect of fire can vary depending on location - fire cat*location have no effect on species richness, fire cat AND location have no effect on species richness.
+m1_a <- glm.nb(sp_rich~fire_cat*location,data = sum_dat)
+m1_b <- glm.nb(sp_rich~fire_cat+location,data = sum_dat)
+m1_c <- glm.nb(sp_rich~fire_cat,data = sum_dat)
+
+summary(m1_a);anova(m1_a)
+summary(m1_b);anova(m1_b)
+summary(m1_c);anova(m1_c)
+
+#save.image("04_workspaces/processed_data.RData")
+
+head(sum_dat, 6);dim(sum_dat)
+
+summary(sum_dat$simps_ind2) 
+
+#do glm.nb for abund_25 and abund_5
+#do glm for shann_ind
+#do glm for pres_25 and pres_5, change "Gamma" to "binomial"
+
+#species diversity as simpson's index:
+m2_a <- glm(simps_ind2~fire_cat*location,data = sum_dat, family = "Gamma")
+m2_b <- glm(simps_ind2~fire_cat+location,data = sum_dat, family = "Gamma")
+m2_c <- glm(simps_ind2~fire_cat,data = sum_dat, family = "Gamma")
+m2_d <- glm(simps_ind2~1,data = sum_dat, family = "Gamma")
+
+#Likelihood ratio test - compares more complicated model (interaction model) with simpler model 
+anova(m2_a, m2_b, test = "F") # p value for interaction term = 0.55 (fire x location)
+anova(m2_b, m2_c, test = "F") # p value for location term = 0.10
+anova(m2_c, m2_d, test = "F") # p value for fire term = 0.06
+
+summary(m2_a);anova(m2_a)
+summary(m2_b);anova(m2_b)
+summary(m2_c);anova(m2_c)
+summary(m2_d);anova(m2_d)
+
+summary(sum_dat$shann_ind)
 
 ### simpson's index:
 
