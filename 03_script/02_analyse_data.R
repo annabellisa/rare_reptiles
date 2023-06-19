@@ -2,7 +2,10 @@
 
 # 02_analyse_data
 
-load("04_workspaces/processed_data.RData")
+#use this if starting fresh
+#load("04_workspaces/processed_data.RData")
+#already analysed data
+load("04_workspaces/analysed_data.RData")
 
 library("MASS")
 
@@ -76,6 +79,9 @@ sum_dat <- merge(sum_dat, rare.data, by="site", all.x = T, all.y = F)
 
 #data fully processed and ready to process 9th May 2023 in sum_dat
 
+#data frame for fire only predictions
+fireonly.pr<-data.frame(fire_cat = factor(levels(sum_dat$fire_cat),levels = levels(sum_dat$fire_cat)))
+
 # species richness as a function of fire category (generalized linear model with negative binomial linear structure). Statistical model = no negative results because count data. 
 # Effect of fire can vary depending on location - fire cat*location have no effect on species richness, fire cat AND location have no effect on species richness.
 m1_a <- glm.nb(sp_rich~fire_cat*location,data = sum_dat)
@@ -84,13 +90,35 @@ m1_c <- glm.nb(sp_rich~fire_cat,data = sum_dat)
 m1_d <- glm.nb(sp_rich~1,data = sum_dat)
 
 #Likelihood ratio test - compares more complicated model (interaction model) with simpler model 
-anova(m1_a, m1_b, test = "F") # p value for interaction term = 0.89 (fire x location)
-anova(m1_b, m1_c, test = "F") # p value for location term = 0.60
-anova(m1_c, m1_d, test = "F") # p value for fire term = 0.48 
+anova(m1_a, m1_b, test = "F") 
+anova(m1_b, m1_c, test = "F") 
+anova(m1_c, m1_d, test = "F") 
 
-summary(m1_a);anova(m1_a)
-summary(m1_b);anova(m1_b)
-summary(m1_c);anova(m1_c)
+summary(m1_a);anova(m1_a) # p value for interaction term = 0.89 (fire x location)
+summary(m1_b);anova(m1_b) # p value for location term = 0.60
+summary(m1_c);anova(m1_c) # p value for fire term = 0.48
+AICc(m1_a) #100.3
+AICc(m1_b) #85.3
+AICc(m1_c) #80.55
+AICc(m1_d) #74.7
+
+m1.set<-list("m1_a"= m1_a, "m1_b"= m1_b, "m1_c"= m1_c, "m1_d"= m1_d)
+m1.tab<-aictab(cand.set = m1.set, second.ord = T, sort = T)
+
+#write.table(m1.tab,file="m1_tab.txt", quote = F, sep = "\t", row.names=F)
+
+#predictions for models to plot graphs, use m1_c
+
+m1_c.pr<-predict(object = m1_c, newdata = fireonly.pr,type = "response", se.fit = T)
+m1_c.pr2<-data.frame(fireonly.pr)
+m1_c.pr2$fit<-m1_c.pr$fit
+m1_c.pr2$se<-m1_c.pr$se
+m1_c.pr2$lci<-m1_c.pr$fit-(m1_c.pr2$se*1.96)
+m1_c.pr2$uci<-m1_c.pr$fit+(m1_c.pr2$se*1.96)
+
+#Cum.Wt = cumulative weight as you add each one up. 0.95 = 95% held in _
+
+# all insignificant p values, fire cat and location no effect on sp richness. AIC shows all models with 2 point difference = significant
 
 #save.image("04_workspaces/analysed_data.RData")
 
@@ -98,23 +126,56 @@ head(sum_dat, 6);dim(sum_dat)
 
 summary(sum_dat$simps_ind2) 
 
-#species diversity as simpson's index:
+# simpson's index as a function of fire category (generalized linear model)
 m2_a <- glm(simps_ind2~fire_cat*location,data = sum_dat, family = "Gamma")
 m2_b <- glm(simps_ind2~fire_cat+location,data = sum_dat, family = "Gamma")
 m2_c <- glm(simps_ind2~fire_cat,data = sum_dat, family = "Gamma")
 m2_d <- glm(simps_ind2~1,data = sum_dat, family = "Gamma")
 
 #Likelihood ratio test - compares more complicated model (interaction model) with simpler model 
-anova(m2_a, m2_b, test = "F") # p value for interaction term = 0.55 (fire x location)
-anova(m2_b, m2_c, test = "F") # p value for location term = 0.10
-anova(m2_c, m2_d, test = "F") # p value for fire term = 0.06 # close to significant, plot fire term
+anova(m2_a, m2_b, test = "F") 
+anova(m2_b, m2_c, test = "F") 
+anova(m2_c, m2_d, test = "F") 
 
-summary(m2_a);anova(m2_a)
-summary(m2_b);anova(m2_b)
-summary(m2_c);anova(m2_c)
-summary(m2_d);anova(m2_d)
+summary(m2_a);anova(m2_a) # p value for interaction term = 0.55 (fire x location)
+summary(m2_b);anova(m2_b) # p value for location term = 0.10
+summary(m2_c);anova(m2_c) # p value for fire term = 0.06 # close to significant, plot fire term
+AICc(m2_a) #73.9
+AICc(m2_b) #60.7
+AICc(m2_c) #59.2
+AICc(m2_d) #58.5
 
-#do glm.nb for abund_25 and abund_5
+m2.set<-list("m2_a"= m2_a, "m2_b"= m2_b, "m2_c"= m2_c, "m2_d"= m2_d)
+m2.tab<-aictab(cand.set = m2.set, second.ord = T, sort = T)
+
+#write.table(m2.tab,file="m2_tab.txt", quote = F, sep = "\t", row.names=F)
+
+# all insignificant p values but fire term close to significant at p = 0.06 so plot fire term. AIC models no significant diff except between a and b. c is within 2 AICs of null, c holds 35% of weight.
+summary(m2_c)
+
+#predictions for models to plot graphs
+fireonly.pr<-data.frame(fire_cat = factor(levels(sum_dat$fire_cat),levels = levels(sum_dat$fire_cat)))
+m2_c.pr<-predict(object = m2_c, newdata = fireonly.pr,type = "response", se.fit = T)
+m2_c.pr2<-data.frame(fireonly.pr)
+m2_c.pr2$fit<-m2_c.pr$fit
+m2_c.pr2$se<-m2_c.pr$se
+m2_c.pr2$lci<-m2_c.pr$fit-(m2_c.pr2$se*1.96)
+m2_c.pr2$uci<-m2_c.pr$fit+(m2_c.pr2$se*1.96)
+
+dev.new(width=10, height=5, dpi=80, pointsize=16, noRStudioGD = T)
+par(mfrow=c(1,2), mar=c(4,4,1,1), mgp=c(1.75,0.8,0))
+
+#update with species richness estimates, change ylab
+plot(c(1:3),m1_c.pr2$fit, xlim=c(0.5,3.5), pch=20, xaxt="n",ylim= c((min(m1_c.pr2$lci)),max(m1_c.pr2$uci)),ylab="Species Richness",xlab="Fire Category", las = 1, cex = 2)
+arrows(c(1:3),m1_c.pr2$lci,c(1:3),m1_c.pr2$uci,length=0.03,code=3,angle=90)
+axis(1,at=c(1:3),labels=m1_c.pr2$fire_cat)
+
+#simps diversity index, no changes required
+plot(c(1:3),m2_c.pr2$fit, xlim=c(0.5,3.5), pch=20, xaxt="n",ylim= c((min(m2_c.pr2$lci)),max(m2_c.pr2$uci)),ylab="Simpson's Diversity Index",xlab="Fire Category", las = 1, cex = 2)
+arrows(c(1:3),m2_c.pr2$lci,c(1:3),m2_c.pr2$uci,length=0.03,code=3,angle=90)
+axis(1,at=c(1:3),labels=m2_c.pr2$fire_cat)
+
+# abund_25 as a function of fire category (generalized linear model with negative binomial linear structure)
 m3_a <- glm.nb(abund_25~fire_cat*location,data = sum_dat)
 m3_b <- glm.nb(abund_25~fire_cat+location,data = sum_dat)
 m3_c <- glm.nb(abund_25~fire_cat,data = sum_dat)
@@ -122,65 +183,82 @@ m3_d <- glm.nb(abund_25~1,data = sum_dat)
 
 summary(m3_a);anova(m3_a) # p value for interaction term = 0.12
 summary(m3_b);anova(m3_b) # p value for location term = 0.0114
-summary(m3_c);anova(m3_c) # p value for fire term = 0.07
-AICc(m3_a) #62.75
+summary(m3_c);anova(m3_c) # p value for fire term = 0.075
+AICc(m3_a) #62.8
 AICc(m3_b) #51.8
 AICc(m3_c) #53.1
 AICc(m3_d) #50.4
 
+# location signficant and fire term close to significant. AIC models b closest to null model, so plot b? 
+
+# abund_5 as a function of fire category (generalized linear model with negative binomial linear structure)
 m4_a <- glm.nb(abund_5~fire_cat*location,data = sum_dat)
 m4_b <- glm.nb(abund_5~fire_cat+location,data = sum_dat)
 m4_c <- glm.nb(abund_5~fire_cat,data = sum_dat)
+m4_d <- glm.nb(abund_5~1,data = sum_dat)
 
 summary(m4_a);anova(m4_a) # p value for interaction term = 0.54
 summary(m4_b);anova(m4_b) # p value for location term = 0.44
 summary(m4_c);anova(m4_c) # p value for fire term = 0.60
+AICc(m4_a) #92.4
+AICc(m4_b) #78.5
+AICc(m4_c) #74.0
+AICc(m4_d) #67.7
+
+# all p values insignificant, abund_5 no effect on fire cat. AIC models all significant with each other but none better than null.
 
 summary(sum_dat$shann_ind)
 
-#do glm for shann_ind
 #species diversity as shannon's index:
+# shann_ind as a function of fire category (generalized linear model)
 m5_a <- glm(shann_ind~fire_cat*location,data = sum_dat, family = "Gamma")
 m5_b <- glm(shann_ind~fire_cat+location,data = sum_dat, family = "Gamma")
 m5_c <- glm(shann_ind~fire_cat,data = sum_dat, family = "Gamma")
 m5_d <- glm(shann_ind~1,data = sum_dat, family = "Gamma")
 
 #Likelihood ratio test - compares more complicated model (interaction model) with simpler model 
-anova(m5_a, m5_b, test = "F") # p value for interaction term = 0.36 (fire x location)
-anova(m5_b, m5_c, test = "F") # p value for location term = 0.03
-anova(m5_c, m5_d, test = "F") # p value for fire term = 0.02 
+anova(m5_a, m5_b, test = "F") 
+anova(m5_b, m5_c, test = "F") 
+anova(m5_c, m5_d, test = "F") 
+
+summary(m5_a);anova(m5_a) # p value for interaction term = 0.36 (fire x location)
+summary(m5_b);anova(m5_b) # p value for location term = 0.03
+summary(m5_c);anova(m5_c) # p value for fire term = 0.02 
 AICc(m5_a) #13.5
 AICc(m5_b) #1.8
 AICc(m5_c) #3.7
 AICc(m5_d) #5.3
 
-summary(m5_a);anova(m5_a)
-summary(m5_b);anova(m5_b)
-summary(m5_c);anova(m5_c)
-summary(m5_d);anova(m5_d)
+# location and fire both significant. AIC models all significant with each other, both location and fire better than null. Plot both location and fire?
+
 
 # don't model pres_5 because all 1s, pres_25 not enough 0s
 
-#species diversity as even2:
+# species diversity as even2:
+# even2 as a function of fire category (generalized linear model)
 m6_a <- glm(even2~fire_cat*location,data = sum_dat, family = "Gamma")
 m6_b <- glm(even2~fire_cat+location,data = sum_dat, family = "Gamma")
 m6_c <- glm(even2~fire_cat,data = sum_dat, family = "Gamma")
 m6_d <- glm(even2~1,data = sum_dat, family = "Gamma")
 
 #Likelihood ratio test - compares more complicated model (interaction model) with simpler model 
-anova(m6_a, m6_b, test = "F") # p value for interaction term = 0.55 (fire x location)
-anova(m6_b, m6_c, test = "F") # p value for location term = 0.10
-anova(m6_c, m6_d, test = "F") # p value for fire term = 0.06 # close to significant, plot fire term
+anova(m6_a, m6_b, test = "F") 
+anova(m6_b, m6_c, test = "F") 
+anova(m6_c, m6_d, test = "F") 
 
+summary(m6_a);anova(m6_a) # p value for interaction term = 0.55 (fire x location)
+summary(m6_b);anova(m6_b) # p value for location term = 0.10
+summary(m6_c);anova(m6_c) # p value for fire term = 0.06 # close to significant, plot fire term
 AICc(m6_a) # -16.7
 AICc(m6_b) # -27.4
 AICc(m6_c) # -27.7
 AICc(m6_d) # -27.4
 
-summary(m6_a);anova(m6_a)
-summary(m6_b);anova(m6_b)
-summary(m6_c);anova(m6_c)
-summary(m6_d);anova(m6_d)
+# all insignificant but fire term close to significant so plot. AIC b, c and d all extremely close, b same as null term so plot?
+
+
+### start of casual graph plots
+
 
 ### simpson's index:
 
