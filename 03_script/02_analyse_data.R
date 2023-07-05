@@ -153,7 +153,7 @@ m2.tab<-aictab(cand.set = m2.set, second.ord = T, sort = T)
 # all insignificant p values but fire term close to significant at p = 0.06 so plot fire term. AIC models no significant diff except between a and b. c is within 2 AICs of null, c holds 35% of weight.
 summary(m2_c)
 
-#predictions for models to plot graphs
+# predictions for models to plot graphs
 fireonly.pr<-data.frame(fire_cat = factor(levels(sum_dat$fire_cat),levels = levels(sum_dat$fire_cat)))
 m2_c.pr<-predict(object = m2_c, newdata = fireonly.pr,type = "response", se.fit = T)
 m2_c.pr2<-data.frame(fireonly.pr)
@@ -165,7 +165,7 @@ m2_c.pr2$uci<-m2_c.pr$fit+(m2_c.pr2$se*1.96)
 dev.new(width=10, height=5, dpi=80, pointsize=16, noRStudioGD = T)
 par(mfrow=c(1,2), mar=c(4,4,1,1), mgp=c(1.75,0.8,0))
 
-#update with species richness estimates, change ylab
+#species richness (changed)
 plot(c(1:3),m1_c.pr2$fit, xlim=c(0.5,3.5), pch=20, xaxt="n",ylim= c((min(m1_c.pr2$lci)),max(m1_c.pr2$uci)),ylab="Species Richness",xlab="Fire Category", las = 1, cex = 2)
 arrows(c(1:3),m1_c.pr2$lci,c(1:3),m1_c.pr2$uci,length=0.03,code=3,angle=90)
 axis(1,at=c(1:3),labels=m1_c.pr2$fire_cat)
@@ -189,7 +189,26 @@ AICc(m3_b) #51.8
 AICc(m3_c) #53.1
 AICc(m3_d) #50.4
 
-# location signficant and fire term close to significant. AIC models b closest to null model, so plot b? 
+# location signficant and fire term close to significant. Plot fire cat = c
+
+m3.set<-list("m3_a"= m3_a, "m3_b"= m3_b, "m3_c"= m3_c, "m3_d"= m3_d)
+m3.tab<-aictab(cand.set = m3.set, second.ord = T, sort = T)
+
+write.table(m3.tab,file="m3_tab.txt", quote = F, sep = "\t", row.names=F)
+
+#predictions for models to plot graphs
+fireonly.pr<-data.frame(fire_cat = factor(levels(sum_dat$fire_cat),levels = levels(sum_dat$fire_cat)))
+m3_c.pr<-predict(object = m3_c, newdata = fireonly.pr,type = "response", se.fit = T)
+m3_c.pr2<-data.frame(fireonly.pr)
+m3_c.pr2$fit<-m3_c.pr$fit
+m3_c.pr2$se<-m3_c.pr$se
+m3_c.pr2$lci<-m3_c.pr$fit-(m3_c.pr2$se*1.96)
+m3_c.pr2$uci<-m3_c.pr$fit+(m3_c.pr2$se*1.96)
+
+# abund_25 plot
+#plot(c(1:3),m3_c.pr2$fit, xlim=c(0.5,3.5), pch=20, xaxt="n",ylim= c((min(m3_c.pr2$lci)),max(m3_c.pr2$uci)),ylab="Abund_25",xlab="Fire Category", las = 1, cex = 2)
+#arrows(c(1:3),m3_c.pr2$lci,c(1:3),m3_c.pr2$uci,length=0.03,code=3,angle=90)
+#axis(1,at=c(1:3),labels=m3_c.pr2$fire_cat)
 
 # abund_5 as a function of fire category (generalized linear model with negative binomial linear structure)
 m4_a <- glm.nb(abund_5~fire_cat*location,data = sum_dat)
@@ -206,6 +225,11 @@ AICc(m4_c) #74.0
 AICc(m4_d) #67.7
 
 # all p values insignificant, abund_5 no effect on fire cat. AIC models all significant with each other but none better than null.
+
+m4.set<-list("m4_a"= m4_a, "m4_b"= m4_b, "m4_c"= m4_c, "m4_d"= m4_d)
+m4.tab<-aictab(cand.set = m4.set, second.ord = T, sort = T)
+
+#write.table(m4.tab,file="m4_tab.txt", quote = F, sep = "\t", row.names=F)
 
 summary(sum_dat$shann_ind)
 
@@ -231,6 +255,27 @@ AICc(m5_d) #5.3
 
 # location and fire both significant. AIC models all significant with each other, both location and fire better than null. Plot both location and fire?
 
+m5.set<-list("m5_a"= m5_a, "m5_b"= m5_b, "m5_c"= m5_c, "m5_d"= m5_d)
+m5.tab<-aictab(cand.set = m5.set, second.ord = T, sort = T)
+
+#write.table(m5.tab,file="m5_tab.txt", quote = F, sep = "\t", row.names=F)
+
+#predictions for models to plot graphs
+fireonly.pr<-data.frame(fire_cat = factor(levels(sum_dat$fire_cat),levels = levels(sum_dat$fire_cat)))
+m5_c.pr<-predict(object = m5_c, newdata = fireonly.pr,type = "response", se.fit = T)
+m5_c.pr2<-data.frame(fireonly.pr)
+m5_c.pr2$fit<-m5_c.pr$fit
+m5_c.pr2$se<-m5_c.pr$se
+m5_c.pr2$lci<-m5_c.pr$fit-(m5_c.pr2$se*1.96)
+m5_c.pr2$uci<-m5_c.pr$fit+(m5_c.pr2$se*1.96)
+
+#dev.new(width=10, height=5, dpi=80, pointsize=16, noRStudioGD = T)
+#par(mfrow=c(1,2), mar=c(4,4,1,1), mgp=c(1.75,0.8,0))
+
+# shann_ind plots for fire
+plot(c(1:3),m5_c.pr2$fit, xlim=c(0.5,3.5), pch=20, xaxt="n",ylim= c((min(m5_c.pr2$lci)),max(m5_c.pr2$uci)),ylab="Shannon's Index",xlab="Fire Category", las = 1, cex = 2)
+arrows(c(1:3),m5_c.pr2$lci,c(1:3),m5_c.pr2$uci,length=0.03,code=3,angle=90)
+axis(1,at=c(1:3),labels=m5_c.pr2$fire_cat)
 
 # don't model pres_5 because all 1s, pres_25 not enough 0s
 
@@ -254,8 +299,29 @@ AICc(m6_b) # -27.4
 AICc(m6_c) # -27.7
 AICc(m6_d) # -27.4
 
+m6.set<-list("m6_a"= m6_a, "m6_b"= m6_b, "m6_c"= m6_c, "m6_d"= m6_d)
+m6.tab<-aictab(cand.set = m6.set, second.ord = T, sort = T)
+
+#write.table(m5.tab,file="m6_tab.txt", quote = F, sep = "\t", row.names=F)
+
 # all insignificant but fire term close to significant so plot. AIC b, c and d all extremely close, b same as null term so plot?
 
+#predictions for models to plot graphs
+fireonly.pr<-data.frame(fire_cat = factor(levels(sum_dat$fire_cat),levels = levels(sum_dat$fire_cat)))
+m6_c.pr<-predict(object = m6_c, newdata = fireonly.pr,type = "response", se.fit = T)
+m6_c.pr2<-data.frame(fireonly.pr)
+m6_c.pr2$fit<-m6_c.pr$fit
+m6_c.pr2$se<-m6_c.pr$se
+m6_c.pr2$lci<-m6_c.pr$fit-(m6_c.pr2$se*1.96)
+m6_c.pr2$uci<-m6_c.pr$fit+(m6_c.pr2$se*1.96)
+
+#dev.new(width=10, height=5, dpi=80, pointsize=16, noRStudioGD = T)
+#par(mfrow=c(1,2), mar=c(4,4,1,1), mgp=c(1.75,0.8,0))
+
+# shann_ind plots for fire
+plot(c(1:3),m6_c.pr2$fit, xlim=c(0.5,3.5), pch=20, xaxt="n",ylim= c((min(m6_c.pr2$lci)),max(m6_c.pr2$uci)),ylab="Evenness",xlab="Fire Category", las = 1, cex = 2)
+arrows(c(1:3),m6_c.pr2$lci,c(1:3),m6_c.pr2$uci,length=0.03,code=3,angle=90)
+axis(1,at=c(1:3),labels=m6_c.pr2$fire_cat)
 
 ### start of casual graph plots
 
