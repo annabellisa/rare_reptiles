@@ -8,6 +8,7 @@
 load("04_workspaces/analysed_data.RData")
 
 library("MASS")
+library(AICcmodavg)
 
 # species matrix into data frame for processing
 sp_div2 <- as.data.frame(sp_div2)
@@ -79,9 +80,6 @@ sum_dat <- merge(sum_dat, rare.data, by="site", all.x = T, all.y = F)
 
 #data fully processed and ready to process 9th May 2023 in sum_dat
 
-#data frame for fire only predictions
-fireonly.pr<-data.frame(fire_cat = factor(levels(sum_dat$fire_cat),levels = levels(sum_dat$fire_cat)))
-
 # species richness as a function of fire category (generalized linear model with negative binomial linear structure). Statistical model = no negative results because count data. 
 # Effect of fire can vary depending on location - fire cat*location have no effect on species richness, fire cat AND location have no effect on species richness.
 m1_a <- glm.nb(sp_rich~fire_cat*location,data = sum_dat)
@@ -102,12 +100,18 @@ AICc(m1_b) #85.3
 AICc(m1_c) #80.55
 AICc(m1_d) #74.7
 
-m1.set<-list("m1_a"= m1_a, "m1_b"= m1_b, "m1_c"= m1_c, "m1_d"= m1_d)
-m1.tab<-aictab(cand.set = m1.set, second.ord = T, sort = T)
+#m1.set<-list("fire x location"= m1_a, "location"= m1_b, "fire"= m1_c, "null"= m1_d)
+#m1.tab<-aictab(cand.set = m1.set, second.ord = T, sort = T)
 
 #write.table(m1.tab,file="m1_tab.txt", quote = F, sep = "\t", row.names=F)
 
-#predictions for models to plot graphs, use m1_c
+# plot fire+location for abund_25 + shannons
+
+#data frame for fire only predictions
+
+fireonly.pr<-data.frame(fire_cat = factor(levels(sum_dat$fire_cat),levels = levels(sum_dat$fire_cat)))
+
+# fire predictions for models to plot graphs, use m1_c
 
 m1_c.pr<-predict(object = m1_c, newdata = fireonly.pr,type = "response", se.fit = T)
 m1_c.pr2<-data.frame(fireonly.pr)
@@ -115,6 +119,19 @@ m1_c.pr2$fit<-m1_c.pr$fit
 m1_c.pr2$se<-m1_c.pr$se
 m1_c.pr2$lci<-m1_c.pr$fit-(m1_c.pr2$se*1.96)
 m1_c.pr2$uci<-m1_c.pr$fit+(m1_c.pr2$se*1.96)
+
+#data frame for location only predictions
+
+locationonly.pr<-data.frame(location = factor(levels(sum_dat$location),levels = levels(sum_dat$location)))
+
+# location predictions for models to plot graphs, use m1_b
+
+m1_b.pr<-predict(object = m1_b, newdata = locationonly.pr,type = "response", se.fit = T)
+m1_b.pr2<-data.frame(locationonly.pr)
+m1_b.pr2$fit<-m1_b.pr$fit
+m1_b.pr2$se<-m1_b.pr$se
+m1_b.pr2$lci<-m1_b.pr$fit-(m1_b.pr2$se*1.96)
+m1_b.pr2$uci<-m1_b.pr$fit+(m1_b.pr2$se*1.96)
 
 #Cum.Wt = cumulative weight as you add each one up. 0.95 = 95% held in _
 
@@ -145,16 +162,19 @@ AICc(m2_b) #60.7
 AICc(m2_c) #59.2
 AICc(m2_d) #58.5
 
-m2.set<-list("m2_a"= m2_a, "m2_b"= m2_b, "m2_c"= m2_c, "m2_d"= m2_d)
-m2.tab<-aictab(cand.set = m2.set, second.ord = T, sort = T)
+#m2.set<-list("fire x location"= m2_a, "location"= m2_b, "fire"= m2_c, "null"= m2_d)
+#m2.tab<-aictab(cand.set = m2.set, second.ord = T, sort = T)
 
 #write.table(m2.tab,file="m2_tab.txt", quote = F, sep = "\t", row.names=F)
 
 # all insignificant p values but fire term close to significant at p = 0.06 so plot fire term. AIC models no significant diff except between a and b. c is within 2 AICs of null, c holds 35% of weight.
 summary(m2_c)
 
-# predictions for models to plot graphs
+# data frame for fire only predictions
 fireonly.pr<-data.frame(fire_cat = factor(levels(sum_dat$fire_cat),levels = levels(sum_dat$fire_cat)))
+
+# fire predictions for models to plot graphs
+
 m2_c.pr<-predict(object = m2_c, newdata = fireonly.pr,type = "response", se.fit = T)
 m2_c.pr2<-data.frame(fireonly.pr)
 m2_c.pr2$fit<-m2_c.pr$fit
@@ -162,18 +182,18 @@ m2_c.pr2$se<-m2_c.pr$se
 m2_c.pr2$lci<-m2_c.pr$fit-(m2_c.pr2$se*1.96)
 m2_c.pr2$uci<-m2_c.pr$fit+(m2_c.pr2$se*1.96)
 
-dev.new(width=10, height=5, dpi=80, pointsize=16, noRStudioGD = T)
-par(mfrow=c(1,2), mar=c(4,4,1,1), mgp=c(1.75,0.8,0))
+#data frame for location only predictions
 
-#species richness (changed)
-plot(c(1:3),m1_c.pr2$fit, xlim=c(0.5,3.5), pch=20, xaxt="n",ylim= c((min(m1_c.pr2$lci)),max(m1_c.pr2$uci)),ylab="Species Richness",xlab="Fire Category", las = 1, cex = 2)
-arrows(c(1:3),m1_c.pr2$lci,c(1:3),m1_c.pr2$uci,length=0.03,code=3,angle=90)
-axis(1,at=c(1:3),labels=m1_c.pr2$fire_cat)
+locationonly.pr<-data.frame(location = factor(levels(sum_dat$location),levels = levels(sum_dat$location)))
 
-#simps diversity index, no changes required
-plot(c(1:3),m2_c.pr2$fit, xlim=c(0.5,3.5), pch=20, xaxt="n",ylim= c((min(m2_c.pr2$lci)),max(m2_c.pr2$uci)),ylab="Simpson's Diversity Index",xlab="Fire Category", las = 1, cex = 2)
-arrows(c(1:3),m2_c.pr2$lci,c(1:3),m2_c.pr2$uci,length=0.03,code=3,angle=90)
-axis(1,at=c(1:3),labels=m2_c.pr2$fire_cat)
+# location predictions for models to plot graphs, use m2_b
+
+m2_b.pr<-predict(object = m2_b, newdata = locationonly.pr,type = "response", se.fit = T)
+m2_b.pr2<-data.frame(locationonly.pr)
+m2_b.pr2$fit<-m2_b.pr$fit
+m2_b.pr2$se<-m2_b.pr$se
+m2_b.pr2$lci<-m2_b.pr$fit-(m2_b.pr2$se*1.96)
+m2_b.pr2$uci<-m2_b.pr$fit+(m2_b.pr2$se*1.96)
 
 # abund_25 as a function of fire category (generalized linear model with negative binomial linear structure)
 m3_a <- glm.nb(abund_25~fire_cat*location,data = sum_dat)
@@ -191,10 +211,10 @@ AICc(m3_d) #50.4
 
 # location signficant and fire term close to significant. Plot fire cat = c
 
-m3.set<-list("m3_a"= m3_a, "m3_b"= m3_b, "m3_c"= m3_c, "m3_d"= m3_d)
-m3.tab<-aictab(cand.set = m3.set, second.ord = T, sort = T)
+#m3.set<-list("fire x location"= m3_a, "location"= m3_b, "fire"= m3_c, "null"= m3_d)
+#m3.tab<-aictab(cand.set = m3.set, second.ord = T, sort = T)
 
-write.table(m3.tab,file="m3_tab.txt", quote = F, sep = "\t", row.names=F)
+#write.table(m3.tab,file="m3_tab.txt", quote = F, sep = "\t", row.names=F)
 
 #predictions for models to plot graphs
 fireonly.pr<-data.frame(fire_cat = factor(levels(sum_dat$fire_cat),levels = levels(sum_dat$fire_cat)))
@@ -205,10 +225,25 @@ m3_c.pr2$se<-m3_c.pr$se
 m3_c.pr2$lci<-m3_c.pr$fit-(m3_c.pr2$se*1.96)
 m3_c.pr2$uci<-m3_c.pr$fit+(m3_c.pr2$se*1.96)
 
-# abund_25 plot
-#plot(c(1:3),m3_c.pr2$fit, xlim=c(0.5,3.5), pch=20, xaxt="n",ylim= c((min(m3_c.pr2$lci)),max(m3_c.pr2$uci)),ylab="Abund_25",xlab="Fire Category", las = 1, cex = 2)
-#arrows(c(1:3),m3_c.pr2$lci,c(1:3),m3_c.pr2$uci,length=0.03,code=3,angle=90)
-#axis(1,at=c(1:3),labels=m3_c.pr2$fire_cat)
+#data frame for location only predictions
+
+summary(m3_b)
+
+locationfire.pr<-data.frame(location = rep(factor(levels(sum_dat$location),levels = levels(sum_dat$location)),3),fire_cat = c(rep(levels(sum_dat$fire_cat)[1],2),rep(levels(sum_dat$fire_cat)[2],2),rep(levels(sum_dat$fire_cat)[3],2)))
+
+# location predictions for models to plot graphs, use m3_b
+
+m3_b.pr<-predict(object = m3_b, newdata = locationfire.pr,type = "link", se.fit = T)
+m3_b.pr2<-data.frame(locationfire.pr)
+m3_b.pr2$fit<-m3_b.pr$fit
+m3_b.pr2$se<-m3_b.pr$se
+m3_b.pr2$lci<-m3_b.pr$fit-(m3_b.pr2$se*1.96)
+m3_b.pr2$uci<-m3_b.pr$fit+(m3_b.pr2$se*1.96)
+
+m3_b.pr2$fit<-exp(m3_b.pr2$fit)
+m3_b.pr2$se<-exp(m3_b.pr2$se)
+m3_b.pr2$lci<-exp(m3_b.pr2$lci)
+m3_b.pr2$uci<-exp(m3_b.pr2$uci)
 
 # abund_5 as a function of fire category (generalized linear model with negative binomial linear structure)
 m4_a <- glm.nb(abund_5~fire_cat*location,data = sum_dat)
@@ -226,10 +261,32 @@ AICc(m4_d) #67.7
 
 # all p values insignificant, abund_5 no effect on fire cat. AIC models all significant with each other but none better than null.
 
-m4.set<-list("m4_a"= m4_a, "m4_b"= m4_b, "m4_c"= m4_c, "m4_d"= m4_d)
-m4.tab<-aictab(cand.set = m4.set, second.ord = T, sort = T)
+#m4.set<-list("fire x location"= m4_a, "location"= m4_b, "fire"= m4_c, "null"= m4_d)
+#m4.tab<-aictab(cand.set = m4.set, second.ord = T, sort = T)
 
 #write.table(m4.tab,file="m4_tab.txt", quote = F, sep = "\t", row.names=F)
+
+# abund_5 predictions for models to plot graphs
+fireonly.pr<-data.frame(fire_cat = factor(levels(sum_dat$fire_cat),levels = levels(sum_dat$fire_cat)))
+m4_c.pr<-predict(object = m4_c, newdata = fireonly.pr,type = "response", se.fit = T)
+m4_c.pr2<-data.frame(fireonly.pr)
+m4_c.pr2$fit<-m4_c.pr$fit
+m4_c.pr2$se<-m4_c.pr$se
+m4_c.pr2$lci<-m4_c.pr$fit-(m4_c.pr2$se*1.96)
+m4_c.pr2$uci<-m4_c.pr$fit+(m4_c.pr2$se*1.96)
+
+#data frame for location only predictions
+
+locationonly.pr<-data.frame(location = factor(levels(sum_dat$location),levels = levels(sum_dat$location)))
+
+# location predictions for models to plot graphs, use m2_b
+
+m4_b.pr<-predict(object = m4_b, newdata = locationonly.pr,type = "response", se.fit = T)
+m4_b.pr2<-data.frame(locationonly.pr)
+m4_b.pr2$fit<-m4_b.pr$fit
+m4_b.pr2$se<-m4_b.pr$se
+m4_b.pr2$lci<-m4_b.pr$fit-(m4_b.pr2$se*1.96)
+m4_b.pr2$uci<-m4_b.pr$fit+(m4_b.pr2$se*1.96)
 
 summary(sum_dat$shann_ind)
 
@@ -255,8 +312,8 @@ AICc(m5_d) #5.3
 
 # location and fire both significant. AIC models all significant with each other, both location and fire better than null. Plot both location and fire?
 
-m5.set<-list("m5_a"= m5_a, "m5_b"= m5_b, "m5_c"= m5_c, "m5_d"= m5_d)
-m5.tab<-aictab(cand.set = m5.set, second.ord = T, sort = T)
+#m5.set<-list("fire x location"= m5_a, "location"= m5_b, "fire"= m5_c, "null"= m5_d)
+#m5.tab<-aictab(cand.set = m5.set, second.ord = T, sort = T)
 
 #write.table(m5.tab,file="m5_tab.txt", quote = F, sep = "\t", row.names=F)
 
@@ -269,13 +326,23 @@ m5_c.pr2$se<-m5_c.pr$se
 m5_c.pr2$lci<-m5_c.pr$fit-(m5_c.pr2$se*1.96)
 m5_c.pr2$uci<-m5_c.pr$fit+(m5_c.pr2$se*1.96)
 
+#data frame for location only predictions
+
+summary(m5_b)
+
+locationonly.pr<-data.frame(location = factor(levels(sum_dat$location),levels = levels(sum_dat$location)))
+
+# location predictions for models to plot graphs, use m2_b
+
+m5_b.pr<-predict(object = m5_b, newdata = locationonly.pr,type = "response", se.fit = T)
+m5_b.pr2<-data.frame(locationonly.pr)
+m5_b.pr2$fit<-m5_b.pr$fit
+m5_b.pr2$se<-m5_b.pr$se
+m5_b.pr2$lci<-m5_b.pr$fit-(m5_b.pr2$se*1.96)
+m5_b.pr2$uci<-m5_b.pr$fit+(m5_b.pr2$se*1.96)
+
 #dev.new(width=10, height=5, dpi=80, pointsize=16, noRStudioGD = T)
 #par(mfrow=c(1,2), mar=c(4,4,1,1), mgp=c(1.75,0.8,0))
-
-# shann_ind plots for fire
-plot(c(1:3),m5_c.pr2$fit, xlim=c(0.5,3.5), pch=20, xaxt="n",ylim= c((min(m5_c.pr2$lci)),max(m5_c.pr2$uci)),ylab="Shannon's Index",xlab="Fire Category", las = 1, cex = 2)
-arrows(c(1:3),m5_c.pr2$lci,c(1:3),m5_c.pr2$uci,length=0.03,code=3,angle=90)
-axis(1,at=c(1:3),labels=m5_c.pr2$fire_cat)
 
 # don't model pres_5 because all 1s, pres_25 not enough 0s
 
@@ -299,11 +366,6 @@ AICc(m6_b) # -27.4
 AICc(m6_c) # -27.7
 AICc(m6_d) # -27.4
 
-m6.set<-list("m6_a"= m6_a, "m6_b"= m6_b, "m6_c"= m6_c, "m6_d"= m6_d)
-m6.tab<-aictab(cand.set = m6.set, second.ord = T, sort = T)
-
-#write.table(m5.tab,file="m6_tab.txt", quote = F, sep = "\t", row.names=F)
-
 # all insignificant but fire term close to significant so plot. AIC b, c and d all extremely close, b same as null term so plot?
 
 #predictions for models to plot graphs
@@ -315,13 +377,95 @@ m6_c.pr2$se<-m6_c.pr$se
 m6_c.pr2$lci<-m6_c.pr$fit-(m6_c.pr2$se*1.96)
 m6_c.pr2$uci<-m6_c.pr$fit+(m6_c.pr2$se*1.96)
 
-#dev.new(width=10, height=5, dpi=80, pointsize=16, noRStudioGD = T)
-#par(mfrow=c(1,2), mar=c(4,4,1,1), mgp=c(1.75,0.8,0))
+#data frame for location only predictions
+
+locationonly.pr<-data.frame(location = factor(levels(sum_dat$location),levels = levels(sum_dat$location)))
+
+# location predictions for models to plot graphs, use m2_b
+
+m6_b.pr<-predict(object = m6_b, newdata = locationonly.pr,type = "response", se.fit = T)
+m6_b.pr2<-data.frame(locationonly.pr)
+m6_b.pr2$fit<-m6_b.pr$fit
+m6_b.pr2$se<-m6_b.pr$se
+m6_b.pr2$lci<-m6_b.pr$fit-(m6_b.pr2$se*1.96)
+m6_b.pr2$uci<-m6_b.pr$fit+(m6_b.pr2$se*1.96)
+
+
+#m6.set<-list("fire x location"= m6_a, "location"= m6_b, "fire"= m6_c, "null"= m6_d)
+#m6.tab<-aictab(cand.set = m6.set, second.ord = T, sort = T)
+
+#m1.tab2<-data.frame(response="Species Richness",m1.tab)
+#m2.tab2<-data.frame(response="Simpson's Index",m2.tab)
+#m3.tab2<-data.frame(response="Abund_25",m3.tab)
+#m4.tab2<-data.frame(response="Abund_5",m4.tab)
+#m5.tab2<-data.frame(response="Shannon's Index",m5.tab)
+#m6.tab2<-data.frame(response="Evenness",m6.tab)
+
+#combi.tab<-rbind(m1.tab2, m2.tab2, m3.tab2, m4.tab2, m5.tab2, m6.tab2)
+
+#write.table(combi.tab,file="megatable.txt", quote = F, sep = "\t", row.names=F)
+
+# plots for fire cat only
+
+dev.new(width=6, height=9, dpi=80, pointsize=16, noRStudioGD = T)
+par(mfrow=c(3,2), mar=c(4,4,1,1), mgp=c(2.8,0.8,0))
+
+# species richness 
+plot(c(1:3),m1_c.pr2$fit, xlim=c(0.5,3.5), pch=20, xaxt="n",ylim= c((min(m1_c.pr2$lci)),max(m1_c.pr2$uci)),ylab="Species Richness",xlab="", las = 1, cex = 2)
+arrows(c(1:3),m1_c.pr2$lci,c(1:3),m1_c.pr2$uci,length=0.03,code=3,angle=90)
+axis(1,at=c(1:3),labels=F)
+axis(1,at=c(0.8,2,3.2),labels=m1_c.pr2$fire_cat,tick=F)
+title(mgp=c(2.3,0.8,0),xlab="Fire Category")
+m1.tab2
+text(0.5,min(m1_c.pr2$lci)+0.1,paste("DeltaAICc = ",round(m1.tab2$Delta_AICc[m1.tab2$Modnames=="fire"]-m1.tab2$Delta_AICc[m1.tab2$Modnames=="null"],2),sep=""),adj=0,col="red")
+# If wanting to use greek symbol
+#text(2,max(m1_c.pr2$uci),expression(paste(Delta,"AICc=",round(m1.tab2$Delta_AICc[m1.tab2$Modnames=="fire"]-m1.tab2$Delta_AICc[m1.tab2$Modnames=="null"],2),sep="")),adj=0,col="red")
+
+
+ # simps diversity index, no changes required
+plot(c(1:3),m2_c.pr2$fit, xlim=c(0.5,3.5), pch=20, xaxt="n",ylim= c((min(m2_c.pr2$lci)),max(m2_c.pr2$uci)),ylab="Simpson's Diversity Index",xlab="", las = 1, cex = 2)
+arrows(c(1:3),m2_c.pr2$lci,c(1:3),m2_c.pr2$uci,length=0.03,code=3,angle=90)
+axis(1,at=c(1:3),labels=F)
+axis(1,at=c(0.8,2,3.2),labels=m2_c.pr2$fire_cat,tick=F)
+title(mgp=c(2.3,0.8,0),xlab="Fire Category")
+text(0.5,min(m2_c.pr2$lci)+0.1,paste("DeltaAICc = ",round(m2.tab2$Delta_AICc[m2.tab2$Modnames=="fire"]-m2.tab2$Delta_AICc[m2.tab2$Modnames=="null"],2),sep=""),adj=0,col="red")
 
 # shann_ind plots for fire
-plot(c(1:3),m6_c.pr2$fit, xlim=c(0.5,3.5), pch=20, xaxt="n",ylim= c((min(m6_c.pr2$lci)),max(m6_c.pr2$uci)),ylab="Evenness",xlab="Fire Category", las = 1, cex = 2)
+plot(c(1:3),m5_c.pr2$fit, xlim=c(0.5,3.5), pch=20, xaxt="n",ylim= c((min(m5_c.pr2$lci)),max(m5_c.pr2$uci)),ylab="Shannon's Index",xlab="", las = 1, cex = 2)
+arrows(c(1:3),m5_c.pr2$lci,c(1:3),m5_c.pr2$uci,length=0.03,code=3,angle=90)
+axis(1,at=c(1:3),labels=F)
+axis(1,at=c(0.8,2,3.2),labels=m5_c.pr2$fire_cat,tick=F)
+title(mgp=c(2.3,0.8,0),xlab="Fire Category")
+text(1.7,max(m5_c.pr2$uci),paste("DeltaAICc = ",round(m5.tab2$Delta_AICc[m5.tab2$Modnames=="fire"]-m5.tab2$Delta_AICc[m5.tab2$Modnames=="null"],2),sep=""),adj=0,col="dark green")
+
+# evenness plots for fire
+plot(c(1:3),m6_c.pr2$fit, xlim=c(0.5,3.5), pch=20, xaxt="n",ylim= c((min(m6_c.pr2$lci)),max(m6_c.pr2$uci)),ylab="Evenness",xlab="", las = 1, cex = 2)
 arrows(c(1:3),m6_c.pr2$lci,c(1:3),m6_c.pr2$uci,length=0.03,code=3,angle=90)
-axis(1,at=c(1:3),labels=m6_c.pr2$fire_cat)
+axis(1,at=c(1:3),labels=F)
+axis(1,at=c(0.8,2,3.2),labels=m6_c.pr2$fire_cat,tick=F)
+title(mgp=c(2.3,0.8,0),xlab="Fire category")
+text(1.7,max(m6_c.pr2$uci),paste("DeltaAICc = ",round(m6.tab2$Delta_AICc[m6.tab2$Modnames=="fire"]-m6.tab2$Delta_AICc[m6.tab2$Modnames=="null"],2),sep=""),adj=0,col="dark green")
+
+# abund_5 plot
+#simps diversity index, no changes required
+plot(c(1:3),m4_c.pr2$fit, xlim=c(0.5,3.5), pch=20, xaxt="n",ylim= c((min(m4_c.pr2$lci)),max(m4_c.pr2$uci)),ylab="Abund_5",xlab="", las = 1, cex = 2)
+arrows(c(1:3),m4_c.pr2$lci,c(1:3),m4_c.pr2$uci,length=0.03,code=3,angle=90)
+axis(1,at=c(1:3),labels=F)
+axis(1,at=c(0.8,2,3.2),labels=m4_c.pr2$fire_cat,tick=F)
+title(mgp=c(2.3,0.8,0),xlab="Fire Category")
+text(0.5,min(m4_c.pr2$lci),paste("DeltaAICc = ",round(m4.tab2$Delta_AICc[m4.tab2$Modnames=="fire"]-m4.tab2$Delta_AICc[m4.tab2$Modnames=="null"],2),sep=""),adj=0,col="red")
+
+# abund_25 plot
+
+plot(c(1:3)-0.25,m3_b.pr2$fit[m3_b.pr2$location=="Hincks"], xlim=c(0.5,3.5), pch=20, xaxt="n",ylim= c((min(m3_b.pr2$lci[m3_b.pr2$location=="Hincks"])),max(m3_b.pr2$uci[m3_b.pr2$location=="Hincks"])),ylab="Abund_25",xlab="", las = 1, cex = 2)
+points(c(1:3)+0.25,m3_b.pr2$fit[m3_b.pr2$location=="Pinks"], xlim=c(0.5,3.5), pch=20)
+arrows(c(1:3)-0.25,m3_b.pr2$lci[m3_b.pr2$location=="Hincks"],c(1:3)-0.25,m3_b.pr2$uci[m3_b.pr2$location=="Hincks"],length=0.03,code=3,angle=90)
+arrows(c(1:3)+0.25,m3_b.pr2$lci[m3_b.pr2$location=="Pinks"],c(1:3)+0.25,m3_b.pr2$uci[m3_b.pr2$location=="Pinks"],length=0.03,code=3,angle=90)
+axis(1,at=c(1:3)-0.25,labels=F)
+axis(1,at=c(0.8,2,3.2),labels=m3_b.pr2$fire_cat[m3_b.pr2$location=="Hincks"],tick=F)
+title(mgp=c(2.3,0.8,0),xlab="Fire Category")
+text(0.5,min(m3_b.pr2$lci[m3_b.pr2$location=="Hincks"]),paste("DeltaAICc = ",round(m3.tab2$Delta_AICc[m3.tab2$Modnames=="location"]-m3.tab2$Delta_AICc[m3.tab2$Modnames=="null"],2),sep=""),adj=0,col="red")
+
 
 ### start of casual graph plots
 
