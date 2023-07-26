@@ -196,6 +196,7 @@ m2_b.pr2$lci<-m2_b.pr$fit-(m2_b.pr2$se*1.96)
 m2_b.pr2$uci<-m2_b.pr$fit+(m2_b.pr2$se*1.96)
 
 # abund_25 as a function of fire category (generalized linear model with negative binomial linear structure)
+
 m3_a <- glm.nb(abund_25~fire_cat*location,data = sum_dat)
 m3_b <- glm.nb(abund_25~fire_cat+location,data = sum_dat)
 m3_c <- glm.nb(abund_25~fire_cat,data = sum_dat)
@@ -330,12 +331,12 @@ m5_c.pr2$uci<-m5_c.pr$fit+(m5_c.pr2$se*1.96)
 
 summary(m5_b)
 
-locationonly.pr<-data.frame(location = factor(levels(sum_dat$location),levels = levels(sum_dat$location)))
+locationfire.pr<-data.frame(location = rep(factor(levels(sum_dat$location),levels = levels(sum_dat$location)),3),fire_cat = c(rep(levels(sum_dat$fire_cat)[1],2),rep(levels(sum_dat$fire_cat)[2],2),rep(levels(sum_dat$fire_cat)[3],2)))
 
-# location predictions for models to plot graphs, use m2_b
+# location predictions for models to plot graphs, use m5_b
 
-m5_b.pr<-predict(object = m5_b, newdata = locationonly.pr,type = "response", se.fit = T)
-m5_b.pr2<-data.frame(locationonly.pr)
+m5_b.pr<-predict(object = m5_b, newdata = locationfire.pr,type = "link", se.fit = T)
+m5_b.pr2<-data.frame(locationfire.pr)
 m5_b.pr2$fit<-m5_b.pr$fit
 m5_b.pr2$se<-m5_b.pr$se
 m5_b.pr2$lci<-m5_b.pr$fit-(m5_b.pr2$se*1.96)
@@ -377,20 +378,6 @@ m6_c.pr2$se<-m6_c.pr$se
 m6_c.pr2$lci<-m6_c.pr$fit-(m6_c.pr2$se*1.96)
 m6_c.pr2$uci<-m6_c.pr$fit+(m6_c.pr2$se*1.96)
 
-#data frame for location only predictions
-
-locationonly.pr<-data.frame(location = factor(levels(sum_dat$location),levels = levels(sum_dat$location)))
-
-# location predictions for models to plot graphs, use m2_b
-
-m6_b.pr<-predict(object = m6_b, newdata = locationonly.pr,type = "response", se.fit = T)
-m6_b.pr2<-data.frame(locationonly.pr)
-m6_b.pr2$fit<-m6_b.pr$fit
-m6_b.pr2$se<-m6_b.pr$se
-m6_b.pr2$lci<-m6_b.pr$fit-(m6_b.pr2$se*1.96)
-m6_b.pr2$uci<-m6_b.pr$fit+(m6_b.pr2$se*1.96)
-
-
 #m6.set<-list("fire x location"= m6_a, "location"= m6_b, "fire"= m6_c, "null"= m6_d)
 #m6.tab<-aictab(cand.set = m6.set, second.ord = T, sort = T)
 
@@ -405,10 +392,10 @@ m6_b.pr2$uci<-m6_b.pr$fit+(m6_b.pr2$se*1.96)
 
 #write.table(combi.tab,file="megatable.txt", quote = F, sep = "\t", row.names=F)
 
-# plots for fire cat only
+# plots for strongest fit
 
-dev.new(width=6, height=9, dpi=80, pointsize=16, noRStudioGD = T)
-par(mfrow=c(3,2), mar=c(4,4,1,1), mgp=c(2.8,0.8,0))
+dev.new(width=7, height=9, dpi=80, pointsize=16, noRStudioGD = T)
+par(mfrow=c(3,2), mar=c(4,4,1,1), mgp=c(2.8,0.8,0), oma=c(0,0,0,6))
 
 # species richness 
 plot(c(1:3),m1_c.pr2$fit, xlim=c(0.5,3.5), pch=20, xaxt="n",ylim= c((min(m1_c.pr2$lci)),max(m1_c.pr2$uci)),ylab="Species Richness",xlab="", las = 1, cex = 2)
@@ -421,6 +408,9 @@ text(0.5,min(m1_c.pr2$lci)+0.1,paste("DeltaAICc = ",round(m1.tab2$Delta_AICc[m1.
 # If wanting to use greek symbol
 #text(2,max(m1_c.pr2$uci),expression(paste(Delta,"AICc=",round(m1.tab2$Delta_AICc[m1.tab2$Modnames=="fire"]-m1.tab2$Delta_AICc[m1.tab2$Modnames=="null"],2),sep="")),adj=0,col="red")
 
+par(xpd=NA)
+legend(x=4.5,y=max(m1_c.pr2$uci)+0.1, title = "Sites", legend = c("Hincks","Pinks"), pt.cex = 1.5, pch = c(16, 18), bty = "n")
+par(xpd=F)
 
  # simps diversity index, no changes required
 plot(c(1:3),m2_c.pr2$fit, xlim=c(0.5,3.5), pch=20, xaxt="n",ylim= c((min(m2_c.pr2$lci)),max(m2_c.pr2$uci)),ylab="Simpson's Diversity Index",xlab="", las = 1, cex = 2)
@@ -428,15 +418,18 @@ arrows(c(1:3),m2_c.pr2$lci,c(1:3),m2_c.pr2$uci,length=0.03,code=3,angle=90)
 axis(1,at=c(1:3),labels=F)
 axis(1,at=c(0.8,2,3.2),labels=m2_c.pr2$fire_cat,tick=F)
 title(mgp=c(2.3,0.8,0),xlab="Fire Category")
-text(0.5,min(m2_c.pr2$lci)+0.1,paste("DeltaAICc = ",round(m2.tab2$Delta_AICc[m2.tab2$Modnames=="fire"]-m2.tab2$Delta_AICc[m2.tab2$Modnames=="null"],2),sep=""),adj=0,col="red")
+text(0.5,min(m2_c.pr2$lci)+0.05,paste("DeltaAICc = ",round(m2.tab2$Delta_AICc[m2.tab2$Modnames=="fire"]-m2.tab2$Delta_AICc[m2.tab2$Modnames=="null"],2),sep=""),adj=0,col="red")
 
-# shann_ind plots for fire
-plot(c(1:3),m5_c.pr2$fit, xlim=c(0.5,3.5), pch=20, xaxt="n",ylim= c((min(m5_c.pr2$lci)),max(m5_c.pr2$uci)),ylab="Shannon's Index",xlab="", las = 1, cex = 2)
-arrows(c(1:3),m5_c.pr2$lci,c(1:3),m5_c.pr2$uci,length=0.03,code=3,angle=90)
-axis(1,at=c(1:3),labels=F)
-axis(1,at=c(0.8,2,3.2),labels=m5_c.pr2$fire_cat,tick=F)
+# shann_ind plots for fire+location
+
+plot(c(1:3)-0.35,m5_b.pr2$fit[m5_b.pr2$location=="Hincks"], xlim=c(0.5,3.5), pch=20, xaxt="n",ylim= c((min(m5_b.pr2$lci[m5_b.pr2$location=="Hincks"])),max(m5_b.pr2$uci[m5_b.pr2$location=="Hincks"])),ylab="Shannon's Index",xlab="", las = 1, cex = 2)
+points(c(1:3),m5_b.pr2$fit[m5_b.pr2$location=="Pinks"], xlim=c(0.5,3.5), pch=18)
+arrows(c(1:3)-0.35,m5_b.pr2$lci[m5_b.pr2$location=="Hincks"],c(1:3)-0.35,m5_b.pr2$uci[m5_b.pr2$location=="Hincks"],length=0.03,code=3,angle=90)
+arrows(c(1:3),m5_b.pr2$lci[m5_b.pr2$location=="Pinks"],c(1:3),m5_b.pr2$uci[m5_b.pr2$location=="Pinks"],length=0.03,code=3,angle=90)
+axis(1,at=c(1:3)-0.25,labels=F)
+axis(1,at=c(0.8,2,3.2),labels=m5_b.pr2$fire_cat[m5_b.pr2$location=="Hincks"],tick=F)
 title(mgp=c(2.3,0.8,0),xlab="Fire Category")
-text(1.7,max(m5_c.pr2$uci),paste("DeltaAICc = ",round(m5.tab2$Delta_AICc[m5.tab2$Modnames=="fire"]-m5.tab2$Delta_AICc[m5.tab2$Modnames=="null"],2),sep=""),adj=0,col="dark green")
+text(0.5,min(m5_b.pr2$lci[m5_b.pr2$location=="Hincks"]),paste("DeltaAICc = ",round(m5.tab2$Delta_AICc[m5.tab2$Modnames=="location"]-m5.tab2$Delta_AICc[m5.tab2$Modnames=="null"],2),sep=""),adj=0,col="dark green")
 
 # evenness plots for fire
 plot(c(1:3),m6_c.pr2$fit, xlim=c(0.5,3.5), pch=20, xaxt="n",ylim= c((min(m6_c.pr2$lci)),max(m6_c.pr2$uci)),ylab="Evenness",xlab="", las = 1, cex = 2)
@@ -444,10 +437,9 @@ arrows(c(1:3),m6_c.pr2$lci,c(1:3),m6_c.pr2$uci,length=0.03,code=3,angle=90)
 axis(1,at=c(1:3),labels=F)
 axis(1,at=c(0.8,2,3.2),labels=m6_c.pr2$fire_cat,tick=F)
 title(mgp=c(2.3,0.8,0),xlab="Fire category")
-text(1.7,max(m6_c.pr2$uci),paste("DeltaAICc = ",round(m6.tab2$Delta_AICc[m6.tab2$Modnames=="fire"]-m6.tab2$Delta_AICc[m6.tab2$Modnames=="null"],2),sep=""),adj=0,col="dark green")
+text(0.5,min(m6_c.pr2$lci),paste("DeltaAICc = ",round(m6.tab2$Delta_AICc[m6.tab2$Modnames=="fire"]-m6.tab2$Delta_AICc[m6.tab2$Modnames=="null"],2),sep=""),adj=0,col="dark green")
 
 # abund_5 plot
-#simps diversity index, no changes required
 plot(c(1:3),m4_c.pr2$fit, xlim=c(0.5,3.5), pch=20, xaxt="n",ylim= c((min(m4_c.pr2$lci)),max(m4_c.pr2$uci)),ylab="Abund_5",xlab="", las = 1, cex = 2)
 arrows(c(1:3),m4_c.pr2$lci,c(1:3),m4_c.pr2$uci,length=0.03,code=3,angle=90)
 axis(1,at=c(1:3),labels=F)
@@ -457,10 +449,10 @@ text(0.5,min(m4_c.pr2$lci),paste("DeltaAICc = ",round(m4.tab2$Delta_AICc[m4.tab2
 
 # abund_25 plot
 
-plot(c(1:3)-0.25,m3_b.pr2$fit[m3_b.pr2$location=="Hincks"], xlim=c(0.5,3.5), pch=20, xaxt="n",ylim= c((min(m3_b.pr2$lci[m3_b.pr2$location=="Hincks"])),max(m3_b.pr2$uci[m3_b.pr2$location=="Hincks"])),ylab="Abund_25",xlab="", las = 1, cex = 2)
-points(c(1:3)+0.25,m3_b.pr2$fit[m3_b.pr2$location=="Pinks"], xlim=c(0.5,3.5), pch=20)
-arrows(c(1:3)-0.25,m3_b.pr2$lci[m3_b.pr2$location=="Hincks"],c(1:3)-0.25,m3_b.pr2$uci[m3_b.pr2$location=="Hincks"],length=0.03,code=3,angle=90)
-arrows(c(1:3)+0.25,m3_b.pr2$lci[m3_b.pr2$location=="Pinks"],c(1:3)+0.25,m3_b.pr2$uci[m3_b.pr2$location=="Pinks"],length=0.03,code=3,angle=90)
+plot(c(1:3)-0.35,m3_b.pr2$fit[m3_b.pr2$location=="Hincks"], xlim=c(0.5,3.5), pch=20, xaxt="n",ylim= c((min(m3_b.pr2$lci[m3_b.pr2$location=="Hincks"])),max(m3_b.pr2$uci[m3_b.pr2$location=="Hincks"])),ylab="Abund_25",xlab="", las = 1, cex = 2)
+points(c(1:3),m3_b.pr2$fit[m3_b.pr2$location=="Pinks"], xlim=c(0.5,3.5), pch=18)
+arrows(c(1:3)-0.35,m3_b.pr2$lci[m3_b.pr2$location=="Hincks"],c(1:3)-0.35,m3_b.pr2$uci[m3_b.pr2$location=="Hincks"],length=0.03,code=3,angle=90)
+arrows(c(1:3),m3_b.pr2$lci[m3_b.pr2$location=="Pinks"],c(1:3),m3_b.pr2$uci[m3_b.pr2$location=="Pinks"],length=0.03,code=3,angle=90)
 axis(1,at=c(1:3)-0.25,labels=F)
 axis(1,at=c(0.8,2,3.2),labels=m3_b.pr2$fire_cat[m3_b.pr2$location=="Hincks"],tick=F)
 title(mgp=c(2.3,0.8,0),xlab="Fire Category")
