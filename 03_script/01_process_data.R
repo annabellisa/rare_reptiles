@@ -241,6 +241,135 @@ specnumber(rel_abund2)==sum_dat$sp_rich
 sum_dat$fire_cat<-factor(c(rep("Unburnt",2),rep("Burnt",2),rep("Medium",2),rep("Burnt",2),rep("Unburnt",4),rep("Medium",2)),levels=c("Burnt","Medium","Unburnt"))
 head(sum_dat); dim(sum_dat)
 
+# species matrix into data frame for processing
+sp_div2 <- as.data.frame(sp_div2)
+
+# captures / 1000 trap nights. 2 seasons of data combined
+head(sp_div2, 3); dim(sp_div2)
+
+# rearranging so unburnt is baseline
+sum_dat$fire_cat <- factor(sum_dat$fire_cat, levels = c("Unburnt", "Medium", "Burnt"))
+
+# making site a factor
+sum_dat$site <- as.factor(sum_dat$site)
+
+#List of 14 sites, taking site column and calling "H" to create 2 different variables for site, either "H" or "P"
+sum_dat$location <- NA
+sum_dat$location[which(unlist(gregexpr("H", sum_dat$site)) == 1)] <- "H"
+sum_dat$location[which(unlist(gregexpr("H", sum_dat$site)) == -1)] <- "P"
+
+# processed data of 14 sites with species diversity metrics
+head(sum_dat, 6);dim(sum_dat)
+
+#list of species
+colnames(sp_div2)
+
+#summing columns
+sum(sp_div2$A_nor)
+sp_sum <- data.frame(sp=names(apply(sp_div2, MARGIN = 2, FUN = sum)),abundance=apply(sp_div2, MARGIN = 2, FUN = sum))
+row.names(sp_sum) <- 1:nrow(sp_sum)
+#write.table(sp_sum, file="SpeciesAbundance.txt", row.names = F, sep = "\t", quote = F)
+
+head(sp_sum);dim(sp_sum)
+
+# reading in species data, quantifying based on proportion of species (25%) vs maximum (5%)
+dir()
+sp_sum2 <- read.table("01_data/R_species_list.txt", header =T)
+
+head(sp_sum2);dim(sp_sum2)
+
+sum_dat$location<-NA
+sum_dat$location[grep("H",sum_dat$site)]<-"Hincks"
+sum_dat$location[grep("P",sum_dat$site)]<-"Pinks"
+sum_dat$location <- as.factor(sum_dat$location)
+sum_dat$fire_cat <- factor(sum_dat$fire_cat, levels = c("Unburnt", "Medium", "Burnt"))
+
+head(sp_div2, 3); dim(sp_div2)
+
+sp_25 <- sp_sum2$Species_Code[which(sp_sum2$sum_method_25 == "r")]
+length(sp_25) # 14 rare species in the lowest 25% category
+
+sp_5 <- sp_sum2$Species_Code[which(sp_sum2$max_5 == "r")]
+length(sp_5) # 25 rare species in the max. 5% cateogry
+
+#pulling out data set for rare 25% species
+sp_div_25 <- sp_div2[,which(colnames(sp_div2)%in%sp_25)]
+head(sp_div_25, 3); dim(sp_div_25)
+
+#pulling out data set for rare 5% species
+sp_div_5 <- sp_div2[,which(colnames(sp_div2)%in%sp_5)]
+head(sp_div_5, 3); dim(sp_div_5)
+
+rare.data <- data.frame(site=names(rowSums(sp_div_25)), abund_25 = rowSums(sp_div_25), pres_25 = ifelse(rowSums(sp_div_25) == 0, 0, 1), abund_5 = rowSums(sp_div_5), pres_5 = ifelse(rowSums(sp_div_5) == 0, 0, 1))
+
+row.names(rare.data) <- 1:nrow(rare.data)
+head(sum_dat, 6);dim(sum_dat)
+head(rare.data); dim(rare.data)
+
+# What about species richness of rare species?
+
+head(sp_div_5, 3); dim(sp_div_5)
+head(sp_div_25, 3); dim(sp_div_25)
+
+sr.rare<-data.frame(site=names(apply(sp_div_25,1,function(x) length(which(x>0)))),sr_25=apply(sp_div_25,1,function(x) length(which(x>0))),sr_5=apply(sp_div_5,1,function(x) length(which(x>0))))
+rownames(sr.rare)<-1:nrow(sr.rare)
+
+# Check that the sites are in the same order (these should all be TRUE):
+table(sum_dat$site == sr.rare$site)
+head(sr.rare); dim(sr.rare)
+
+# combining data sets into sum_dat
+sum_dat <- merge(sum_dat, rare.data, by="site", all.x = T, all.y = F)
+
+sum_dat <- merge(sum_dat, sr.rare, by="site", all.x = T, all.y = F)
+head(sum_dat, 6);dim(sum_dat)
+
+# calculating Shannon's, Evenness and Simpsons index for rare species
+
+head(sp_div_25, 3); dim(sp_div_25)
+head(sp_div_5, 3); dim(sp_div_5)
+
+# rare 25% species
+
+# simpson's index
+sum_dat$inv_simps_ind25<-1/rowSums(sp_div_25^2)
+# replace 'Inf' with 0s
+sum_dat$inv_simps_ind25[which(sum_dat$inv_simps_ind25 == 'Inf')]<- 0
+
+# evenness, from Simpson's
+sum_dat$even25<-sum_dat$inv_simps_ind25/sum_dat$sr_25
+sum_dat$even25[which(sum_dat$even25 == 'NaN')]<- 0
+
+# shannon's index:
+log_relab25<-log(sp_div_25)
+log_relab25<-t(apply(log_relab25,1,function(x) ifelse(is.infinite(x)==T,0,x)))
+
+sum_dat$shann_ind25<--rowSums(sp_div_25*log_relab25)
+
+# evenness, from Shannon's:
+sum_dat$Hmax_25<-log(sum_dat$sr_25)
+sum_dat$even2_25<-sum_dat$shann_ind25/sum_dat$Hmax_25
+
+#rare 5% species
+
+# simpson's index
+sum_dat$inv_simps_ind5<-1/rowSums(sp_div_5^2)
+
+# evenness, from Simpson's:
+sum_dat$even5<-sum_dat$inv_simps_ind5/sum_dat$sr_5
+
+# shannon's index:
+log_relab5<-log(sp_div_5)
+log_relab5<-t(apply(log_relab5,1,function(x) ifelse(is.infinite(x)==T,0,x)))
+
+sum_dat$shann_ind5<--rowSums(sp_div_5*log_relab5)
+
+# evenness, from Shannon's:
+sum_dat$Hmax_5<-log(sum_dat$sr_5)
+sum_dat$even2_5<-sum_dat$shann_ind5/sum_dat$Hmax_5
+
+
+
 dir()
 save.image("04_workspaces/processed_data.RData")
 
