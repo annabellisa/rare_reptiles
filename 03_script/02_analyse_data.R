@@ -12,6 +12,9 @@ load("04_workspaces/analysed_data.RData")
 library("MASS")
 library(AICcmodavg)
 
+# Load functions:
+invisible(lapply(paste("02_functions/",dir("02_functions"),sep=""), function(x) source(x)))
+
 #data fully processed and ready to process 9th May 2023 in sum_dat
 
 head(sum_dat, 6);dim(sum_dat)
@@ -371,75 +374,79 @@ combi.tab<-rbind(m1.tab2, m2.tab2, m3.tab2, m4.tab2, m5.tab2, m6.tab2, m7.tab2, 
 #save.image("04_workspaces/analysed_data.RData")
 
 
-# plots for strongest fit
+#Contrasts
 
-dev.new(width=7, height=9, dpi=75, pointsize=16, noRStudioGD = T)
-par(mfrow=c(3,2), mar=c(4.5,4,1,1), mgp=c(2.8,0.8,0), oma=c(0,0,1,6))
+#There are 3 contrasts for three categories (u:m, u:b, m:b)
 
-# species richness
-plot(c(1:3),m1_c.pr2$fit, xlim=c(0.5,3.5), pch=20, xaxt="n",ylim= c((min(m1_c.pr2$lci)),max(m1_c.pr2$uci)),ylab="Species Richness",xlab="", las = 1, cex = 2.5)
-arrows(c(1:3),m1_c.pr2$lci,c(1:3),m1_c.pr2$uci,length=0.03,code=3,angle=90)
-axis(1,at=c(1:3),labels=F)
-axis(1,at=c(1,2,3),labels=m1_c.pr2$fire_cat,tick=F)
-title(mgp=c(2.3,0.8,0),xlab="Fire Category")
-m1.tab2
-text(2.1,max(m1_c.pr2$uci),as.expression(bquote(Delta~"AICc ="~.(paste(round(m1.tab2$Delta_AICc[m1.tab2$Modnames=="fire"]-m1.tab2$Delta_AICc[m1.tab2$Modnames=="null"],2),sep="")))),adj=0,col="red")
-mtext(text="(a)", side = 3, line = 0.5, adj = 0, cex = 1)
+summary(m1_c) #glm.nb model
 
-# simps diversity index, no changes required
-plot(c(1:3),m2_c.pr2$fit, xlim=c(0.5,3.5), pch=20, xaxt="n",ylim= c((min(m2_c.pr2$lci)),max(m2_c.pr2$uci)),ylab="Simpson's Diversity Index",xlab="", las = 1, cex = 2.5)
-arrows(c(1:3),m2_c.pr2$lci,c(1:3),m2_c.pr2$uci,length=0.03,code=3,angle=90)
-axis(1,at=c(1:3),labels=F)
-axis(1,at=c(1,2,3),labels=m2_c.pr2$fire_cat,tick=F)
-title(mgp=c(2.3,0.8,0),xlab="Fire Category")
-text(2.1,max(m2_c.pr2$uci),as.expression(bquote(Delta~"AICc ="~.(paste(round(m2.tab2$Delta_AICc[m2.tab2$Modnames=="fire"]-m2.tab2$Delta_AICc[m2.tab2$Modnames=="null"],2),sep="")))),adj=0,col="red")
-mtext(text="(b)", side = 3, line = 0.5, adj = 0, cex = 1)
+# fireonly.pr<-data.frame(fire_cat = factor(levels(sum_dat$fire_cat),levels = levels(sum_dat$fire_cat)))
 
-par(xpd=NA)
-legend(x=4,y=max(m2_c.pr2$uci)+0.1, title = "Sites", legend = c("Fire only", "Hincks","Pinks"), pt.cex = 1.5, pch = c(16, 15, 17), bty = "n", title.adj=0)
-par(xpd=F)
+fireonly_contrast<-data.frame(contrast=paste(combn(fireonly.pr$fire_cat,2)[1,],combn(fireonly.pr$fire_cat,2)[2,],sep=':'))
 
-# shann_ind plots for fire+location
+#Create unique model matrix
 
-plot(c(1:3)-0.15,m5_b.pr2$fit[m5_b.pr2$location=="Hincks"], xlim=c(0.5,3.5), pch=15, xaxt="n",ylim= c((min(m5_b.pr2$lci)),max(m5_b.pr2$uci)+0.03),ylab="Shannon's Index",xlab="", las = 1, cex = 1.5)
-points(c(1:3)+0.15,m5_b.pr2$fit[m5_b.pr2$location=="Pinks"], xlim=c(0.5,3.5), pch=17, cex = 1.5)
-arrows(c(1:3)-0.15,m5_b.pr2$lci[m5_b.pr2$location=="Hincks"],c(1:3)-0.15,m5_b.pr2$uci[m5_b.pr2$location=="Hincks"],length=0.03,code=3,angle=90)
-arrows(c(1:3)+0.15,m5_b.pr2$lci[m5_b.pr2$location=="Pinks"],c(1:3)+0.15,m5_b.pr2$uci[m5_b.pr2$location=="Pinks"],length=0.03,code=3,angle=90)
-axis(1,at=c(1:3),labels=F)
-axis(1,at=c(1,2,3),labels=m5_b.pr2$fire_cat[m5_b.pr2$location=="Hincks"],tick=F)
-title(mgp=c(2.3,0.8,0),xlab="Fire Category")
-text(2,max(m5_b.pr2$uci)+0.03,as.expression(bquote(Delta~"AICc ="~.(paste(round(m5.tab2$Delta_AICc[m5.tab2$Modnames=="fire"]-m5.tab2$Delta_AICc[m5.tab2$Modnames=="null"],2),sep="")))),adj=0,col="dark green")
-mtext(text="(c)", side = 3, line = 0.5, adj = 0, cex = 1)
+m1c_conmod <- lm(formula = sp_rich ~ fire_cat, data = sum_dat,x=T)$x
 
-# evenness plots for fire
-plot(c(1:3),m6_c.pr2$fit, xlim=c(0.5,3.5), pch=20, xaxt="n",ylim= c((min(m6_c.pr2$lci)),max(m6_c.pr2$uci)),ylab="Evenness",xlab="", las = 1, cex = 2.5)
-arrows(c(1:3),m6_c.pr2$lci,c(1:3),m6_c.pr2$uci,length=0.03,code=3,angle=90)
-axis(1,at=c(1:3),labels=F)
-axis(1,at=c(1,2,3),labels=m6_c.pr2$fire_cat,tick=F)
-title(mgp=c(2.3,0.8,0),xlab="Fire category")
-text(2,max(m6_c.pr2$uci),as.expression(bquote(Delta~"AICc ="~.(paste(round(m6.tab2$Delta_AICc[m6.tab2$Modnames=="fire"]-m6.tab2$Delta_AICc[m6.tab2$Modnames=="null"],2),sep="")))),adj=0,col="dark green")
-mtext(text="(d)", side = 3, line = 0.5, adj = 0, cex = 1)
+umm_m1c <- unique(m1c_conmod)
 
-# abund_5 plot
-plot(c(1:3),m4_c.pr2$fit, xlim=c(0.5,3.5), pch=20, xaxt="n",ylim= c((min(m4_c.pr2$lci)),max(m4_c.pr2$uci)),ylab="5% of max abundance",xlab="", las = 1, cex = 2.5)
-arrows(c(1:3),m4_c.pr2$lci,c(1:3),m4_c.pr2$uci,length=0.03,code=3,angle=90)
-axis(1,at=c(1:3),labels=F)
-axis(1,at=c(1,2,3),labels=m4_c.pr2$fire_cat,tick=F)
-title(mgp=c(2.3,0.8,0),xlab="Fire Category")
-text(2.1,max(m4_c.pr2$uci),as.expression(bquote(Delta~"AICc ="~.(paste(round(m4.tab2$Delta_AICc[m4.tab2$Modnames=="fire"]-m4.tab2$Delta_AICc[m4.tab2$Modnames=="null"],2),sep="")))),adj=0,col="red")
-mtext(text="(e)", side = 3, line = 0.5, adj = 0, cex = 1)
+rownames(umm_m1c) <- 1:nrow(umm_m1c)
 
-# abund_25 plot fire*location
+#WARNING NUMERIC SUBSETS - put them in the natural order 2016-2019, c to r
 
-plot(c(1:3)-0.15,m3_b.pr2$fit[m3_b.pr2$location=="Hincks"], xlim=c(0.5,3.5), pch=15, xaxt="n",ylim= c((min(m3_b.pr2$lci)),max(m3_b.pr2$uci)),ylab="Lowest 25%",xlab="", las = 1, cex = 1.5)
-points(c(1:3)+0.15,m3_b.pr2$fit[m3_b.pr2$location=="Pinks"], xlim=c(0.5,3.5), pch=17, cex = 1.5)
-arrows(c(1:3)-0.15,m3_b.pr2$lci[m3_b.pr2$location=="Hincks"],c(1:3)-0.15,m3_b.pr2$uci[m3_b.pr2$location=="Hincks"],length=0.03,code=3,angle=90)
-arrows(c(1:3)+0.15,m3_b.pr2$lci[m3_b.pr2$location=="Pinks"],c(1:3)+0.15,m3_b.pr2$uci[m3_b.pr2$location=="Pinks"],length=0.03,code=3,angle=90)
-axis(1,at=c(1:3),labels=F)
-axis(1,at=c(1,2,3),labels=m3_b.pr2$fire_cat[m3_b.pr2$location=="Hincks"],tick=F)
-title(mgp=c(2.3,0.8,0),xlab="Fire Category")
-text(2.1,max(m3_b.pr2$uci),as.expression(bquote(Delta~"AICc ="~.(paste(round(m3.tab2$Delta_AICc[m3.tab2$Modnames=="fire"]-m3.tab2$Delta_AICc[m3.tab2$Modnames=="null"],2),sep="")))),adj=0,col="red")
-mtext(text="(f)", side = 3, line = 0.5, adj = 0, cex = 1)
+umm_m1c <- umm_m1c[c(1,3,2),]
+
+rownames(umm_m1c) <- 1:nrow(umm_m1c)
+
+#Create a difference matrix
+
+#Each row must be a vector with a length equal to the number of rows in the unique model matrix (umm), e.g. four rows in umm_form matrix will give 6 contrasts. Each row will specify one contrast.
+
+diffm_col <- rbind(
+  
+  c(-1,1,0,0),
+  
+  c(-1,0,1,0),
+  
+  c(-1,0,0,1),
+  
+  c(0,-1,1,0),
+  
+  c(0,-1,0,1),
+  
+  c(0,0,-1,1)
+  
+)
+
+
+
+#Now we have a unique model matrix
+
+umm_col2
+
+
+
+#and we have a difference matrix
+
+diffm_col
+
+
+
+#and we have the names for the contrast
+
+col_contrast
+
+
+
+#calculate the differences and CI's (abun)
+
+col_diff<-data.frame(contrast=col_contrast,diff.est(model = Colinvdiv_mod1,unique.mod.mat = umm_col2,diff.matrix = diffm_col))
+
+col_diff$diff <- ifelse(sign(col_diff$lci)==sign(col_diff$uci),1,0)
+
+
+
+
 
 #### RARE SPECIES assemblage
 #### Species richness of rare species combined with abundance of rare species:
