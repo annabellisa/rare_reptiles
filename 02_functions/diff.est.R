@@ -1,10 +1,10 @@
-# This function calculates the estimated differences, SEs and CIs. I wrote it for logistic and negbin models, tried to adapt it for lmer and now (Nov 2021) trying to adapt it for gam, glmer and glmmadmb.
+# This function estimates differences, SEs and CIs among all pairs of levels within factorial variables (least-squares mean contrasts) on the link scale. 
+
+# I wrote it for logistic and negbin models and later adapted it for lmer. In Nov 2021, I adapted it for gam, glmer and glmmadmb. In Sept 2023, I adapted it for negbin models (glm.nb), for Amber Lim's rare_reptiles. 
 
 # Inputs are the model to estimate from, a unique model matrix for the parameters of interest (with other params set to zero, and the differences matrix which specifies how to calculate the differences):
 
 # Author: Annabel Smith & Wade Blanchard
-
-
 
 diff.est<-function(model,unique.mod.mat,diff.matrix){
   
@@ -16,7 +16,9 @@ diff.est<-function(model,unique.mod.mat,diff.matrix){
   
   if(class(model)[1]=="glmmadmb") mod.coef<-summary(model)$coefficients[,1]
   
-  if(class(model)[1]=="gam") mod.coef<-summary(sd_mod2a)$p.table[,1]
+  if(class(model)[1]=="gam") mod.coef<-summary(model)$p.table[,1]
+  
+  if(class(model)[1]=="negbin") mod.coef<-summary(model)$coefficients[,1]
   
   diffs<-contrasts%*%mod.coef
   

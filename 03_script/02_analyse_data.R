@@ -386,65 +386,46 @@ fireonly_contrast<-data.frame(contrast=paste(combn(fireonly.pr$fire_cat,2)[1,],c
 
 #Create unique model matrix
 
-m1c_conmod <- lm(formula = sp_rich ~ fire_cat, data = sum_dat,x=T)$x
+fireonly_conmod <- lm(formula = sp_rich ~ fire_cat, data = sum_dat,x=T)$x
 
-umm_m1c <- unique(m1c_conmod)
+umm_fireonly <- unique(fireonly_conmod)
+rownames(umm_fireonly) <- 1:nrow(umm_fireonly)
 
-rownames(umm_m1c) <- 1:nrow(umm_m1c)
+# WARNING NUMERIC SUBSETS - put them in the natural order: Intercept (Unburnt), Medium, Burnt
 
-#WARNING NUMERIC SUBSETS - put them in the natural order 2016-2019, c to r
-
-umm_m1c <- umm_m1c[c(1,3,2),]
-
-rownames(umm_m1c) <- 1:nrow(umm_m1c)
+umm_fireonly <- umm_fireonly[c(1,3,2),]
+rownames(umm_fireonly) <- 1:nrow(umm_fireonly)
 
 #Create a difference matrix
 
-#Each row must be a vector with a length equal to the number of rows in the unique model matrix (umm), e.g. four rows in umm_form matrix will give 6 contrasts. Each row will specify one contrast.
+# Each row must be a vector with a length equal to the number of rows in the unique model matrix (umm_fireonly), e.g. three rows in umm_fireonly matrix will give 3 contrasts. Each row will specify one contrast.
 
-diffm_col <- rbind(
-  
-  c(-1,1,0,0),
-  
-  c(-1,0,1,0),
-  
-  c(-1,0,0,1),
-  
-  c(0,-1,1,0),
-  
-  c(0,-1,0,1),
-  
-  c(0,0,-1,1)
-  
+diffm_fireonly <- rbind(
+  c(-1,1,0),
+  c(-1,0,1),
+  c(0,-1,1)
 )
 
+# Now we have a unique model matrix
+umm_fireonly
 
+# and we have a difference matrix
+diffm_fireonly
 
-#Now we have a unique model matrix
-
-umm_col2
-
-
-
-#and we have a difference matrix
-
-diffm_col
-
-
-
-#and we have the names for the contrast
-
-col_contrast
-
-
+# and we have the names for the contrasts
+fireonly_contrast
 
 #calculate the differences and CI's (abun)
 
-col_diff<-data.frame(contrast=col_contrast,diff.est(model = Colinvdiv_mod1,unique.mod.mat = umm_col2,diff.matrix = diffm_col))
+summary(m1_c) # Species richness, fire only, glm.nb model
 
-col_diff$diff <- ifelse(sign(col_diff$lci)==sign(col_diff$uci),1,0)
+m1_c_diff<-data.frame(contrast=fireonly_contrast,diff.est(model = m1_c,unique.mod.mat = umm_fireonly,diff.matrix = diffm_fireonly))
 
+m1_c_diff$diff <- ifelse(sign(col_diff$lci)==sign(col_diff$uci),1,0)
 
+summary(m2_c) # Simpsons Index, fire only, Gamma glm
+
+summary(m3_b) # Abund 25, fire + location, glm.nb model
 
 
 
@@ -453,7 +434,7 @@ col_diff$diff <- ifelse(sign(col_diff$lci)==sign(col_diff$uci),1,0)
 
 # Lowest 25% (14 species). This metric classified species as rare if their abundances fell into the lowest 25% of the assemblage. For these 14 species, we modelled both the richness of this assemblage and the total abundance of all 14 species. 
 
-# 5 % of max abundance ()
+# 5 % of max abundance
 m7_c.pr2
 m8_c.pr2
 
