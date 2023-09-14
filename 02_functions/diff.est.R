@@ -20,6 +20,8 @@ diff.est<-function(model,unique.mod.mat,diff.matrix){
   
   if(class(model)[1]=="negbin") mod.coef<-summary(model)$coefficients[,1]
   
+  if(class(model)[1]=="glm") mod.coef<-summary(model)$coefficients[,1]
+  
   diffs<-contrasts%*%mod.coef
   
   # SE:

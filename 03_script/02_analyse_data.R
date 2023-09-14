@@ -374,7 +374,7 @@ combi.tab<-rbind(m1.tab2, m2.tab2, m3.tab2, m4.tab2, m5.tab2, m6.tab2, m7.tab2, 
 #save.image("04_workspaces/analysed_data.RData")
 
 
-#Contrasts
+# fire only contrasts
 
 #There are 3 contrasts for three categories (u:m, u:b, m:b)
 
@@ -409,25 +409,114 @@ diffm_fireonly <- rbind(
 # Now we have a unique model matrix
 umm_fireonly
 
-# and we have a difference matrix
+# and we have a difference matrix - -1 is baseline, 1 is comparison level to umm
 diffm_fireonly
 
 # and we have the names for the contrasts
 fireonly_contrast
 
+# fire + location contrasts
+
+#There are 6 contrasts for three categories within each site (hu:hm, hu:hb, hm:hb, pu:pm, pu:pb, pm:pb)
+
+summary(m3_b) #glm.nb model
+
+fireloc_contrast<-data.frame(location=rep(c('Hincks','Pinks'),rep(3,2)),contrast=paste(combn(fireonly.pr$fire_cat,2)[1,],combn(fireonly.pr$fire_cat,2)[2,],sep=':'))
+
+#Create unique model matrix
+
+fireloc_conmod <- lm(abund_25 ~ fire_cat + location, data = sum_dat,x=T)$x
+
+umm_fireloc <- unique(fireloc_conmod)
+rownames(umm_fireloc) <- 1:nrow(umm_fireloc)
+
+# WARNING NUMERIC SUBSETS - put them in the natural order: Intercept (Unburnt), Medium, Burnt
+
+umm_fireloc <- umm_fireloc[c(1,3,2,5,6,4),]
+rownames(umm_fireloc) <- 1:nrow(umm_fireloc)
+
+#Create a difference matrix
+
+# Each row must be a vector with a length equal to the number of rows in the unique model matrix (umm_fireonly), e.g. three rows in umm_fireonly matrix will give 3 contrasts. Each row will specify one contrast.
+
+diffm_fireloc <- rbind(
+  c(-1,1,0,0,0,0),
+  c(-1,0,1,0,0,0),
+  c(0,-1,1,0,0,0),
+  c(0,0,0,-1,1,0),
+  c(0,0,0,-1,0,1),
+  c(0,0,0,0,-1,1)
+)
+
+# Now we have a unique model matrix
+umm_fireloc
+
+# and we have a difference matrix - -1 is baseline, 1 is comparison level to umm
+diffm_fireloc
+
+# and we have the names for the contrasts
+fireloc_contrast
+
+
+
 #calculate the differences and CI's (abun)
 
-summary(m1_c) # Species richness, fire only, glm.nb model
+summary(m1_c) # Species richness, fire only, glm.nb model, 
+
+# significance based on 'diff', 0 insignificant, 1 significant / lci and uci also show significance based on whether lci + uci cross 0
 
 m1_c_diff<-data.frame(contrast=fireonly_contrast,diff.est(model = m1_c,unique.mod.mat = umm_fireonly,diff.matrix = diffm_fireonly))
 
-m1_c_diff$diff <- ifelse(sign(col_diff$lci)==sign(col_diff$uci),1,0)
+m1_c_diff$diff <- ifelse(sign(m1_c_diff$lci)==sign(m1_c_diff$uci),1,0)
+
 
 summary(m2_c) # Simpsons Index, fire only, Gamma glm
 
-summary(m3_b) # Abund 25, fire + location, glm.nb model
+m2_c_diff<-data.frame(contrast=fireonly_contrast,diff.est(model = m2_c,unique.mod.mat = umm_fireonly,diff.matrix = diffm_fireonly))
+
+m2_c_diff$diff <- ifelse(sign(m2_c_diff$lci)==sign(m2_c_diff$uci),1,0)
 
 
+summary(m3_b) # Abund lowest 25%, fire + location, glm.nb model
+
+m3_b_diff<-data.frame(contrast=fireloc_contrast,diff.est(model = m3_b,unique.mod.mat = umm_fireloc,diff.matrix = diffm_fireloc))
+
+m3_b_diff$diff <- ifelse(sign(m3_b_diff$lci)==sign(m3_b_diff$uci),1,0)
+
+
+summary (m4_c) # Abund 5% of max, fire only, glm.nb model
+
+m4_c_diff<-data.frame(contrast=fireonly_contrast,diff.est(model = m4_c,unique.mod.mat = umm_fireonly,diff.matrix = diffm_fireonly))
+
+m4_c_diff$diff <- ifelse(sign(m4_c_diff$lci)==sign(m4_c_diff$uci),1,0)
+
+
+summary (m5_b) # Shannon's index, fire + location, Gamma glm
+
+m5_b_diff<-data.frame(contrast=fireloc_contrast,diff.est(model = m5_b,unique.mod.mat = umm_fireloc,diff.matrix = diffm_fireloc))
+
+m5_b_diff$diff <- ifelse(sign(m5_b_diff$lci)==sign(m5_b_diff$uci),1,0)
+
+
+summary (m6_c) # Evenness, fire only, Gamma glm
+
+m6_c_diff<-data.frame(contrast=fireonly_contrast,diff.est(model = m6_c,unique.mod.mat = umm_fireonly,diff.matrix = diffm_fireonly))
+
+m6_c_diff$diff <- ifelse(sign(m6_c_diff$lci)==sign(m6_c_diff$uci),1,0)
+
+
+summary (m7_c) # Rare species lowest 25%, fire only, glm.nb
+
+m7_c_diff<-data.frame(contrast=fireonly_contrast,diff.est(model = m7_c,unique.mod.mat = umm_fireonly,diff.matrix = diffm_fireonly))
+
+m7_c_diff$diff <- ifelse(sign(m7_c_diff$lci)==sign(m7_c_diff$uci),1,0)
+
+
+summary (m8_c) # Rare species 5% max, fire only, glm.nb
+
+m8_c_diff<-data.frame(contrast=fireonly_contrast,diff.est(model = m8_c,unique.mod.mat = umm_fireonly,diff.matrix = diffm_fireonly))
+
+m8_c_diff$diff <- ifelse(sign(m8_c_diff$lci)==sign(m8_c_diff$uci),1,0)
 
 #### RARE SPECIES assemblage
 #### Species richness of rare species combined with abundance of rare species:
