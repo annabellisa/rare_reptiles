@@ -1,13 +1,11 @@
-
-
 # 02_analyse_data
 
-#use this if starting fresh
-#load("04_workspaces/processed_data.RData")
-#already analysed data
-load("04_workspaces/analysed_data.RData")
-#save.image("04_workspaces/analysed_data.RData")
+# use this if starting fresh
+# load("04_workspaces/processed_data.RData")
 
+# already analysed data
+load("04_workspaces/analysed_data.RData")
+# save.image("04_workspaces/analysed_data.RData")
 
 library("MASS")
 library(AICcmodavg)
@@ -15,9 +13,11 @@ library(AICcmodavg)
 # Load functions:
 invisible(lapply(paste("02_functions/",dir("02_functions"),sep=""), function(x) source(x)))
 
-#data fully processed and ready to process 9th May 2023 in sum_dat
+# data fully processed and ready to analyse 9th May 2023 in sum_dat
 
 head(sum_dat, 6);dim(sum_dat)
+
+#### MODELS
 
 # species richness as a function of fire category (generalized linear model with negative binomial linear structure). Statistical model = no negative results because count data. 
 # Effect of fire can vary depending on location - fire cat*location have no effect on species richness, fire cat AND location have no effect on species richness.
@@ -374,9 +374,11 @@ combi.tab<-rbind(m1.tab2, m2.tab2, m3.tab2, m4.tab2, m5.tab2, m6.tab2, m7.tab2, 
 #save.image("04_workspaces/analysed_data.RData")
 
 
+#### CONTRASTS
+
 # fire only contrasts
 
-#There are 3 contrasts for three categories (u:m, u:b, m:b)
+#There are 3 contrasts for three fire categories (u:m, u:b, m:b)
 
 summary(m1_c) #glm.nb model
 
@@ -457,12 +459,11 @@ diffm_fireloc
 # and we have the names for the contrasts
 fireloc_contrast
 
-
+#save.image("04_workspaces/analysed_data.RData")
 
 #calculate the differences and CI's (abun)
 
 summary(m1_c) # Species richness, fire only, glm.nb model, 
-
 # significance based on 'diff', 0 insignificant, 1 significant / lci and uci also show significance based on whether lci + uci cross 0
 
 m1_c_diff<-data.frame(contrast=fireonly_contrast,diff.est(model = m1_c,unique.mod.mat = umm_fireonly,diff.matrix = diffm_fireonly))
@@ -518,8 +519,38 @@ m8_c_diff<-data.frame(contrast=fireonly_contrast,diff.est(model = m8_c,unique.mo
 
 m8_c_diff$diff <- ifelse(sign(m8_c_diff$lci)==sign(m8_c_diff$uci),1,0)
 
+# Summary of all contrasts:
+
+summary(m1_c) # Species richness, fire only, glm.nb model,
+m1_c_diff
+
+summary(m2_c) # Simpsons Index, fire only, Gamma glm
+m2_c_diff
+
+summary(m3_b) # Abund lowest 25%, fire + location, glm.nb model
+m3_b_diff
+
+summary (m4_c) # Abund 5% of max, fire only, glm.nb model
+m4_c_diff
+
+summary (m5_b) # Shannon's index, fire + location, Gamma glm
+m5_b_diff
+
+summary (m6_c) # Evenness, fire only, Gamma glm
+m6_c_diff
+
+summary (m7_c) # Rare species richness, lowest 25%, fire only, glm.nb
+m7_c_diff
+
+summary (m8_c) # Rare species richness, 5% max, fire only, glm.nb
+m8_c_diff
+
+#save.image("04_workspaces/analysed_data.RData")
+
+#### PLOTS
+
 #### RARE SPECIES assemblage
-#### Species richness of rare species combined with abundance of rare species:
+#### Species richness of rare species on the same figure as abundance of rare species:
 
 # Lowest 25% (14 species). This metric classified species as rare if their abundances fell into the lowest 25% of the assemblage. For these 14 species, we modelled both the richness of this assemblage and the total abundance of all 14 species. 
 
@@ -531,48 +562,56 @@ dev.new(width=7, height=6, dpi=80, pointsize=14, noRStudioGD = T)
 par(mfrow=c(2,2), mar=c(4.5,4,1,1), mgp=c(2.8,0.8,0), oma=c(0,0,1,6))
 
 # species richness (5% of max.)
-plot(c(1:3),m8_c.pr2$fit, xlim=c(0.5,3.5), pch=20, xaxt="n",ylim= c((min(m8_c.pr2$lci)),max(m8_c.pr2$uci)),ylab="Richness (5% of max.)",xlab="", las = 1, cex = 2.5)
+plot(c(1:3),m8_c.pr2$fit, xlim=c(0.5,3.5), pch=20, xaxt="n",ylim= c((min(m8_c.pr2$lci)),max(m8_c.pr2$uci)+2),ylab="Richness (5% of max.)",xlab="", las = 1, cex = 2.5)
 arrows(c(1:3),m8_c.pr2$lci,c(1:3),m8_c.pr2$uci,length=0.03,code=3,angle=90)
 axis(1,at=c(1:3),labels=F)
 axis(1,at=c(0.8,2,3.2), cex.axis=1,labels=m8_c.pr2$fire_cat,tick=F)
 title(mgp=c(2.3,0.8,0),xlab="Fire Category")
 m8.tab2
-text(2.1,max(m8_c.pr2$uci),as.expression(bquote(Delta~"AICc ="~.(paste(round(m8.tab2$Delta_AICc[m8.tab2$Modnames=="fire"]-m1.tab2$Delta_AICc[m8.tab2$Modnames=="null"],2),sep="")))),adj=0,col="red", cex=0.9)
+mtext(as.expression(bquote(Delta~"AICc ="~.(paste(round(m8.tab2$Delta_AICc[m8.tab2$Modnames=="fire"]-m1.tab2$Delta_AICc[m8.tab2$Modnames=="null"],2),sep="")))),side=3,line=0.1,adj=1,col="red", cex=0.75)
 mtext(text="(a)", side = 3, line = 0.5, adj = 0, cex = 1)
+m8_c_diff
+text(x=1:3, y=max(m8_c.pr2$uci)+1,labels=c(letters[1],paste(letters[1],letters[2],sep="",collapse=""),letters[2]))
 
 # species richness (Lowest 25%)
-plot(c(1:3),m7_c.pr2$fit, xlim=c(0.5,3.5), pch=20, xaxt="n",ylim= c((min(m7_c.pr2$lci)),max(m7_c.pr2$uci)),ylab="Richness (lowest 25%)",xlab="", las = 1, cex = 2.5)
+plot(c(1:3),m7_c.pr2$fit, xlim=c(0.5,3.5), pch=20, xaxt="n",ylim= c((min(m7_c.pr2$lci)),max(m7_c.pr2$uci)+1),ylab="Richness (lowest 25%)",xlab="", las = 1, cex = 2.5)
 arrows(c(1:3),m7_c.pr2$lci,c(1:3),m7_c.pr2$uci,length=0.03,code=3,angle=90)
 axis(1,at=c(1:3),labels=F)
 axis(1,at=c(0.8,2,3.2),labels=m7_c.pr2$fire_cat,tick=F, cex.axis=1)
 title(mgp=c(2.3,0.8,0),xlab="Fire Category")
 m7.tab2
-text(2.1,max(m7_c.pr2$uci),as.expression(bquote(Delta~"AICc ="~.(paste(round(m7.tab2$Delta_AICc[m7.tab2$Modnames=="fire"]-m7.tab2$Delta_AICc[m7.tab2$Modnames=="null"],2),sep="")))),adj=0,col="red", cex=0.9)
+mtext(as.expression(bquote(Delta~"AICc ="~.(paste(round(m7.tab2$Delta_AICc[m7.tab2$Modnames=="fire"]-m7.tab2$Delta_AICc[m7.tab2$Modnames=="null"],2),sep="")))), side=3,line=0.1,adj=1,col="red", cex=0.75)
 mtext(text="(b)", side = 3, line = 0.5, adj = 0, cex = 1)
+m7_c_diff # no differences
+text(x=1:3, y=max(m7_c.pr2$uci)+0.5,labels=rep(letters[1],3))
 
 par(xpd=NA)
-legend(x=4,y=max(m7_c.pr2$uci)+0.1, title = "Sites", legend = c("Fire only", "Hincks","Pinks"), pt.cex = 1.5, pch = c(16, 15, 17), bty = "n", title.adj=0)
+legend(x=4,y=max(m7_c.pr2$uci)+1.1, title = "Sites", legend = c("Fire only", "Hincks","Pinks"), pt.cex = 1.5, pch = c(16, 15, 17), bty = "n", title.adj=0)
 par(xpd=F)
 
 # Abundance (5% of max.)
-plot(c(1:3),m4_c.pr2$fit, xlim=c(0.5,3.5), pch=20, xaxt="n",ylim= c((min(m4_c.pr2$lci)),max(m4_c.pr2$uci)),ylab="Abundance (5% of max.)",xlab="", las = 1, cex = 2.5)
+plot(c(1:3),m4_c.pr2$fit, xlim=c(0.5,3.5), pch=20, xaxt="n",ylim= c((min(m4_c.pr2$lci)),max(m4_c.pr2$uci)+2),ylab="Abundance (5% of max.)",xlab="", las = 1, cex = 2.5)
 arrows(c(1:3),m4_c.pr2$lci,c(1:3),m4_c.pr2$uci,length=0.03,code=3,angle=90)
 axis(1,at=c(1:3),labels=F)
 axis(1,at=c(0.8,2,3.2),cex.axis=1,labels=m4_c.pr2$fire_cat,tick=F)
 title(mgp=c(2.3,0.8,0),xlab="Fire Category")
-text(2.1,max(m4_c.pr2$uci),as.expression(bquote(Delta~"AICc ="~.(paste(round(m4.tab2$Delta_AICc[m4.tab2$Modnames=="fire"]-m4.tab2$Delta_AICc[m4.tab2$Modnames=="null"],2),sep="")))),adj=0,col="red", cex=0.9)
+mtext(as.expression(bquote(Delta~"AICc ="~.(paste(round(m4.tab2$Delta_AICc[m4.tab2$Modnames=="fire"]-m4.tab2$Delta_AICc[m4.tab2$Modnames=="null"],2),sep="")))), side=3,line=0.1,adj=1,col="red", cex=0.75)
 mtext(text="(c)", side = 3, line = 0.5, adj = 0, cex = 1)
+m4_c_diff # no differences
+text(x=1:3, y=max(m4_c.pr2$uci)+1,labels=rep(letters[1],3))
 
 # Abundance (Lowest 25%)
-plot(c(1:3)-0.15,m3_b.pr2$fit[m3_b.pr2$location=="Hincks"], xlim=c(0.5,3.5), pch=15, xaxt="n",ylim= c((min(m3_b.pr2$lci)),max(m3_b.pr2$uci)),ylab="Abundance (lowest 25%)",xlab="", las = 1, cex = 1.5)
+plot(c(1:3)-0.15,m3_b.pr2$fit[m3_b.pr2$location=="Hincks"], xlim=c(0.5,3.5), pch=15, xaxt="n",ylim= c((min(m3_b.pr2$lci)),max(m3_b.pr2$uci)+2),ylab="Abundance (lowest 25%)",xlab="", las = 1, cex = 1.5)
 points(c(1:3)+0.15,m3_b.pr2$fit[m3_b.pr2$location=="Pinks"], xlim=c(0.5,3.5), pch=17, cex = 1.5)
 arrows(c(1:3)-0.15,m3_b.pr2$lci[m3_b.pr2$location=="Hincks"],c(1:3)-0.15,m3_b.pr2$uci[m3_b.pr2$location=="Hincks"],length=0.03,code=3,angle=90)
 arrows(c(1:3)+0.15,m3_b.pr2$lci[m3_b.pr2$location=="Pinks"],c(1:3)+0.15,m3_b.pr2$uci[m3_b.pr2$location=="Pinks"],length=0.03,code=3,angle=90)
 axis(1,at=c(1:3),labels=F)
 axis(1,at=c(0.8,2,3.2), cex.axis=1,labels=m3_b.pr2$fire_cat[m3_b.pr2$location=="Hincks"],tick=F)
 title(mgp=c(2.3,0.8,0),xlab="Fire Category")
-text(2.1,max(m3_b.pr2$uci),as.expression(bquote(Delta~"AICc ="~.(paste(round(m3.tab2$Delta_AICc[m3.tab2$Modnames=="fire"]-m3.tab2$Delta_AICc[m3.tab2$Modnames=="null"],2),sep="")))),adj=0,col="red", cex=0.9)
+mtext(as.expression(bquote(Delta~"AICc ="~.(paste(round(m3.tab2$Delta_AICc[m3.tab2$Modnames=="fire"]-m3.tab2$Delta_AICc[m3.tab2$Modnames=="null"],2),sep="")))), side=3,line=0.1,adj=1,col="red", cex=0.75)
 mtext(text="(d)", side = 3, line = 0.5, adj = 0, cex = 1)
+m3_b_diff
+text(x=1:3, y=max(m3_b.pr2$uci)+1,labels=c(letters[1],paste(letters[1],letters[2],sep="",collapse=""),letters[2]))
 
 
 #### ALL SPECIES assemblage
