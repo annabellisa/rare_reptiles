@@ -621,51 +621,56 @@ dev.new(width=7, height=6, dpi=80, pointsize=14, noRStudioGD = T)
 par(mfrow=c(2,2), mar=c(4.5,4,1,1), mgp=c(2.8,0.8,0), oma=c(0,0,1,6))
 
 # species richness
-plot(c(1:3),m1_c.pr2$fit, xlim=c(0.5,3.5), pch=20, xaxt="n",ylim= c((min(m1_c.pr2$lci)),max(m1_c.pr2$uci)),ylab="Species Richness",xlab="", las = 1, cex = 2.5)
+plot(c(1:3),m1_c.pr2$fit, xlim=c(0.5,3.5), pch=20, xaxt="n",ylim= c((min(m1_c.pr2$lci)),max(m1_c.pr2$uci)+3),ylab="Species Richness",xlab="", las = 1, cex = 2.5)
 arrows(c(1:3),m1_c.pr2$lci,c(1:3),m1_c.pr2$uci,length=0.03,code=3,angle=90)
 axis(1,at=c(1:3),labels=F)
 axis(1,at=c(0.8,2,3.2), cex.axis=1,labels=m1_c.pr2$fire_cat,tick=F)
 title(mgp=c(2.3,0.8,0),xlab="Fire Category")
 m1.tab2
-text(2.1,max(m1_c.pr2$uci),as.expression(bquote(Delta~"AICc ="~.(paste(round(m1.tab2$Delta_AICc[m1.tab2$Modnames=="fire"]-m1.tab2$Delta_AICc[m1.tab2$Modnames=="null"],2),sep="")))),adj=0,col="red",cex=0.9)
+mtext(as.expression(bquote(Delta~"AICc ="~.(paste(round(m1.tab2$Delta_AICc[m1.tab2$Modnames=="fire"]-m1.tab2$Delta_AICc[m1.tab2$Modnames=="null"],2),sep="")))), side=3,line=0.1,adj=1,col="red", cex=0.75)
 mtext(text="(a)", side = 3, line = 0.5, adj = 0, cex = 1)
+m1_c_diff # no differences
+text(x=1:3, y=max(m1_c.pr2$uci)+1.5,labels=rep(letters[1],3))
 
 # simps diversity index, no changes required
-plot(c(1:3),m2_c.pr2$fit, xlim=c(0.5,3.5), pch=20, xaxt="n",ylim= c((min(m2_c.pr2$lci)),max(m2_c.pr2$uci)),ylab="Simpson's Diversity Index",xlab="", las = 1, cex = 2.5)
+plot(c(1:3),m2_c.pr2$fit, xlim=c(0.5,3.5), pch=20, xaxt="n",ylim= c((min(m2_c.pr2$lci)),max(m2_c.pr2$uci)+2),ylab="Simpson's Diversity Index",xlab="", las = 1, cex = 2.5)
 arrows(c(1:3),m2_c.pr2$lci,c(1:3),m2_c.pr2$uci,length=0.03,code=3,angle=90)
 axis(1,at=c(1:3),labels=F)
 axis(1,at=c(0.8,2,3.2), cex.axis=1,labels=m2_c.pr2$fire_cat,tick=F)
 title(mgp=c(2.3,0.8,0),xlab="Fire Category")
-text(2.1,max(m2_c.pr2$uci),as.expression(bquote(Delta~"AICc ="~.(paste(round(m2.tab2$Delta_AICc[m2.tab2$Modnames=="fire"]-m2.tab2$Delta_AICc[m2.tab2$Modnames=="null"],2),sep="")))),adj=0,col="red", cex=0.9)
+mtext(as.expression(bquote(Delta~"AICc ="~.(paste(round(m2.tab2$Delta_AICc[m2.tab2$Modnames=="fire"]-m2.tab2$Delta_AICc[m2.tab2$Modnames=="null"],2),sep="")))), side=3,line=0.1,adj=1,col="red", cex=0.75)
 mtext(text="(b)", side = 3, line = 0.5, adj = 0, cex = 1)
+m2_c_diff
+text(x=1:3, y=max(m2_c.pr2$uci)+1,labels=c(letters[1],rep(letters[2],2)))
 
 par(xpd=NA)
-legend(x=4,y=max(m2_c.pr2$uci)+0.1, title = "Sites", legend = c("Fire only", "Hincks","Pinks"), pt.cex = 1.5, pch = c(16, 15, 17), bty = "n", title.adj=0)
+legend(x=4,y=max(m2_c.pr2$uci)+2.1, title = "Sites", legend = c("Fire only", "Hincks","Pinks"), pt.cex = 1.5, pch = c(16, 15, 17), bty = "n", title.adj=0)
 par(xpd=F)
 
 # shann_ind plots for fire+location
 
-plot(c(1:3)-0.15,m5_b.pr2$fit[m5_b.pr2$location=="Hincks"], xlim=c(0.5,3.5), pch=15, xaxt="n",ylim= c((min(m5_b.pr2$lci)),max(m5_b.pr2$uci)+0.03),ylab="Shannon's Index",xlab="", las = 1, cex = 1.5)
+plot(c(1:3)-0.15,m5_b.pr2$fit[m5_b.pr2$location=="Hincks"], xlim=c(0.5,3.5), pch=15, xaxt="n",ylim= c((min(m5_b.pr2$lci)),max(m5_b.pr2$uci)+0.28),ylab="Shannon's Index",xlab="", las = 1, cex = 1.5)
 points(c(1:3)+0.15,m5_b.pr2$fit[m5_b.pr2$location=="Pinks"], xlim=c(0.5,3.5), pch=17, cex = 1.5)
 arrows(c(1:3)-0.15,m5_b.pr2$lci[m5_b.pr2$location=="Hincks"],c(1:3)-0.15,m5_b.pr2$uci[m5_b.pr2$location=="Hincks"],length=0.03,code=3,angle=90)
 arrows(c(1:3)+0.15,m5_b.pr2$lci[m5_b.pr2$location=="Pinks"],c(1:3)+0.15,m5_b.pr2$uci[m5_b.pr2$location=="Pinks"],length=0.03,code=3,angle=90)
 axis(1,at=c(1:3),labels=F)
 axis(1,at=c(0.8,2,3.2),labels=m5_b.pr2$fire_cat[m5_b.pr2$location=="Hincks"],tick=F)
 title(mgp=c(2.3,0.8,0),xlab="Fire Category")
-text(2,max(m5_b.pr2$uci)+0.03,as.expression(bquote(Delta~"AICc ="~.(paste(round(m5.tab2$Delta_AICc[m5.tab2$Modnames=="fire"]-m5.tab2$Delta_AICc[m5.tab2$Modnames=="null"],2),sep="")))),adj=0,col="dark green", cex=0.9)
+mtext(as.expression(bquote(Delta~"AICc ="~.(paste(round(m5.tab2$Delta_AICc[m5.tab2$Modnames=="fire"]-m5.tab2$Delta_AICc[m5.tab2$Modnames=="null"],2),sep="")))), side=3,line=0.1,adj=1,col="dark green", cex=0.75)
 mtext(text="(c)", side = 3, line = 0.5, adj = 0, cex = 1)
+m5_b_diff
+text(x=1:3, y=max(m5_b.pr2$uci)+0.15,labels=c(letters[1],rep(letters[2],2)))
 
 # evenness plots for fire
-plot(c(1:3),m6_c.pr2$fit, xlim=c(0.5,3.5), pch=20, xaxt="n",ylim= c((min(m6_c.pr2$lci)),max(m6_c.pr2$uci)),ylab="Evenness",xlab="", las = 1, cex = 2.5)
+plot(c(1:3),m6_c.pr2$fit, xlim=c(0.5,3.5), pch=20, xaxt="n",ylim= c((min(m6_c.pr2$lci)),max(m6_c.pr2$uci)+0.08),ylab="Evenness",xlab="", las = 1, cex = 2.5)
 arrows(c(1:3),m6_c.pr2$lci,c(1:3),m6_c.pr2$uci,length=0.03,code=3,angle=90)
 axis(1,at=c(1:3),labels=F)
 axis(1,at=c(0.8,2,3.2),labels=m6_c.pr2$fire_cat,tick=F)
 title(mgp=c(2.3,0.8,0),xlab="Fire category")
-text(2,max(m6_c.pr2$uci),as.expression(bquote(Delta~"AICc ="~.(paste(round(m6.tab2$Delta_AICc[m6.tab2$Modnames=="fire"]-m6.tab2$Delta_AICc[m6.tab2$Modnames=="null"],2),sep="")))),adj=0,col="dark green", cex=0.9)
+mtext(as.expression(bquote(Delta~"AICc ="~.(paste(round(m6.tab2$Delta_AICc[m6.tab2$Modnames=="fire"]-m6.tab2$Delta_AICc[m6.tab2$Modnames=="null"],2),sep="")))), side=3,line=0.1,adj=1,col="dark green", cex=0.75)
 mtext(text="(d)", side = 3, line = 0.5, adj = 0, cex = 1)
-
-
-
+m6_c_diff
+text(x=1:3, y=max(m6_c.pr2$uci)+0.04,labels=c(letters[1],letters[2],paste(letters[1],letters[2],sep="",collapse="")))
 
 
 
