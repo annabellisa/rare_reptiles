@@ -608,7 +608,7 @@ arrows(c(1:3)+0.15,m3_b.pr2$lci[m3_b.pr2$location=="Pinks"],c(1:3)+0.15,m3_b.pr2
 axis(1,at=c(1:3),labels=F)
 axis(1,at=c(0.8,2,3.2), cex.axis=1,labels=m3_b.pr2$fire_cat[m3_b.pr2$location=="Hincks"],tick=F)
 title(mgp=c(2.3,0.8,0),xlab="Fire Category")
-mtext(as.expression(bquote(Delta~"AICc ="~.(paste(round(m3.tab2$Delta_AICc[m3.tab2$Modnames=="fire"]-m3.tab2$Delta_AICc[m3.tab2$Modnames=="null"],2),sep="")))), side=3,line=0.1,adj=1,col="red", cex=0.75)
+mtext(as.expression(bquote(Delta~"AICc ="~.(paste(round(m3.tab2$Delta_AICc[m3.tab2$Modnames=="location"]-m3.tab2$Delta_AICc[m3.tab2$Modnames=="null"],2),sep="")))), side=3,line=0.1,adj=1,col="red", cex=0.75)
 mtext(text="(d)", side = 3, line = 0.5, adj = 0, cex = 1)
 m3_b_diff
 text(x=1:3, y=max(m3_b.pr2$uci)+1,labels=c(letters[1],paste(letters[1],letters[2],sep="",collapse=""),letters[2]))
@@ -656,7 +656,7 @@ arrows(c(1:3)+0.15,m5_b.pr2$lci[m5_b.pr2$location=="Pinks"],c(1:3)+0.15,m5_b.pr2
 axis(1,at=c(1:3),labels=F)
 axis(1,at=c(0.8,2,3.2),labels=m5_b.pr2$fire_cat[m5_b.pr2$location=="Hincks"],tick=F)
 title(mgp=c(2.3,0.8,0),xlab="Fire Category")
-mtext(as.expression(bquote(Delta~"AICc ="~.(paste(round(m5.tab2$Delta_AICc[m5.tab2$Modnames=="fire"]-m5.tab2$Delta_AICc[m5.tab2$Modnames=="null"],2),sep="")))), side=3,line=0.1,adj=1,col="dark green", cex=0.75)
+mtext(as.expression(bquote(Delta~"AICc ="~.(paste(round(m5.tab2$Delta_AICc[m5.tab2$Modnames=="location"]-m5.tab2$Delta_AICc[m5.tab2$Modnames=="null"],2),sep="")))), side=3,line=0.1,adj=1,col="dark green", cex=0.75)
 mtext(text="(c)", side = 3, line = 0.5, adj = 0, cex = 1)
 m5_b_diff
 text(x=1:3, y=max(m5_b.pr2$uci)+0.15,labels=c(letters[1],rep(letters[2],2)))
