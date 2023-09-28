@@ -674,4 +674,46 @@ text(x=1:3, y=max(m6_c.pr2$uci)+0.04,labels=c(letters[1],letters[2],paste(letter
 
 
 
+# Rank abundance plot for appendix:
+# Use captures / 1000 trap nights, 2 seasons of data combined
+head(sp_div2, 3); dim(sp_div2)
+
+sp_abund<-data.frame(species=names(colSums(sp_div2)), total_abund=colSums(sp_div2))
+sp_abund<-sp_abund[order(sp_abund$total_abund),]
+rownames(sp_abund)<-1:nrow(sp_abund)
+head(sp_abund); dim(sp_abund)
+tail(sp_abund)
+
+dev.new(height = 8, width = 12, noRStudioGD = T, dpi=70, pointsize=20)
+par(mfrow = c(2,2), mar=c(4,5,2,1), mgp=c(2.3,0.7,0))
+
+hist(sp_abund$total_abund, breaks=seq(0,500,by=10), main = "", ylab="Number of species", xlab="",las=1, col="grey80")
+title(xlab="Abundance", mgp=c(2,1,0))
+title(main="(a) All Data", mgp=c(2,1,0), adj = 0, font.main = 1, cex.main=0.95)
+
+lab1<-tail(sp_abund,4)
+lab1names<-c("Ctenotus euclae","Liopholis inornata","Nephrurus stellatus","Ctenophorus fordi")
+text(c(lab1$total_abund[1]-10,lab1$total_abund[2]+10,lab1$total_abund[c(3,4)]),2,font=3,labels=lab1names,srt=90, adj=0, col="darkorange4", cex=0.8)
+
+hist(sp_abund$total_abund[sp_abund$total_abund<100], breaks=seq(0,100,by=10), main="", ylab="Number of species", xlab="",las=1, col="grey80")
+title(xlab="Abundance", mgp=c(2,1,0))
+title(main="(b) Less than 100", mgp=c(2,1,0), adj = 0, font.main = 1, cex.main=0.95)
+
+lab2<-tail(sp_abund[sp_abund$total_abund<100,],3)
+lab2names<-c("Ctenotus atlas","Lerista edwardsae","Ctenophorus cristatus")
+text(c(lab2$total_abund[1]+4,lab2$total_abund[c(2,3)]),2,font=3,labels=lab2names,srt=90, adj=0, col="darkorange4", cex=0.8)
+
+hist(sp_abund$total_abund[sp_abund$total_abund<20], breaks=seq(0,20,by=1), main="", ylab="Number of species", xlab="",las=1, col="grey80", adj = 0)
+title(xlab="Abundance", mgp=c(2,1,0))
+title(main="(c) Less than 20", mgp=c(2,1,0), adj = 0,font.main = 1, cex.main=0.95)
+
+lab3<-tail(sp_abund[sp_abund$total_abund<20,],2)
+lab3names<-c("Anilios bituberculatus","Anilios australis")
+text(lab3$total_abund-0.5,1.5,font=3,labels=lab3names,srt=90, adj=0, col="darkorange4", cex=0.8)
+
+hist(sp_abund$total_abund[sp_abund$total_abund<10], breaks=seq(0,10,by=1), main="", ylab="Number of species", xlab="",las=1, col="grey80", adj = 0)
+title(xlab="Abundance", mgp=c(2,1,0))
+title(main="(d) Less than 10", mgp=c(2,1,0), adj = 0, font.main = 1, cex.main=0.95)
+
+
 
