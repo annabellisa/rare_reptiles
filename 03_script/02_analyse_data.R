@@ -586,7 +586,7 @@ m7_c_diff # no differences
 text(x=1:3, y=max(m7_c.pr2$uci)+0.5,labels=rep(letters[1],3))
 
 par(xpd=NA)
-legend(x=4,y=max(m7_c.pr2$uci)+1.1, title = "Sites", legend = c("Fire only", "Hincks","Pinks"), pt.cex = 1.5, pch = c(16, 15, 17), bty = "n", title.adj=0)
+legend(x=4,y=max(m7_c.pr2$uci)+1.1, title = "Location", legend = c("Fire only", "Hincks","Pinkaw."), pt.cex = 1.5, pch = c(16, 15, 17), bty = "n", title.adj=0)
 par(xpd=F)
 
 # Abundance (5% of max.)
@@ -644,7 +644,7 @@ m2_c_diff
 text(x=1:3, y=max(m2_c.pr2$uci)+1,labels=c(letters[1],rep(letters[2],2)))
 
 par(xpd=NA)
-legend(x=4,y=max(m2_c.pr2$uci)+2.1, title = "Sites", legend = c("Fire only", "Hincks","Pinks"), pt.cex = 1.5, pch = c(16, 15, 17), bty = "n", title.adj=0)
+legend(x=4,y=max(m2_c.pr2$uci)+2.1, title = "Location", legend = c("Fire only", "Hincks","Pinkaw."), pt.cex = 1.5, pch = c(16, 15, 17), bty = "n", title.adj=0)
 par(xpd=F)
 
 # shann_ind plots for fire+location
