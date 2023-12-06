@@ -1,4 +1,4 @@
-# Fire and rarity in reptile communities
+# Fire influences rarity and dominance in a reptile community
 
 R scripts for analysing the influence of fire on rarity and dominance in reptile communities
 
@@ -20,7 +20,7 @@ Amber Lim and Annabel Smith (unless otherwise stated within script)
 
 ## Manuscript
 
-Lim & Smith (in preparation). How does fire influence rarity and dominance in reptile communities?
+Lim A., Smith A.L. (in preparation). Fire influences rarity and dominance in a reptile community.
 
 ## License
 
