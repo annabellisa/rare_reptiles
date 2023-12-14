@@ -20,7 +20,7 @@ Amber Lim and Annabel Smith (unless otherwise stated within script)
 
 ## Manuscript
 
-Lim A., Smith A.L. (under review). Fire influences rarity and dominance in a reptile community.
+Lim A.S.Y., Smith A.L. (under review). Fire influences rarity and dominance in a reptile community.
 
 ## License
 
