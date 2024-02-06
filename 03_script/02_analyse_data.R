@@ -373,7 +373,6 @@ combi.tab<-rbind(m1.tab2, m2.tab2, m3.tab2, m4.tab2, m5.tab2, m6.tab2, m7.tab2, 
 
 #save.image("04_workspaces/analysed_data.RData")
 
-
 #### CONTRASTS
 
 # fire only contrasts
@@ -463,7 +462,7 @@ fireloc_contrast
 
 #calculate the differences and CI's (abun)
 
-summary(m1_c) # Species richness, fire only, glm.nb model, 
+summary(m1_c) # Species richness, fire only, glm.nb model
 # significance based on 'diff', 0 insignificant, 1 significant / lci and uci also show significance based on whether lci + uci cross 0
 
 m1_c_diff<-data.frame(contrast=fireonly_contrast,diff.est(model = m1_c,unique.mod.mat = umm_fireonly,diff.matrix = diffm_fireonly))
@@ -811,5 +810,83 @@ hist(sp_abund$total_abund[sp_abund$total_abund<10], breaks=seq(0,10,by=1), main=
 title(xlab="Abundance", mgp=c(2,1,0))
 title(main="(d) Less than 10", mgp=c(2,1,0), adj = 0, font.main = 1, cex.main=0.95)
 
+# Create table of model coefficients for top models:
 
+# Whole reptile community:
+all.coef<-rbind(
+  matrix(data=c("Species richness",""),nrow=1,ncol=2),
+  round(summary(m1_c)$coefficients,3)[,1:2], # Species richness, fire only, glm.nb model
+
+  matrix(data=c("Simpson's Diversity Index",""),nrow=1,ncol=2),
+  round(summary(m2_c)$coefficients,3)[,1:2], # Simpsons Index, fire only, Gamma glm
+
+  matrix(data=c("Shannon's Diversity Index", ""),nrow=1,ncol=2),
+  round(summary(m5_b)$coefficients,3)[,1:2], # Shannon's index, fire + location, Gamma glm
+
+  matrix(data=c("Evenness", ""),nrow=1,ncol=2),
+  round(summary(m6_c)$coefficients,3)[,1:2], # Evenness, fire only, Gamma glm
+
+# Rare species:
+
+matrix(data=c("Richness (5% of max.)", ""),nrow=1,ncol=2),
+round(summary(m8_c)$coefficients,3)[,1:2], # Rare species richness 5% max, fire only, glm.nb
+
+matrix(data=c("Richness (lowest 25%)", ""),nrow=1,ncol=2),
+round(summary(m7_c)$coefficients,3)[,1:2], # Rare species richness, lowest 25%, fire only, glm.nb
+
+matrix(data=c("Abundance (5% of max.)", ""),nrow=1,ncol=2),
+round(summary (m4_c)$coefficients,3)[,1:2], # Abund 5% of max, fire only, glm.nb model
+
+matrix(data=c("Abundance (lowest 25%)", ""),nrow=1,ncol=2),
+round(summary(m3_b)$coefficients,3)[,1:2] # Abund lowest 25%, fire + location, glm.nb model
+)
+
+all.coef2<-as.data.frame(all.coef)
+# write.table(all.coef2,file="all.coef2.txt",quote=F,sep="\t",row.names = T)
+
+# Plot effect sizes for all contrasts:
+
+diff.list<-list(
+  # Species richness, fire only, glm.nb model
+  m1_c_diff, 
+  # Simpsons Index, fire only, Gamma glm
+  m2_c_diff, 
+  # Shannon's index, fire + location, Gamma glm
+  m5_b_diff, 
+  # Evenness, fire only, Gamma glm
+  m6_c_diff, 
+  # Rare species richness 5% max, fire only, glm.nb
+  m8_c_diff, 
+  # Rare species richness, lowest 25%, fire only, glm.nb
+  m7_c_diff, 
+  # Abund 5% of max, fire only, glm.nb model
+  m4_c_diff, 
+  # Abund lowest 25%, fire + location, glm.nb model
+  m3_b_diff)
+
+diff.lab<-c("Species richness", "Simpson's Diversity Index","Shannon's Diversity Index", "Evenness", "Richness (5% of max.)", "Richness (lowest 25%)", "Abundance (5% of max.)", "Abundance (lowest 25%)")
+
+dev.new(width=4, height=7, dpi=80, pointsize=12, noRStudioGD = T)
+par(mfrow=c(4,2), mar=c(4,4,2,1), mgp=c(2,0.8,0))
+
+for(i in 1:length(diff.list)){
+  
+  list.thisrun<-diff.list[[i]]
+  
+  if(nrow(list.thisrun)==3){
+    plot(rev(list.thisrun$est), 1:3, xlim=c(min(list.thisrun$lci),max(list.thisrun$uci)), yaxt="n", pch=16, ylim=c(0.5,3.5), xlab="Difference ± 95 % CI", ylab="", main="", font.main=1)
+    mtext(paste("(",letters[i],") ",diff.lab[i],sep=""),side=3, line=0.5, cex=0.65, adj=0)
+    arrows(rev(list.thisrun$lci),1:3,rev(list.thisrun$uci),1:3,length=0, lty=1)
+    arrows(0,0,0,4,length=0, lty=2)
+    axis(side=2,at=1:3,labels=rev(c("U:M","U:B","M:B")), las=1)
+  } # close if nrow == 3
+  
+  if(nrow(list.thisrun)==6){
+    plot(rev(list.thisrun$est), 1:6, xlim=c(min(list.thisrun$lci),max(list.thisrun$uci)), yaxt="n", pch=16, ylim=c(0.5,6.5), xlab="Difference ± 95 % CI", ylab="", main="", font.main=1)
+    mtext(paste("(",letters[i],") ",diff.lab[i],sep=""),side=3, line=0.5, cex=0.65, adj=0)
+    arrows(rev(list.thisrun$lci),1:6,rev(list.thisrun$uci),1:6,length=0, lty=1)
+    arrows(0,0,0,7,length=0, lty=2)
+    axis(side=2,at=1:6,labels=rev(c("H U:M","H U:B","H M:B","P U:M","P U:B","P M:B")), las=1)
+  } # close if nrow == 6
+}
 
