@@ -814,31 +814,31 @@ title(main="(d) Less than 10", mgp=c(2,1,0), adj = 0, font.main = 1, cex.main=0.
 
 # Whole reptile community:
 all.coef<-rbind(
-  matrix(data=c("Species richness",""),nrow=1,ncol=2),
-  round(summary(m1_c)$coefficients,3)[,1:2], # Species richness, fire only, glm.nb model
+  matrix(data=c("Species richness","","",""),nrow=1,ncol=4),
+  round(summary(m1_c)$coefficients,3)[,1:4], # Species richness, fire only, glm.nb model
 
-  matrix(data=c("Simpson's Diversity Index",""),nrow=1,ncol=2),
-  round(summary(m2_c)$coefficients,3)[,1:2], # Simpsons Index, fire only, Gamma glm
+  matrix(data=c("Simpson's Diversity Index","","",""),nrow=1,ncol=4),
+  round(summary(m2_c)$coefficients,3)[,1:4], # Simpsons Index, fire only, Gamma glm
 
-  matrix(data=c("Shannon's Diversity Index", ""),nrow=1,ncol=2),
-  round(summary(m5_b)$coefficients,3)[,1:2], # Shannon's index, fire + location, Gamma glm
+  matrix(data=c("Shannon's Diversity Index", "","",""),nrow=1,ncol=4),
+  round(summary(m5_b)$coefficients,3)[,1:4], # Shannon's index, fire + location, Gamma glm
 
-  matrix(data=c("Evenness", ""),nrow=1,ncol=2),
-  round(summary(m6_c)$coefficients,3)[,1:2], # Evenness, fire only, Gamma glm
+  matrix(data=c("Evenness", "","",""),nrow=1,ncol=4),
+  round(summary(m6_c)$coefficients,3)[,1:4], # Evenness, fire only, Gamma glm
 
 # Rare species:
 
-matrix(data=c("Richness (5% of max.)", ""),nrow=1,ncol=2),
-round(summary(m8_c)$coefficients,3)[,1:2], # Rare species richness 5% max, fire only, glm.nb
+matrix(data=c("Richness (5% of max.)", "","",""),nrow=1,ncol=4),
+round(summary(m8_c)$coefficients,3)[,1:4], # Rare species richness 5% max, fire only, glm.nb
 
-matrix(data=c("Richness (lowest 25%)", ""),nrow=1,ncol=2),
-round(summary(m7_c)$coefficients,3)[,1:2], # Rare species richness, lowest 25%, fire only, glm.nb
+matrix(data=c("Richness (lowest 25%)", "","",""),nrow=1,ncol=4),
+round(summary(m7_c)$coefficients,3)[,1:4], # Rare species richness, lowest 25%, fire only, glm.nb
 
-matrix(data=c("Abundance (5% of max.)", ""),nrow=1,ncol=2),
-round(summary (m4_c)$coefficients,3)[,1:2], # Abund 5% of max, fire only, glm.nb model
+matrix(data=c("Abundance (5% of max.)", "","",""),nrow=1,ncol=4),
+round(summary(m4_c)$coefficients,3)[,1:4], # Abund 5% of max, fire only, glm.nb model
 
-matrix(data=c("Abundance (lowest 25%)", ""),nrow=1,ncol=2),
-round(summary(m3_b)$coefficients,3)[,1:2] # Abund lowest 25%, fire + location, glm.nb model
+matrix(data=c("Abundance (lowest 25%)", "","",""),nrow=1,ncol=4),
+round(summary(m3_b)$coefficients,3)[,1:4] # Abund lowest 25%, fire + location, glm.nb model
 )
 
 all.coef2<-as.data.frame(all.coef)
