@@ -27,6 +27,8 @@ head(sum_dat, 6);dim(sum_dat)
 
 #### MODELS
 
+# ----
+
 # species richness as a function of fire category (generalized linear model with negative binomial linear structure). Statistical model = no negative results because count data. 
 # Effect of fire can vary depending on location - fire cat*location have no effect on species richness, fire cat AND location have no effect on species richness.
 m1_a <- glm.nb(sp_rich~fire_cat*location,data = sum_dat)
@@ -381,9 +383,13 @@ combi.tab<-rbind(m1.tab2, m2.tab2, m3.tab2, m4.tab2, m5.tab2, m6.tab2, m7.tab2, 
 
 #save.image("04_workspaces/analysed_data.RData")
 
+# ----
+
 #### CONTRASTS
 
 # fire only contrasts
+
+# ----
 
 #There are 3 contrasts for three fire categories (u:m, u:b, m:b)
 
@@ -553,6 +559,8 @@ summary (m8_c) # Rare species richness, 5% max, fire only, glm.nb
 m8_c_diff
 
 #save.image("04_workspaces/analysed_data.RData")
+
+# ----
 
 #### PLOTS
 
