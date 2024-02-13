@@ -1,4 +1,12 @@
-# 02_analyse_data
+# ------------------------------------ #
+# ---------- RARE REPTILES  ---------- #
+# ------------------------------------ #
+
+### Analysis fire effects on rarity and dominance in a reptile community 
+
+# ---------- 02_analyse_data  ---------- #
+
+### Script authors: Amber Lim & Annabel Smith 
 
 # use this if starting fresh
 # load("04_workspaces/processed_data.RData")

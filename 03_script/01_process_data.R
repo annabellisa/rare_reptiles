@@ -1,5 +1,14 @@
-# Ideas for Amber's project
-# Feb 2023
+# ------------------------------------ #
+# ---------- RARE REPTILES  ---------- #
+# ------------------------------------ #
+
+### Analysis fire effects on rarity and dominance in a reptile community 
+
+# ---------- 01_process_data  ---------- #
+
+### Script authors: Amber Lim & Annabel Smith 
+
+# Key questions:
 
 # what can we tell about the influence of fire on rare species from comparing species richness to diversity estimates?
 
@@ -13,10 +22,7 @@
 
 # Following Rabinowitz (1981), we could look at rarity based on: geographic range, habitat specificity and local abundance. We've been talking about abundance-related rarity, but we could also look at geographical rarity - i.e. the proportion of sites in which each species occurs. Habitat specificity would have to be done through the literature. 
 
-#testing amber 1 march
-
-
-# For community ecology lecture
+# Data processing:
 # March 2020
 
 library("lme4"); library("vegan")
@@ -64,8 +70,6 @@ for (i in 1:lgth2){
 caps$mod_type<-as.factor(new.x)
 caps
 
-
-
 # STANDARDISE THE DATA BY TRAP EFFORT (dat4). 
 
 # This will turn the data into something like "the number of captures per 500 trap nights".
@@ -96,10 +100,9 @@ head(compare)
 # plot(compare$raw, compare$std)
 # cor.test(compare$raw, compare$std)
 
-
 # THE DATA:
 
-# The mod_type can also be used to specify which data set to use:
+# mod_type can also be used to specify which data set to use:
 
 # 1 = Hdat (Hincks only, all sites)
 # 2 = Pdat (Pinks only, all sites)
@@ -367,8 +370,6 @@ sum_dat$shann_ind5<--rowSums(sp_div_5*log_relab5)
 # evenness, from Shannon's:
 sum_dat$Hmax_5<-log(sum_dat$sr_5)
 sum_dat$even2_5<-sum_dat$shann_ind5/sum_dat$Hmax_5
-
-
 
 dir()
 save.image("04_workspaces/processed_data.RData")
