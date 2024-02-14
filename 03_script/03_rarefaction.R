@@ -69,18 +69,80 @@ abund_mat$Unburnt<-rowSums(t(sp_div2[which(rownames(sp_div2) %in% ub_sites),]))
 head(abund_mat); dim(abund_mat)
 
 # run iNEXT analysis:
-reptile_iN<-iNEXT(abund_mat, q=0, datatype="abundance")
+reptile_iN<-iNEXT(abund_mat, q=c(0,1,2), datatype="abundance")
 str(reptile_iN)
+
 r_dat<-reptile_iN$DataInfo
 est_dat<-reptile_iN$iNextEst
 asy_dat<-reptile_iN$AsyEst
+
+# DataInfo: 
+# n = reference sample size, S.obs = observed species richness, SC = sample coverage estimate for the reference sample, fi = first ten frequency counts
+r_dat
+
+# iNextEst:
+# Diversity estimates and related statistics
+
+# there are size based and coverage based estimates, both containing CIs obtained from a bootstrap method. Sampling uncertainty is greater in the coverage based estimates, so CIs are wider for this group of estimates. 
+
+# m = sample size based on 40 equally spaced knots, from 1 to (2 x n), where n is the reference sample size for each group. This locates the reference sample at the mid point of the diversity estimates. qD is the Hill number diversity estimate of order q; SC is the sample coverage. Both of these estimates have associated CIs. 
+
+seq(1,(558*2), length.out=40)
+seq(1,(168*2), length.out=40)
+
 str(est_dat)
 
-head(asy_dat)
+head(est_dat$size_based,3); dim(est_dat$size_based)
+head(est_dat$coverage_based,3); dim(est_dat$coverage_based)
+est_dat$size_based[which(est_dat$size_based=="Burnt"),1:4]
+
+# AsyEst
+# Asymptotic diversity estimates for richness, Shannon and Simpson diversity
+head(asy_dat,3); dim(asy_dat)
+
+# Plot iNext object
+
+# Plot size-based, then coverage-based
+e_size<-est_dat$size_based
+e_cov<-est_dat$coverage_based
+
+e_size$Assemblage<-factor(e_size$Assemblage,levels=c("Unburnt","Medium","Burnt"))
+e_cov$Assemblage<-factor(e_cov$Assemblage,levels=c("Unburnt","Medium","Burnt"))
+
+head(e_size,3); dim(e_size)
+head(e_cov,3); dim(e_cov)
+
+size0<-e_size[e_size$Order.q==0,]
+size1<-e_size[e_size$Order.q==1,]
+size2<-e_size[e_size$Order.q==2,]
+head(size0,3); dim(size0)
+
+
+dev.new(width=10, height=8, dpi=80, pointsize=14, noRStudioGD = T)
+par(mfrow=c(2,3), mar=c(4.5,4,1,1), mgp=c(2.4,0.8,0), oma=c(0,0,1,6))
+
+plot(size0$m[size0$Assemblage=="Burnt"],size0$qD[size0$Assemblage=="Burnt"], type="l", ylim=c(min(size0$qD.LCL),max(size0$qD.UCL)), las=1, xlab="Number of individuals",ylab="Estimated species diversity")
+
+pg.ci(x="m","size0",x.subset="Assemblage",colour=c(1,2,3))
+
+
+
+
+# ggINEXT examples:
+r_iN1<-iNEXT(abund_mat, q=c(0,1,2), datatype="abundance")
+est_iN1<-r_iN1$iNextEst
+head(est_iN1$size_based,3); dim(est_iN1$size_based)
+
+est_iN1$size_based[which(est_iN1$size_based=="Burnt"),1:4]
+
+ggiNEXT(r_iN1, type=1, se=TRUE, facet.var="Assemblage", color.var="Order.q", grey=FALSE)
+ggiNEXT(r_iN1, type=1, se=TRUE, facet.var="Order.q", color.var="Assemblage", grey=FALSE)
+
+# Plot asymptotic diversity estimate:
 
 asy_dat$Assemblage<-factor(asy_dat$Assemblage,levels=c("Unburnt","Medium","Burnt"))
 
-dev.new(width=8, height=5, dpi=80, pointsize=20, noRStudioGD = T)
+dev.new(width=6, height=4, dpi=80, pointsize=16, noRStudioGD = T)
 par(mfrow=c(1,1), mar=c(2.5,4,0,1), mgp=c(2.8,0.8,0), oma=c(0,0,1,7))
   
   # species richness (5% of max.)
@@ -95,7 +157,7 @@ par(mfrow=c(1,1), mar=c(2.5,4,0,1), mgp=c(2.8,0.8,0), oma=c(0,0,1,7))
   arrows(c(1:3)+0.2,asy_dat$LCL[asy_dat$Diversity=="Simpson diversity"],c(1:3)+0.2,asy_dat$UCL[asy_dat$Diversity=="Simpson diversity"],length=0.03,code=3,angle=90)
   
   axis(1,at=c(1:3),labels=F)
-  axis(1,at=c(1:3), cex.axis=1,labels=levels(asy_dat$Assemblage),tick=F)
+  axis(1,at=c(0.8,2,3.2), cex.axis=1,labels=levels(asy_dat$Assemblage),tick=F)
   
   # plot legend:
 par(xpd=NA)

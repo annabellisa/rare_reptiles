@@ -565,6 +565,9 @@ m8_c_diff
 #### PLOTS
 
 #### RARE SPECIES assemblage
+
+# ----
+
 #### Species richness of rare species on the same figure as abundance of rare species:
 
 # Lowest 25% (14 species). This metric classified species as rare if their abundances fell into the lowest 25% of the assemblage. For these 14 species, we modelled both the richness of this assemblage and the total abundance of all 14 species. 
@@ -597,9 +600,9 @@ text(x=1:3, y=max(m8_c.pr2$uci)+1,labels=c(letters[1],paste(letters[1],letters[2
 sr5_ub<-sum_dat$sr_5[sum_dat$fire_cat=="Unburnt"]
 sr5_m<-sum_dat$sr_5[sum_dat$fire_cat=="Medium"]
 sr5_b<-sum_dat$sr_5[sum_dat$fire_cat=="Burnt"]
-points(jitter(rep(1+0.2,length(sr5_ub)),factor=3),sr5_ub, pch=20,col=rgb(0,0,0,0.2))
-points(jitter(rep(2+0.2,length(sr5_m)),factor=2),sr5_m, pch=20,col=rgb(0,0,0,0.2))
-points(jitter(rep(3+0.2,length(sr5_b)),factor=3),sr5_b, pch=20,col=rgb(0,0,0,0.2))
+points(jitter(rep(1,length(sr5_ub)),factor=4),sr5_ub, pch=20,col=rgb(0,0,0,0.2))
+points(jitter(rep(2,length(sr5_m)),factor=4),sr5_m, pch=20,col=rgb(0,0,0,0.2))
+points(jitter(rep(3,length(sr5_b)),factor=4),sr5_b, pch=20,col=rgb(0,0,0,0.2))
 
 # species richness (Lowest 25%)
 plot(c(1:3),m7_c.pr2$fit, xlim=c(0.5,3.5), pch=20, xaxt="n",ylim= c((min(m7_c.pr2$lci)),max(m7_c.pr2$uci)+1),ylab="Richness (lowest 25%)",xlab="", las = 1, cex = 2.5)
@@ -617,9 +620,9 @@ text(x=1:3, y=max(m7_c.pr2$uci)+0.5,labels=rep(letters[1],3))
 sr25_ub<-sum_dat$sr_25[sum_dat$fire_cat=="Unburnt"]
 sr25_m<-sum_dat$sr_25[sum_dat$fire_cat=="Medium"]
 sr25_b<-sum_dat$sr_25[sum_dat$fire_cat=="Burnt"]
-points(jitter(rep(1+0.2,length(sr25_ub)),factor=3),sr25_ub, pch=20,col=rgb(0,0,0,0.2))
-points(jitter(rep(2+0.2,length(sr25_m)),factor=2),sr25_m, pch=20,col=rgb(0,0,0,0.2))
-points(jitter(rep(3+0.2,length(sr25_b)),factor=3),sr25_b, pch=20,col=rgb(0,0,0,0.2))
+points(jitter(rep(1,length(sr25_ub)),factor=4),sr25_ub, pch=20,col=rgb(0,0,0,0.2))
+points(jitter(rep(2,length(sr25_m)),factor=4),sr25_m, pch=20,col=rgb(0,0,0,0.2))
+points(jitter(rep(3,length(sr25_b)),factor=4),sr25_b, pch=20,col=rgb(0,0,0,0.2))
 
 # plot legend:
 par(xpd=NA)
@@ -642,9 +645,9 @@ abund5_ub<-sum_dat$abund_5[sum_dat$fire_cat=="Unburnt"]
 abund5_m<-sum_dat$abund_5[sum_dat$fire_cat=="Medium"]
 abund5_b<-sum_dat$abund_5[sum_dat$fire_cat=="Burnt"]
 
-points(jitter(rep(1+0.2,length(abund5_ub)),factor=3),abund5_ub, pch=20,col=rgb(0,0,0,0.2))
-points(jitter(rep(2+0.2,length(abund5_m)),factor=2),abund5_m, pch=20,col=rgb(0,0,0,0.2))
-points(jitter(rep(3+0.2,length(abund5_b)),factor=3),abund5_b, pch=20,col=rgb(0,0,0,0.2))
+points(jitter(rep(1,length(abund5_ub)),factor=4),abund5_ub, pch=20,col=rgb(0,0,0,0.2))
+points(jitter(rep(2,length(abund5_m)),factor=4),abund5_m, pch=20,col=rgb(0,0,0,0.2))
+points(jitter(rep(3,length(abund5_b)),factor=4),abund5_b, pch=20,col=rgb(0,0,0,0.2))
 
 # Abundance (Lowest 25%)
 plot(c(1:3)-0.15,m3_b.pr2$fit[m3_b.pr2$location=="Hincks"], xlim=c(0.5,3.5), pch=15, xaxt="n",ylim= c((min(m3_b.pr2$lci)),max(m3_b.pr2$uci)+2),ylab="Abundance (lowest 25%)",xlab="", las = 1, cex = 1.5)
@@ -667,17 +670,21 @@ abund25_mP<-sum_dat$abund_25[sum_dat$fire_cat=="Medium" & sum_dat$location=="Pin
 abund25_bH<-sum_dat$abund_25[sum_dat$fire_cat=="Burnt" & sum_dat$location=="Hincks"]
 abund25_bP<-sum_dat$abund_25[sum_dat$fire_cat=="Burnt" & sum_dat$location=="Pinks"]
 
-points(jitter(rep(1,length(abund25_ubH)),factor=3),abund25_ubH, pch=15,col=rgb(0,0,0,0.2))
-points(jitter(rep(1+0.35,length(abund25_ubP)),factor=3),abund25_ubP, pch=17,col=rgb(0,0,0,0.2))
+points(jitter(rep(1-0.15,length(abund25_ubH)),factor=4),abund25_ubH, pch=15,col=rgb(0,0,0,0.2))
+points(jitter(rep(1+0.15,length(abund25_ubP)),factor=4),abund25_ubP, pch=17,col=rgb(0,0,0,0.2))
 
-points(jitter(rep(2,length(abund25_mH)),factor=2),abund25_mH, pch=15,col=rgb(0,0,0,0.2))
-points(jitter(rep(2+0.35,length(abund25_mP)),factor=2),abund25_mP, pch=17,col=rgb(0,0,0,0.2))
+points(jitter(rep(2-0.15,length(abund25_mH)),factor=4),abund25_mH, pch=15,col=rgb(0,0,0,0.2))
+points(jitter(rep(2+0.15,length(abund25_mP)),factor=4),abund25_mP, pch=17,col=rgb(0,0,0,0.2))
 
-points(jitter(rep(3,length(abund25_bH)),factor=3),abund25_bH, pch=15,col=rgb(0,0,0,0.2))
-points(jitter(rep(3+0.35,length(abund25_bP)),factor=3),abund25_bP, pch=17,col=rgb(0,0,0,0.2))
+points(jitter(rep(3-0.15,length(abund25_bH)),factor=4),abund25_bH, pch=15,col=rgb(0,0,0,0.2))
+points(jitter(rep(3+0.15,length(abund25_bP)),factor=4),abund25_bP, pch=17,col=rgb(0,0,0,0.2))
 
+# ----
 
 #### ALL SPECIES assemblage
+
+# ----
+
 #### Species richness all species:
 
 # m1_c: sum_dat$sp_rich
@@ -705,38 +712,13 @@ sr_ub<-sum_dat$sp_rich[sum_dat$fire_cat=="Unburnt"]
 sr_m<-sum_dat$sp_rich[sum_dat$fire_cat=="Medium"]
 sr_b<-sum_dat$sp_rich[sum_dat$fire_cat=="Burnt"]
 
-points(jitter(rep(1+0.2,length(sr_ub)),factor=3),sr_ub, pch=20,col=rgb(0,0,0,0.2))
-points(jitter(rep(2+0.2,length(sr_m)),factor=2),sr_m, pch=20,col=rgb(0,0,0,0.2))
-points(jitter(rep(3+0.2,length(sr_b)),factor=3),sr_b, pch=20,col=rgb(0,0,0,0.2))
-
-# simps diversity index, no changes required
-plot(c(1:3),m2_c.pr2$fit, xlim=c(0.5,3.5), pch=20, xaxt="n",ylim= c((min(si2_b)),max(m2_c.pr2$uci)+2),ylab="Simpson's Diversity Index",xlab="", las = 1, cex = 2.5)
-arrows(c(1:3),m2_c.pr2$lci,c(1:3),m2_c.pr2$uci,length=0.03,code=3,angle=90)
-axis(1,at=c(1:3),labels=F)
-axis(1,at=c(0.8,2,3.2), cex.axis=1,labels=m2_c.pr2$fire_cat,tick=F)
-title(mgp=c(2.3,0.8,0),xlab="Fire Category")
-mtext(as.expression(bquote(Delta~"AICc ="~.(paste(round(m2.tab2$Delta_AICc[m2.tab2$Modnames=="fire"]-m2.tab2$Delta_AICc[m2.tab2$Modnames=="null"],2),sep="")))), side=3,line=0.1,adj=1,col="darkorange2", cex=0.75)
-mtext(text="(b)", side = 3, line = 0.5, adj = 0, cex = 1)
-m2_c_diff
-text(x=1:3, y=max(m2_c.pr2$uci)+1,labels=c(letters[1],rep(letters[2],2)))
-
-# plot raw data:
-si2_ub<-sum_dat$simps_ind2[sum_dat$fire_cat=="Unburnt"]
-si2_m<-sum_dat$simps_ind2[sum_dat$fire_cat=="Medium"]
-si2_b<-sum_dat$simps_ind2[sum_dat$fire_cat=="Burnt"]
-
-points(jitter(rep(1+0.2,length(si2_ub)),factor=3),si2_ub, pch=20,col=rgb(0,0,0,0.2))
-points(jitter(rep(2+0.2,length(si2_m)),factor=2),si2_m, pch=20,col=rgb(0,0,0,0.2))
-points(jitter(rep(3+0.2,length(si2_b)),factor=3),si2_b, pch=20,col=rgb(0,0,0,0.2))
-
-# plot legend:
-par(xpd=NA)
-legend(x=4,y=max(m2_c.pr2$uci)+2.1, title = "Location", legend = c("Fire only", "Hincks","Pinkaw."), pt.cex = 1.5, pch = c(16, 15, 17), bty = "n", title.adj=0)
-par(xpd=F)
+points(jitter(rep(1,length(sr_ub)),factor=4),sr_ub, pch=20,col=rgb(0,0,0,0.2))
+points(jitter(rep(2,length(sr_m)),factor=4),sr_m, pch=20,col=rgb(0,0,0,0.2))
+points(jitter(rep(3,length(sr_b)),factor=4),sr_b, pch=20,col=rgb(0,0,0,0.2))
 
 # shann_ind plots for fire+location
 
-plot(c(1:3)-0.15,m5_b.pr2$fit[m5_b.pr2$location=="Hincks"], xlim=c(0.5,3.5), pch=15, xaxt="n",ylim= c((min(m5_b.pr2$lci)),max(m5_b.pr2$uci)+0.28),ylab="Shannon's Diversity Index",xlab="", las = 1, cex = 1.5)
+plot(c(1:3)-0.15,m5_b.pr2$fit[m5_b.pr2$location=="Hincks"], xlim=c(0.5,3.5), pch=15, xaxt="n",ylim= c((min(m5_b.pr2$lci)),max(m5_b.pr2$uci)+0.28),ylab="Shannon's Diversity",xlab="", las = 1, cex = 1.5)
 points(c(1:3)+0.15,m5_b.pr2$fit[m5_b.pr2$location=="Pinks"], xlim=c(0.5,3.5), pch=17, cex = 1.5)
 arrows(c(1:3)-0.15,m5_b.pr2$lci[m5_b.pr2$location=="Hincks"],c(1:3)-0.15,m5_b.pr2$uci[m5_b.pr2$location=="Hincks"],length=0.03,code=3,angle=90)
 arrows(c(1:3)+0.15,m5_b.pr2$lci[m5_b.pr2$location=="Pinks"],c(1:3)+0.15,m5_b.pr2$uci[m5_b.pr2$location=="Pinks"],length=0.03,code=3,angle=90)
@@ -756,16 +738,50 @@ sh_mP<-sum_dat$shann_ind[sum_dat$fire_cat=="Medium" & sum_dat$location=="Pinks"]
 sh_bH<-sum_dat$shann_ind[sum_dat$fire_cat=="Burnt" & sum_dat$location=="Hincks"]
 sh_bP<-sum_dat$shann_ind[sum_dat$fire_cat=="Burnt" & sum_dat$location=="Pinks"]
 
-points(jitter(rep(1,length(sh_ubH)),factor=3),sh_ubH, pch=15,col=rgb(0,0,0,0.2))
-points(jitter(rep(1+0.35,length(sh_ubP)),factor=3),sh_ubP, pch=17,col=rgb(0,0,0,0.2))
+points(jitter(rep(1-0.15,length(sh_ubH)),factor=4),sh_ubH, pch=15,col=rgb(0,0,0,0.2))
+points(jitter(rep(1+0.15,length(sh_ubP)),factor=4),sh_ubP, pch=17,col=rgb(0,0,0,0.2))
 
-points(jitter(rep(2,length(sh_mH)),factor=2),sh_mH, pch=15,col=rgb(0,0,0,0.2))
-points(jitter(rep(2+0.35,length(sh_mP)),factor=2),sh_mP, pch=17,col=rgb(0,0,0,0.2))
+points(jitter(rep(2-0.15,length(sh_mH)),factor=4),sh_mH, pch=15,col=rgb(0,0,0,0.2))
+points(jitter(rep(2+0.15,length(sh_mP)),factor=4),sh_mP, pch=17,col=rgb(0,0,0,0.2))
 
-points(jitter(rep(3,length(sh_bH)),factor=3),sh_bH, pch=15,col=rgb(0,0,0,0.2))
-points(jitter(rep(3+0.35,length(sh_bP)),factor=3),sh_bP, pch=17,col=rgb(0,0,0,0.2))
+points(jitter(rep(3-0.15,length(sh_bH)),factor=4),sh_bH, pch=15,col=rgb(0,0,0,0.2))
+points(jitter(rep(3+0.15,length(sh_bP)),factor=4),sh_bP, pch=17,col=rgb(0,0,0,0.2))
+
+# plot legend:
+par(xpd=NA)
+legend(x=3.8,y=max(m5_b.pr2$uci)+0.3, title = "Location", legend = c("Fire only", "Hincks","Pinkaw."), pt.cex = 1.5, pch = c(16, 15, 17), bty = "n", title.adj=0)
+par(xpd=F)
+
+# simps diversity index, no changes required
+
+# plot raw data:
+# run first as this is used for ylim
+si2_ub<-sum_dat$simps_ind2[sum_dat$fire_cat=="Unburnt"]
+si2_m<-sum_dat$simps_ind2[sum_dat$fire_cat=="Medium"]
+si2_b<-sum_dat$simps_ind2[sum_dat$fire_cat=="Burnt"]
+
+plot(c(1:3),m2_c.pr2$fit, xlim=c(0.5,3.5), pch=20, xaxt="n",ylim= c(min(si2_b),max(m2_c.pr2$uci)+2),ylab="Simpson's Diversity",xlab="", las = 1, cex = 2.5)
+arrows(c(1:3),m2_c.pr2$lci,c(1:3),m2_c.pr2$uci,length=0.03,code=3,angle=90)
+axis(1,at=c(1:3),labels=F)
+axis(1,at=c(0.8,2,3.2), cex.axis=1,labels=m2_c.pr2$fire_cat,tick=F)
+title(mgp=c(2.3,0.8,0),xlab="Fire Category")
+mtext(as.expression(bquote(Delta~"AICc ="~.(paste(round(m2.tab2$Delta_AICc[m2.tab2$Modnames=="fire"]-m2.tab2$Delta_AICc[m2.tab2$Modnames=="null"],2),sep="")))), side=3,line=0.1,adj=1,col="darkorange2", cex=0.75)
+mtext(text="(b)", side = 3, line = 0.5, adj = 0, cex = 1)
+m2_c_diff
+text(x=1:3, y=max(m2_c.pr2$uci)+1,labels=c(letters[1],rep(letters[2],2)))
+
+points(jitter(rep(1,length(si2_ub)),factor=4),si2_ub, pch=20,col=rgb(0,0,0,0.2))
+points(jitter(rep(2,length(si2_m)),factor=4),si2_m, pch=20,col=rgb(0,0,0,0.2))
+points(jitter(rep(3,length(si2_b)),factor=4),si2_b, pch=20,col=rgb(0,0,0,0.2))
 
 # evenness plots for fire
+
+# run first as this is used for ylim
+# plot raw data:
+ev_ub<-sum_dat$even2[sum_dat$fire_cat=="Unburnt"]
+ev_m<-sum_dat$even2[sum_dat$fire_cat=="Medium"]
+ev_b<-sum_dat$even2[sum_dat$fire_cat=="Burnt"]
+
 plot(c(1:3),m6_c.pr2$fit, xlim=c(0.5,3.5), pch=20, xaxt="n",ylim= c(min(ev_m),max(m6_c.pr2$uci)+0.08),ylab="Evenness",xlab="", las = 1, cex = 2.5)
 arrows(c(1:3),m6_c.pr2$lci,c(1:3),m6_c.pr2$uci,length=0.03,code=3,angle=90)
 axis(1,at=c(1:3),labels=F)
@@ -776,14 +792,11 @@ mtext(text="(d)", side = 3, line = 0.5, adj = 0, cex = 1)
 m6_c_diff
 text(x=1:3, y=max(m6_c.pr2$uci)+0.04,labels=c(letters[1],letters[2],paste(letters[1],letters[2],sep="",collapse="")))
 
-# plot raw data:
-ev_ub<-sum_dat$even2[sum_dat$fire_cat=="Unburnt"]
-ev_m<-sum_dat$even2[sum_dat$fire_cat=="Medium"]
-ev_b<-sum_dat$even2[sum_dat$fire_cat=="Burnt"]
+points(jitter(rep(1,length(ev_ub)),factor=4),ev_ub, pch=20,col=rgb(0,0,0,0.2))
+points(jitter(rep(2,length(ev_m)),factor=4),ev_m, pch=20,col=rgb(0,0,0,0.2))
+points(jitter(rep(3,length(ev_b)),factor=4),ev_b, pch=20,col=rgb(0,0,0,0.2))
 
-points(jitter(rep(1+0.2,length(ev_ub)),factor=3),ev_ub, pch=20,col=rgb(0,0,0,0.2))
-points(jitter(rep(2+0.2,length(ev_m)),factor=2),ev_m, pch=20,col=rgb(0,0,0,0.2))
-points(jitter(rep(3+0.2,length(ev_b)),factor=3),ev_b, pch=20,col=rgb(0,0,0,0.2))
+# ----
 
 # Rank abundance plot for appendix:
 # Use captures / 1000 trap nights, 2 seasons of data combined
