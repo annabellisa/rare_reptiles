@@ -36,7 +36,6 @@ pg.ci<-function(x,data,x.subset=NULL,colour){
     data.withsubset<-get(data)
     subset.all<-data.withsubset[,x.subset]
     
-    
     # Specify subs.levs: levels for factors, unique numbers for binary variables, and first and third quartiles for continuous variables
     
     if(is.factor(subset.all)) subs.levs<-levels(subset.all)
@@ -59,7 +58,7 @@ pg.ci<-function(x,data,x.subset=NULL,colour){
       
       xvec <- c(x.thisrun, tail(x.thisrun, 1), rev(x.thisrun), x.thisrun[1])
       yvec <- c(lci.thisrun, tail(uci.thisrun, 1), rev(uci.thisrun), lci.thisrun[1])
-      polygon(xvec, yvec, col=colour, border=NA)
+      polygon(xvec, yvec, col=get(colour[i]), border=NA)
       
     } # close for sub levels i
     
