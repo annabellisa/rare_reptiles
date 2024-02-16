@@ -4,7 +4,7 @@
 
 ### Analysis fire effects on rarity and dominance in a reptile community 
 
-# ---------- 02_rarefaction  ---------- #
+# ---------- 03_rarefaction  ---------- #
 
 ### Script authors: Amber Lim & Annabel Smith
 
@@ -109,6 +109,8 @@ head(asy_dat,3); dim(asy_dat)
 # Plot size-based, then coverage-based
 e_size<-est_dat$size_based
 e_cov<-est_dat$coverage_based
+head(e_cov)
+head(e_size,3); dim(e_size)
 
 e_size$Assemblage<-factor(e_size$Assemblage,levels=c("Unburnt","Medium","Burnt"))
 e_cov$Assemblage<-factor(e_cov$Assemblage,levels=c("Unburnt","Medium","Burnt"))
@@ -116,35 +118,38 @@ e_cov$Assemblage<-factor(e_cov$Assemblage,levels=c("Unburnt","Medium","Burnt"))
 head(e_size,3); dim(e_size)
 head(e_cov,3); dim(e_cov)
 
-size0<-e_size[e_size$Order.q==0,]
-size1<-e_size[e_size$Order.q==1,]
-size2<-e_size[e_size$Order.q==2,]
-head(size0,3); dim(size0)
+# q.col.test<-hcl.colors(16, palette = "viridis", alpha = 1)
+# plot(1:16, 1:16, pch=20, col=q.col.test, cex=3)
 
-q.col.test<-hcl.colors(16, palette = "viridis", alpha = 1)
-plot(1:16, 1:16, pch=20, col=q.col.test, cex=3)
-
-
-dev.new(width=10.5, height=7, dpi=80, pointsize=18, noRStudioGD = T)
-par(mfrow=c(2,3), mar=c(4.5,4,1,1), mgp=c(2,0.8,0), oma=c(0,0,1,7))
-
+# Plot by order, with each assemblage shown on the same panel, with different colours
 orders.q<-unique(e_size$Order.q)
 assemb.q<-unique(e_size$Assemblage)
 
+# Set colours:
 q.col<-hcl.colors(16, palette = "viridis", alpha = 0.5)[c(1,7,14)]
 assemb.col<-hcl.colors(16, palette = "viridis", alpha = 1)[c(1,7,14)]
+
+# Plot
+dev.new(width=10.5, height=7, dpi=80, pointsize=18, noRStudioGD = T)
+par(mfrow=c(2,3), mar=c(4.5,4,1,1), mgp=c(2,0.8,0), oma=c(0,0,1,7))
+
+# sample-size-based
 
 for(i in 1:length(orders.q)){
 
 order.thisrun<-orders.q[i]
 data.thisrun<-e_size[e_size$Order.q==order.thisrun,]
-y.lim.all<-c(min(e_size$qD.LCL[data.thisrun$Assemblage=="Burnt"]),max(e_size$qD.UCL[data.thisrun$Assemblage=="Burnt"]))
 
-plot(data.thisrun$m[data.thisrun$Assemblage=="Burnt"],data.thisrun$qD[data.thisrun$Assemblage=="Burnt"], type="n", ylim=y.lim.all,xlim=c(0,1500), las=1, xlab="Number of individuals",ylab="Estimated species diversity")
+# Chao et al. 2014 allow the ylim to vary for each q, whereas Hsieh et al. 2016 keep them consistent. The first of these sets a consistent ylim, as the q with the maximum number of species. The second allows it to vary for each q. The third sets the max ylim at 20 to enable interpretation. 
+y.lim.all<-c(min(e_size$qD.LCL),max(e_size$qD.UCL))
+y.lim.ind<-c(min(data.thisrun$qD.LCL),max(data.thisrun$qD.UCL))
+if(i==1) y.lim.var<-c(min(e_size$qD.LCL),max(e_size$qD.UCL)) else y.lim.var<-c(min(e_size$qD.LCL),20)
 
-pg.ci(x="m","data.thisrun",x.subset="Assemblage",colour=q.col)
+plot(data.thisrun$m[data.thisrun$Assemblage=="Burnt"],data.thisrun$qD[data.thisrun$Assemblage=="Burnt"], type="n", ylim=y.lim.var,xlim=c(0,1500), las=1, xlab="Number of individuals",ylab="Estimated species diversity")
 
-mtext(bquote("("*.(letters[i])*") "*italic("q")*" = "*.(order.thisrun)), adj=0, cex=0.7)
+pg.ci(x="m","data.thisrun",x.subset="Assemblage",colour=q.col, lower="qD.LCL",upper="qD.UCL")
+
+mtext(bquote("("*.(letters[i])*") Sample-size-based, "*italic("q")*" = "*.(order.thisrun)), adj=0, cex=0.625)
                         
 for (j in 1:length(assemb.q)){
 
@@ -154,19 +159,91 @@ for (j in 1:length(assemb.q)){
   lines(assemb.thisrun$m[assemb.thisrun$Method=="Extrapolation"],assemb.thisrun$qD[assemb.thisrun$Method=="Extrapolation"], lty=2)
   points(assemb.thisrun$m[assemb.thisrun$Method=="Observed"],assemb.thisrun$qD[assemb.thisrun$Method=="Observed"], pch=20,col=assemb.col[j], cex=2)
   
+  # add.max<- ifelse(i==1, 40, 20) 
+  # axis(side=2,at=add.max,labels=add.max,tick=F,font=2, las=1)
+  
 } # close j assemblage
 
-} # close order
+} # close order size-based
 
 # plot legend:
 par(xpd=NA)
-legend(x=1650,y=max(y.lim.all), title = "Treatment", legend = levels(assemb.q), pt.cex = 2, pch = c(20, 20, 20), bty = "n", title.adj=0,col=assemb.col)
-legend(x=1550,y=max(y.lim.all)-15, title = "", legend = unique(e_size$Method)[c(1,3)], lty = c(1,2), bty = "n", title.adj=0)
+legend(x=1650,y=max(y.lim.var), title = "Treatment", legend = levels(assemb.q), pt.cex = 2, pch = c(20, 20, 20), bty = "n", title.adj=0,col=assemb.col)
+legend(x=1550,y=max(y.lim.var)-7, title = "", legend = unique(e_size$Method)[c(1,3)], lty = c(1,2), bty = "n", title.adj=0)
 par(xpd=F)
 
+# coverage-based
+
+for(i in 1:length(orders.q)){
+  
+  order.thisrun<-orders.q[i]
+  data.thisrun<-e_cov[e_cov$Order.q==order.thisrun,]
+  
+  # Chao et al. 2014 allow the ylim to vary for each q, whereas Hsieh et al. 2016 keep them consistent. The first of these sets a consistent ylim, as the q with the maximum number of species. The second allows it to vary for each q. The third sets the max ylim at 20 to enable interpretation. 
+  y.lim.all<-c(min(e_size$qD.LCL),max(e_size$qD.UCL))
+  y.lim.ind<-c(min(data.thisrun$qD.LCL),max(data.thisrun$qD.UCL))
+  if(i==1) y.lim.var<-c(min(e_size$qD.LCL),max(e_size$qD.UCL)) else y.lim.var<-c(min(e_size$qD.LCL),20)
+  
+  plot(data.thisrun$SC[data.thisrun$Assemblage=="Burnt"],data.thisrun$qD[data.thisrun$Assemblage=="Burnt"], type="n", ylim=y.lim.var,xlim=c(min(e_cov$SC),max(e_cov$SC)), las=1, xlab="Sample coverage",ylab="Estimated species diversity")
+  
+  pg.ci(x="SC","data.thisrun",x.subset="Assemblage",colour=q.col, lower="qD.LCL",upper="qD.UCL")
+  
+  mtext(bquote("("*.(letters[i])*") Coverage-based, "*italic("q")*" = "*.(order.thisrun)), adj=0, cex=0.625)
+  
+  for (j in 1:length(assemb.q)){
+    
+    asb.thisrun<-levels(assemb.q)[j]
+    assemb.thisrun<-data.thisrun[data.thisrun$Assemblage==asb.thisrun,]
+    lines(assemb.thisrun$SC[assemb.thisrun$Method=="Rarefaction"],assemb.thisrun$qD[assemb.thisrun$Method=="Rarefaction"])
+    lines(assemb.thisrun$SC[assemb.thisrun$Method=="Extrapolation"],assemb.thisrun$qD[assemb.thisrun$Method=="Extrapolation"], lty=2)
+    points(assemb.thisrun$SC[assemb.thisrun$Method=="Observed"],assemb.thisrun$qD[assemb.thisrun$Method=="Observed"], pch=20,col=assemb.col[j], cex=2)
+    
+  } # close j assemblage
+  
+} # close order
+
+# Plot sample coverage against the number of individuals 
+
+# From Chao et al. 2014: The sample-size- and coverage-based curves are linked by a sample completeness curve (Figs. 4 and 7), which reveals the relationship between sample size (number of individuals or number of sampling units) and sample completeness. This curve illustrates how much sampling effort is needed to achieve a pre-determined level of sample completeness.
+
+# save.image("04_workspaces/rarefaction.RData")
+
+dev.new(width=8, height=6, dpi=80, pointsize=18, noRStudioGD = T)
+par(mfrow=c(1,1), mar=c(4.5,4,1,1), mgp=c(2.3,0.8,0), oma=c(0,0,1,7))
+
+# All q orders have the same sample coverage, so we only need a single plot to show the sample coverage
+
+i=1
+  
+  order.thisrun<-orders.q[i]
+  data.thisrun<-e_size[e_size$Order.q==order.thisrun,]
+  head(data.thisrun,2)
+  
+  plot(data.thisrun$m[data.thisrun$Assemblage=="Burnt"],data.thisrun$SC[data.thisrun$Assemblage=="Burnt"], type="n", ylim=c(min(data.thisrun$SC.LCL), max(data.thisrun$SC.UCL)), las=1, xlab="Number of individuals",ylab="Sample coverage")
+  
+  pg.ci(x="m","data.thisrun",x.subset="Assemblage",colour=q.col,lower="SC.LCL",upper="SC.UCL")
+  
+  for (j in 1:length(assemb.q)){
+    
+    asb.thisrun<-levels(assemb.q)[j]
+    assemb.thisrun<-data.thisrun[data.thisrun$Assemblage==asb.thisrun,]
+    lines(assemb.thisrun$m[assemb.thisrun$Method=="Rarefaction"],assemb.thisrun$SC[assemb.thisrun$Method=="Rarefaction"])
+    lines(assemb.thisrun$m[assemb.thisrun$Method=="Extrapolation"],assemb.thisrun$SC[assemb.thisrun$Method=="Extrapolation"], lty=2)
+    points(assemb.thisrun$m[assemb.thisrun$Method=="Observed"],assemb.thisrun$SC[assemb.thisrun$Method=="Observed"], pch=20,col=assemb.col[j], cex=2)
+    
+  } # close j assemblage
+
+# plot legend:
+par(xpd=NA)
+legend(x=1200,y=1, title = "Treatment", legend = levels(assemb.q), pt.cex = 2, pch = c(20, 20, 20), bty = "n", title.adj=0,col=assemb.col)
+legend(x=1130,y=0.7, title = "", legend = unique(e_size$Method)[c(1,3)], lty = c(1,2), bty = "n", title.adj=0)
+par(xpd=F)
+
+# save.image("04_workspaces/rarefaction.RData")
 
 
-# ggINEXT examples:
+
+# Run ggINEXT to check custom plots against inbuilt plotting functions:
 r_iN1<-iNEXT(abund_mat, q=c(0,1,2), datatype="abundance")
 est_iN1<-r_iN1$iNextEst
 head(est_iN1$size_based,3); dim(est_iN1$size_based)
@@ -175,6 +252,9 @@ est_iN1$size_based[which(est_iN1$size_based=="Burnt"),1:4]
 
 ggiNEXT(r_iN1, type=1, se=TRUE, facet.var="Assemblage", color.var="Order.q", grey=FALSE)
 ggiNEXT(r_iN1, type=1, se=TRUE, facet.var="Order.q", color.var="Assemblage", grey=FALSE)
+ggiNEXT(r_iN1, type=3, se=TRUE, facet.var="Order.q", color.var="Assemblage", grey=FALSE)
+ggiNEXT(r_iN1, type=3, se=TRUE, facet.var="Assemblage", color.var="Order.q", grey=FALSE)
+ggiNEXT(r_iN1, type=2, se=TRUE, facet.var="None", color.var="Assemblage", grey=FALSE)
 
 # Plot asymptotic diversity estimate:
 
@@ -201,12 +281,6 @@ par(mfrow=c(1,1), mar=c(2.5,4,0,1), mgp=c(2.8,0.8,0), oma=c(0,0,1,7))
 par(xpd=NA)
 legend(x=3.75,y=max(asy_dat$UCL)+1.1, title = "Hill number order", legend = c(expression(paste(italic("q")," = 0", sep="")), expression(paste(italic("q")," = 1",sep="")),"q = 2"), pt.cex = 1, pch = c(20), bty = "n",adj=0, title.adj=0, col=c("black","grey50","grey75"))
 par(xpd=F)
-
-
-
-
-
-
 
 
 # iNEXT tutorial examples:
