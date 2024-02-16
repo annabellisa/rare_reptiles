@@ -168,7 +168,7 @@ for (j in 1:length(assemb.q)){
 
 # plot legend:
 par(xpd=NA)
-legend(x=1650,y=max(y.lim.var), title = "Treatment", legend = levels(assemb.q), pt.cex = 2, pch = c(20, 20, 20), bty = "n", title.adj=0,col=assemb.col)
+legend(x=1650,y=max(y.lim.var), title = "Fire category", legend = levels(assemb.q), pt.cex = 2, pch = c(20, 20, 20), bty = "n", title.adj=0,col=assemb.col)
 legend(x=1550,y=max(y.lim.var)-7, title = "", legend = unique(e_size$Method)[c(1,3)], lty = c(1,2), bty = "n", title.adj=0)
 par(xpd=F)
 
@@ -188,7 +188,7 @@ for(i in 1:length(orders.q)){
   
   pg.ci(x="SC","data.thisrun",x.subset="Assemblage",colour=q.col, lower="qD.LCL",upper="qD.UCL")
   
-  mtext(bquote("("*.(letters[i])*") Coverage-based, "*italic("q")*" = "*.(order.thisrun)), adj=0, cex=0.625)
+  mtext(bquote("("*.(letters[i+3])*") Coverage-based, "*italic("q")*" = "*.(order.thisrun)), adj=0, cex=0.625)
   
   for (j in 1:length(assemb.q)){
     
@@ -219,7 +219,7 @@ i=1
   data.thisrun<-e_size[e_size$Order.q==order.thisrun,]
   head(data.thisrun,2)
   
-  plot(data.thisrun$m[data.thisrun$Assemblage=="Burnt"],data.thisrun$SC[data.thisrun$Assemblage=="Burnt"], type="n", ylim=c(min(data.thisrun$SC.LCL), max(data.thisrun$SC.UCL)), las=1, xlab="Number of individuals",ylab="Sample coverage")
+  plot(data.thisrun$m[data.thisrun$Assemblage=="Burnt"],data.thisrun$SC[data.thisrun$Assemblage=="Burnt"], type="n", ylim=c(min(data.thisrun$SC.LCL), max(data.thisrun$SC.UCL)),xlim=c(1,1500), las=1, xlab="Number of individuals",ylab="Sample coverage")
   
   pg.ci(x="m","data.thisrun",x.subset="Assemblage",colour=q.col,lower="SC.LCL",upper="SC.UCL")
   
@@ -235,8 +235,8 @@ i=1
 
 # plot legend:
 par(xpd=NA)
-legend(x=1200,y=1, title = "Treatment", legend = levels(assemb.q), pt.cex = 2, pch = c(20, 20, 20), bty = "n", title.adj=0,col=assemb.col)
-legend(x=1130,y=0.7, title = "", legend = unique(e_size$Method)[c(1,3)], lty = c(1,2), bty = "n", title.adj=0)
+legend(x=1600,y=1, title = "Fire category", legend = levels(assemb.q), pt.cex = 2, pch = c(20, 20, 20), bty = "n", title.adj=0,col=assemb.col)
+legend(x=1550,y=0.7, title = "", legend = unique(e_size$Method)[c(1,3)], lty = c(1,2), bty = "n", title.adj=0)
 par(xpd=F)
 
 # save.image("04_workspaces/rarefaction.RData")
