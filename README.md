@@ -2,6 +2,9 @@
 
 R scripts for analysing the influence of fire on rarity and dominance in reptile communities
 
+# Archive
+[![DOI](https://zenodo.org/badge/604401015.svg)](https://zenodo.org/doi/10.5281/zenodo.10202343)
+
 ## Content Description
 
 01_data: Reptile community data and associated site data
