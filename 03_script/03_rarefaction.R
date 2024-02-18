@@ -71,7 +71,7 @@ abund_mat$Unburnt<-rowSums(t(sp_div2[which(rownames(sp_div2) %in% ub_sites),]))
 head(abund_mat); dim(abund_mat)
 
 # run iNEXT analysis:
-reptile_iN<-iNEXT(abund_mat, q=c(0,1,2), datatype="abundance")
+reptile_iN<-iNEXT(abund_mat, q=c(0,1,2), datatype="abundance",nboot=200)
 str(reptile_iN)
 
 r_dat<-reptile_iN$DataInfo
