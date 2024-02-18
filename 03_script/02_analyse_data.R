@@ -29,8 +29,10 @@ head(sum_dat, 6);dim(sum_dat)
 
 # ----
 
-# species richness as a function of fire category (generalized linear model with negative binomial linear structure). Statistical model = no negative results because count data. 
+# species richness as a function of fire category (generalized linear model with negative binomial linear structure).
+
 # Effect of fire can vary depending on location - fire cat*location have no effect on species richness, fire cat AND location have no effect on species richness.
+
 m1_a <- glm.nb(sp_rich~fire_cat*location,data = sum_dat)
 m1_b <- glm.nb(sp_rich~fire_cat+location,data = sum_dat)
 m1_c <- glm.nb(sp_rich~fire_cat,data = sum_dat)
@@ -41,9 +43,9 @@ anova(m1_a, m1_b, test = "F")
 anova(m1_b, m1_c, test = "F") 
 anova(m1_c, m1_d, test = "F") 
 
-summary(m1_a);anova(m1_a) # p value for interaction term = 0.89 (fire x location)
-summary(m1_b);anova(m1_b) # p value for location term = 0.60
-summary(m1_c);anova(m1_c) # p value for fire term = 0.48
+summary(m1_a);anova(m1_a) 
+summary(m1_b);anova(m1_b) 
+summary(m1_c);anova(m1_c) 
 AICc(m1_a) #100.3
 AICc(m1_b) #85.3
 AICc(m1_c) #80.55
@@ -60,7 +62,7 @@ m1.tab<-aictab(cand.set = m1.set, second.ord = T, sort = T)
 
 fireonly.pr<-data.frame(fire_cat = factor(levels(sum_dat$fire_cat),levels = levels(sum_dat$fire_cat)))
 
-# fire predictions for models to plot graphs, use m1_c
+# fire predictions for models to plot graphs, m1_c
 
 m1_c.pr<-predict(object = m1_c, newdata = fireonly.pr,type = "response", se.fit = T)
 m1_c.pr2<-data.frame(fireonly.pr)
@@ -68,10 +70,6 @@ m1_c.pr2$fit<-m1_c.pr$fit
 m1_c.pr2$se<-m1_c.pr$se
 m1_c.pr2$lci<-m1_c.pr$fit-(m1_c.pr2$se*1.96)
 m1_c.pr2$uci<-m1_c.pr$fit+(m1_c.pr2$se*1.96)
-
-#Cum.Wt = cumulative weight as you add each one up. 0.95 = 95% held in _
-
-# all insignificant p values, fire cat and location no effect on sp richness. AIC shows all models with 2 point difference = significant
 
 #save.image("04_workspaces/analysed_data.RData")
 
@@ -85,14 +83,14 @@ m2_b <- glm(simps_ind2~fire_cat+location,data = sum_dat, family = "Gamma")
 m2_c <- glm(simps_ind2~fire_cat,data = sum_dat, family = "Gamma")
 m2_d <- glm(simps_ind2~1,data = sum_dat, family = "Gamma")
 
-#Likelihood ratio test - compares more complicated model (interaction model) with simpler model 
+# Likelihood ratio test - compare more complicated model (interaction model) with simpler model 
 anova(m2_a, m2_b, test = "F") 
 anova(m2_b, m2_c, test = "F") 
 anova(m2_c, m2_d, test = "F") 
 
-summary(m2_a);anova(m2_a) # p value for interaction term = 0.55 (fire x location)
-summary(m2_b);anova(m2_b) # p value for location term = 0.10
-summary(m2_c);anova(m2_c) # p value for fire term = 0.06 # close to significant, plot fire term
+summary(m2_a);anova(m2_a) 
+summary(m2_b);anova(m2_b) 
+summary(m2_c);anova(m2_c) 
 AICc(m2_a) #73.9
 AICc(m2_b) #60.7
 AICc(m2_c) #59.2
@@ -103,7 +101,6 @@ m2.tab<-aictab(cand.set = m2.set, second.ord = T, sort = T)
 
 #write.table(m2.tab,file="m2_tab.txt", quote = F, sep = "\t", row.names=F)
 
-# all insignificant p values but fire term close to significant at p = 0.06 so plot fire term. AIC models no significant diff except between a and b. c is within 2 AICs of null, c holds 35% of weight.
 summary(m2_c)
 
 # data frame for fire only predictions
@@ -125,15 +122,15 @@ m3_b <- glm.nb(abund_25~fire_cat+location,data = sum_dat)
 m3_c <- glm.nb(abund_25~fire_cat,data = sum_dat)
 m3_d <- glm.nb(abund_25~1,data = sum_dat)
 
-summary(m3_a);anova(m3_a) # p value for interaction term = 0.12
-summary(m3_b);anova(m3_b) # p value for location term = 0.0114
-summary(m3_c);anova(m3_c) # p value for fire term = 0.075
+summary(m3_a);anova(m3_a) 
+summary(m3_b);anova(m3_b) 
+summary(m3_c);anova(m3_c) 
 AICc(m3_a) #62.8
 AICc(m3_b) #51.8
 AICc(m3_c) #53.1
 AICc(m3_d) #50.4
 
-# location signficant and fire term close to significant. Plot fire cat = c
+# Plot fire cat = c
 
 m3.set<-list("fire x location"= m3_a, "location"= m3_b, "fire"= m3_c, "null"= m3_d)
 m3.tab<-aictab(cand.set = m3.set, second.ord = T, sort = T)
@@ -177,15 +174,13 @@ m4_b <- glm.nb(abund_5~fire_cat+location,data = sum_dat)
 m4_c <- glm.nb(abund_5~fire_cat,data = sum_dat)
 m4_d <- glm.nb(abund_5~1,data = sum_dat)
 
-summary(m4_a);anova(m4_a) # p value for interaction term = 0.54
-summary(m4_b);anova(m4_b) # p value for location term = 0.44
-summary(m4_c);anova(m4_c) # p value for fire term = 0.60
+summary(m4_a);anova(m4_a) 
+summary(m4_b);anova(m4_b) 
+summary(m4_c);anova(m4_c) 
 AICc(m4_a) #92.4
 AICc(m4_b) #78.5
 AICc(m4_c) #74.0
 AICc(m4_d) #67.7
-
-# all p values insignificant, abund_5 no effect on fire cat. AIC models all significant with each other but none better than null.
 
 m4.set<-list("fire x location"= m4_a, "location"= m4_b, "fire"= m4_c, "null"= m4_d)
 m4.tab<-aictab(cand.set = m4.set, second.ord = T, sort = T)
@@ -206,10 +201,10 @@ m4_c.pr2$se<-exp(m4_c.pr2$se)
 m4_c.pr2$lci<-exp(m4_c.pr2$lci)
 m4_c.pr2$uci<-exp(m4_c.pr2$uci)
 
-
 summary(sum_dat$shann_ind)
 
 #species diversity as shannon's index:
+
 # shann_ind as a function of fire category (generalized linear model)
 m5_a <- glm(shann_ind~fire_cat*location,data = sum_dat, family = "Gamma")
 m5_b <- glm(shann_ind~fire_cat+location,data = sum_dat, family = "Gamma")
@@ -221,22 +216,20 @@ anova(m5_a, m5_b, test = "F")
 anova(m5_b, m5_c, test = "F") 
 anova(m5_c, m5_d, test = "F") 
 
-summary(m5_a);anova(m5_a) # p value for interaction term = 0.36 (fire x location)
-summary(m5_b);anova(m5_b) # p value for location term = 0.03
-summary(m5_c);anova(m5_c) # p value for fire term = 0.02 
+summary(m5_a);anova(m5_a) 
+summary(m5_b);anova(m5_b) 
+summary(m5_c);anova(m5_c) 
 AICc(m5_a) #13.5
 AICc(m5_b) #1.8
 AICc(m5_c) #3.7
 AICc(m5_d) #5.3
-
-# location and fire both significant. AIC models all significant with each other, both location and fire better than null. Plot both location and fire?
 
 m5.set<-list("fire x location"= m5_a, "location"= m5_b, "fire"= m5_c, "null"= m5_d)
 m5.tab<-aictab(cand.set = m5.set, second.ord = T, sort = T)
 
 #write.table(m5.tab,file="m5_tab.txt", quote = F, sep = "\t", row.names=F)
 
-#predictions for models to plot graphs
+#predictions for models to plot 
 fireonly.pr<-data.frame(fire_cat = factor(levels(sum_dat$fire_cat),levels = levels(sum_dat$fire_cat)))
 m5_c.pr<-predict(object = m5_c, newdata = fireonly.pr,type = "response", se.fit = T)
 m5_c.pr2<-data.frame(fireonly.pr)
@@ -245,13 +238,13 @@ m5_c.pr2$se<-m5_c.pr$se
 m5_c.pr2$lci<-m5_c.pr$fit-(m5_c.pr2$se*1.96)
 m5_c.pr2$uci<-m5_c.pr$fit+(m5_c.pr2$se*1.96)
 
-#data frame for location only predictions
+#data frame for fire + location predictions
 
 summary(m5_b)
 
 locationfire.pr<-data.frame(location = rep(factor(levels(sum_dat$location),levels = levels(sum_dat$location)),3),fire_cat = c(rep(levels(sum_dat$fire_cat)[1],2),rep(levels(sum_dat$fire_cat)[2],2),rep(levels(sum_dat$fire_cat)[3],2)))
 
-# location predictions for models to plot graphs, use m5_b
+# fire + location predictions for models to plot, m5_b
 
 m5_b.pr<-predict(object = m5_b, newdata = locationfire.pr,type = "response", se.fit = T)
 m5_b.pr2<-data.frame(locationfire.pr)
@@ -260,8 +253,6 @@ m5_b.pr2$se<-m5_b.pr$se
 m5_b.pr2$lci<-m5_b.pr$fit-(m5_b.pr2$se*1.96)
 m5_b.pr2$uci<-m5_b.pr$fit+(m5_b.pr2$se*1.96)
 
-# don't model pres_5 because all 1s, pres_25 not enough 0s
-
 # species diversity as even2:
 # even2 as a function of fire category (generalized linear model)
 m6_a <- glm(even2~fire_cat*location,data = sum_dat, family = "Gamma")
@@ -269,20 +260,18 @@ m6_b <- glm(even2~fire_cat+location,data = sum_dat, family = "Gamma")
 m6_c <- glm(even2~fire_cat,data = sum_dat, family = "Gamma")
 m6_d <- glm(even2~1,data = sum_dat, family = "Gamma")
 
-#Likelihood ratio test - compares more complicated model (interaction model) with simpler model 
+#Likelihood ratio test - compare more complicated model (interaction model) with simpler model 
 anova(m6_a, m6_b, test = "F") 
 anova(m6_b, m6_c, test = "F") 
 anova(m6_c, m6_d, test = "F") 
 
-summary(m6_a);anova(m6_a) # p value for interaction term = 0.55 (fire x location)
-summary(m6_b);anova(m6_b) # p value for location term = 0.10
-summary(m6_c);anova(m6_c) # p value for fire term = 0.06 # close to significant, plot fire term
+summary(m6_a);anova(m6_a) 
+summary(m6_b);anova(m6_b) 
+summary(m6_c);anova(m6_c) 
 AICc(m6_a) # -16.7
 AICc(m6_b) # -27.4
 AICc(m6_c) # -27.7
 AICc(m6_d) # -27.4
-
-# all insignificant but fire term close to significant so plot. AIC b, c and d all extremely close, b same as null term so plot?
 
 #predictions for models to plot graphs
 fireonly.pr<-data.frame(fire_cat = factor(levels(sum_dat$fire_cat),levels = levels(sum_dat$fire_cat)))
@@ -297,6 +286,7 @@ m6.set<-list("fire x location"= m6_a, "location"= m6_b, "fire"= m6_c, "null"= m6
 m6.tab<-aictab(cand.set = m6.set, second.ord = T, sort = T)
 
 # species richness of RARE SPECIES, as a function of fire category (generalized linear model with negative binomial linear structure)
+
 head(sum_dat,3); dim(sum_dat)
 
 # Rare species Lowest 25 %
@@ -305,7 +295,7 @@ m7_b <- glm.nb(sr_25~fire_cat+location,data = sum_dat)
 m7_c <- glm.nb(sr_25~fire_cat,data = sum_dat)
 m7_d <- glm.nb(sr_25~1,data = sum_dat)
 
-#Likelihood ratio test - compares more complicated model (interaction model) with simpler model 
+#Likelihood ratio test - compare more complicated model (interaction model) with simpler model 
 anova(m7_a, m7_b, test = "F") 
 anova(m7_b, m7_c, test = "F") 
 anova(m7_c, m7_d, test = "F") 
@@ -338,7 +328,7 @@ m8_b <- glm.nb(sr_5~fire_cat+location,data = sum_dat)
 m8_c <- glm.nb(sr_5~fire_cat,data = sum_dat)
 m8_d <- glm.nb(sr_5~1,data = sum_dat)
 
-#Likelihood ratio test - compares more complicated model (interaction model) with simpler model 
+#Likelihood ratio test - compare more complicated model (interaction model) with simpler model 
 anova(m8_a, m8_b, test = "F") 
 anova(m8_b, m8_c, test = "F") 
 anova(m8_c, m8_d, test = "F") 
@@ -376,7 +366,7 @@ m6.tab2<-data.frame(response="Evenness",m6.tab)
 m7.tab2<-data.frame(response="Richness Lowest 25%",m7.tab)
 m8.tab2<-data.frame(response="Richness Max. 5%",m8.tab)
 
-# Haven't added m7 and m8 to combi.tab yet (richness of rare species):
+# Added m7 and m8 to combi.tab (richness of rare species):
 combi.tab<-rbind(m1.tab2, m2.tab2, m3.tab2, m4.tab2, m5.tab2, m6.tab2, m7.tab2, m8.tab2)
 
 #write.table(combi.tab,file="megatable.txt", quote = F, sep = "\t", row.names=F)
@@ -878,10 +868,10 @@ all.coef2<-as.data.frame(all.coef)
 diff.list<-list(
   # Species richness, fire only, glm.nb model
   m1_c_diff, 
-  # Simpsons Index, fire only, Gamma glm
-  m2_c_diff, 
   # Shannon's index, fire + location, Gamma glm
   m5_b_diff, 
+  # Simpsons Index, fire only, Gamma glm
+  m2_c_diff, 
   # Evenness, fire only, Gamma glm
   m6_c_diff, 
   # Rare species richness 5% max, fire only, glm.nb
@@ -893,7 +883,7 @@ diff.list<-list(
   # Abund lowest 25%, fire + location, glm.nb model
   m3_b_diff)
 
-diff.lab<-c("Species richness", "Simpson's Diversity Index","Shannon's Diversity Index", "Evenness", "Richness (5% of max.)", "Richness (lowest 25%)", "Abundance (5% of max.)", "Abundance (lowest 25%)")
+diff.lab<-c("Species richness","Shannon's Diversity",  "Simpson's Diversity ","Evenness", "Richness (5% of max.)", "Richness (lowest 25%)", "Abundance (5% of max.)", "Abundance (lowest 25%)")
 
 dev.new(width=4, height=7, dpi=80, pointsize=12, noRStudioGD = T)
 par(mfrow=c(4,2), mar=c(4,4,2,1), mgp=c(2,0.8,0))
