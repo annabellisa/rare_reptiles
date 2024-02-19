@@ -71,7 +71,7 @@ abund_mat$Unburnt<-rowSums(t(sp_div2[which(rownames(sp_div2) %in% ub_sites),]))
 head(abund_mat); dim(abund_mat)
 
 # run iNEXT analysis:
-reptile_iN<-iNEXT(abund_mat, q=c(0,1,2), datatype="abundance",nboot=200)
+reptile_iN<-iNEXT(abund_mat, q=c(0,1,2), datatype="abundance",nboot=200, knots=80)
 str(reptile_iN)
 
 r_dat<-reptile_iN$DataInfo
@@ -117,6 +117,12 @@ e_cov$Assemblage<-factor(e_cov$Assemblage,levels=c("Unburnt","Medium","Burnt"))
 
 head(e_size,3); dim(e_size)
 head(e_cov,3); dim(e_cov)
+
+e_size[which(e_size$Method=="Observed"),]
+e_cov[which(e_cov$Method=="Observed"),]
+
+e_size[e_size$m<100,]
+
 
 # q.col.test<-hcl.colors(16, palette = "viridis", alpha = 1)
 # plot(1:16, 1:16, pch=20, col=q.col.test, cex=3)
@@ -168,7 +174,7 @@ for (j in 1:length(assemb.q)){
 
 # plot legend:
 par(xpd=NA)
-legend(x=1650,y=max(y.lim.var), title = "Fire category", legend = levels(assemb.q), pt.cex = 2, pch = c(20, 20, 20), bty = "n", title.adj=0,col=assemb.col)
+legend(x=1600,y=max(y.lim.var), title = "Fire category", legend = levels(assemb.q), pt.cex = 2, pch = c(20, 20, 20), bty = "n", title.adj=0,col=assemb.col)
 legend(x=1550,y=max(y.lim.var)-7, title = "", legend = unique(e_size$Method)[c(1,3)], lty = c(1,2), bty = "n", title.adj=0)
 par(xpd=F)
 
@@ -208,8 +214,8 @@ for(i in 1:length(orders.q)){
 
 # save.image("04_workspaces/rarefaction.RData")
 
-dev.new(width=8, height=6, dpi=80, pointsize=18, noRStudioGD = T)
-par(mfrow=c(1,1), mar=c(4.5,4,1,1), mgp=c(2.3,0.8,0), oma=c(0,0,1,7))
+dev.new(width=12, height=5, dpi=80, pointsize=18, noRStudioGD = T)
+par(mfrow=c(1,2), mar=c(4.5,4,1,1), mgp=c(2.3,0.8,0), oma=c(0,0,1,7))
 
 # All q orders have the same sample coverage, so we only need a single plot to show the sample coverage
 
@@ -229,15 +235,54 @@ i=1
     assemb.thisrun<-data.thisrun[data.thisrun$Assemblage==asb.thisrun,]
     lines(assemb.thisrun$m[assemb.thisrun$Method=="Rarefaction"],assemb.thisrun$SC[assemb.thisrun$Method=="Rarefaction"])
     lines(assemb.thisrun$m[assemb.thisrun$Method=="Extrapolation"],assemb.thisrun$SC[assemb.thisrun$Method=="Extrapolation"], lty=2)
+    
+  } # close j assemblage
+  
+  # plot points separately so lines don't overlap:
+  
+  j=1
+  
+  for (j in 1:length(assemb.q)){
+  
+    asb.thisrun<-levels(assemb.q)[j]
+  assemb.thisrun<-data.thisrun[data.thisrun$Assemblage==asb.thisrun,]
+  points(assemb.thisrun$m[assemb.thisrun$Method=="Observed"],assemb.thisrun$SC[assemb.thisrun$Method=="Observed"], pch=20,col=assemb.col[j], cex=2)
+    
+  } # close j assemblage
+  
+  mtext(paste("(",(letters[i]),")",sep=""), adj=0, cex=1, line=0.4)
+  
+  # Plot another one, zoomed in on the x-axis:
+  
+  i=1
+  
+  order.thisrun<-orders.q[i]
+  data.thisrun<-e_size[e_size$Order.q==order.thisrun,]
+  head(data.thisrun,2)
+  
+  plot(data.thisrun$m[data.thisrun$Assemblage=="Burnt"],data.thisrun$SC[data.thisrun$Assemblage=="Burnt"], type="n", ylim=c(min(data.thisrun$SC.LCL), max(data.thisrun$SC.UCL)),xlim=c(1,400), las=1, xlab="Number of individuals",ylab="Sample coverage")
+  
+  pg.ci(x="m","data.thisrun",x.subset="Assemblage",colour=q.col,lower="SC.LCL",upper="SC.UCL")
+  
+  for (j in 1:length(assemb.q)){
+    
+    asb.thisrun<-levels(assemb.q)[j]
+    assemb.thisrun<-data.thisrun[data.thisrun$Assemblage==asb.thisrun,]
+    lines(assemb.thisrun$m[assemb.thisrun$Method=="Rarefaction"],assemb.thisrun$SC[assemb.thisrun$Method=="Rarefaction"])
+    lines(assemb.thisrun$m[assemb.thisrun$Method=="Extrapolation"],assemb.thisrun$SC[assemb.thisrun$Method=="Extrapolation"], lty=2)
     points(assemb.thisrun$m[assemb.thisrun$Method=="Observed"],assemb.thisrun$SC[assemb.thisrun$Method=="Observed"], pch=20,col=assemb.col[j], cex=2)
     
   } # close j assemblage
-
+  
+  mtext(paste("(",(letters[i+1]),")",sep=""), adj=0, cex=1, line=0.4)
+  
 # plot legend:
 par(xpd=NA)
-legend(x=1600,y=1, title = "Fire category", legend = levels(assemb.q), pt.cex = 2, pch = c(20, 20, 20), bty = "n", title.adj=0,col=assemb.col)
-legend(x=1550,y=0.7, title = "", legend = unique(e_size$Method)[c(1,3)], lty = c(1,2), bty = "n", title.adj=0)
+legend(x=430,y=1, title = "Fire category", legend = levels(assemb.q), pt.cex = 2, pch = c(20, 20, 20), bty = "n", title.adj=0,col=assemb.col)
+legend(x=400,y=0.6, title = "", legend = unique(e_size$Method)[c(1,3)], lty = c(1,2), bty = "n", title.adj=0)
 par(xpd=F)
+
+
 
 # save.image("04_workspaces/rarefaction.RData")
 
