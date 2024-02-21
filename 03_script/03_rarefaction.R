@@ -71,7 +71,10 @@ abund_mat$Unburnt<-rowSums(t(sp_div2[which(rownames(sp_div2) %in% ub_sites),]))
 head(abund_mat); dim(abund_mat)
 
 # run iNEXT analysis:
-reptile_iN<-iNEXT(abund_mat, q=c(0,1,2), datatype="abundance",nboot=200, knots=80)
+reptile_iN<-iNEXT(abund_mat, q=c(0,1,2), datatype="abundance",nboot=200, knots=120)
+
+# save.image("04_workspaces/rarefaction.RData")
+
 str(reptile_iN)
 
 r_dat<-reptile_iN$DataInfo
@@ -96,7 +99,8 @@ str(est_dat)
 
 head(est_dat$size_based,3); dim(est_dat$size_based)
 head(est_dat$coverage_based,3); dim(est_dat$coverage_based)
-est_dat$size_based[which(est_dat$size_based=="Burnt"),1:4]
+
+dim(est_dat$size_based[which(est_dat$size_based=="Burnt"),])
 
 # AsyEst
 # Asymptotic diversity estimates for richness, Shannon and Simpson diversity
@@ -260,7 +264,8 @@ i=1
   data.thisrun<-e_size[e_size$Order.q==order.thisrun,]
   head(data.thisrun,2)
   
-  plot(data.thisrun$m[data.thisrun$Assemblage=="Burnt"],data.thisrun$SC[data.thisrun$Assemblage=="Burnt"], type="n", ylim=c(min(data.thisrun$SC.LCL), max(data.thisrun$SC.UCL)),xlim=c(1,400), las=1, xlab="Number of individuals",ylab="Sample coverage")
+  plot(data.thisrun$m[data.thisrun$Assemblage=="Burnt"],data.thisrun$SC[data.thisrun$Assemblage=="Burnt"], type="n", ylim=c(min(data.thisrun$SC.LCL), max(data.thisrun$SC.UCL)),xlim=c(1,300), las=1, xlab="Number of individuals",ylab="Sample coverage", xaxt="n")
+  axis(side=1, at=c(0,100,200,300), labels=T)
   
   pg.ci(x="m","data.thisrun",x.subset="Assemblage",colour=q.col,lower="SC.LCL",upper="SC.UCL")
   
@@ -278,8 +283,8 @@ i=1
   
 # plot legend:
 par(xpd=NA)
-legend(x=430,y=1, title = "Fire category", legend = levels(assemb.q), pt.cex = 2, pch = c(20, 20, 20), bty = "n", title.adj=0,col=assemb.col)
-legend(x=400,y=0.6, title = "", legend = unique(e_size$Method)[c(1,3)], lty = c(1,2), bty = "n", title.adj=0)
+legend(x=320,y=1, title = "Fire category", legend = levels(assemb.q), pt.cex = 2, pch = c(20, 20, 20), bty = "n", title.adj=0,col=assemb.col)
+legend(x=300,y=0.6, title = "", legend = unique(e_size$Method)[c(1,3)], lty = c(1,2), bty = "n", title.adj=0)
 par(xpd=F)
 
 
