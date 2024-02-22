@@ -695,7 +695,7 @@ m1.tab2
 mtext(as.expression(bquote(Delta~"AICc ="~.(paste(round(m1.tab2$Delta_AICc[m1.tab2$Modnames=="fire"]-m1.tab2$Delta_AICc[m1.tab2$Modnames=="null"],2),sep="")))), side=3,line=0.1,adj=1,col="red", cex=0.75)
 mtext(text="(a)", side = 3, line = 0.5, adj = 0, cex = 1)
 m1_c_diff # no differences
-text(x=1:3, y=max(m1_c.pr2$uci)+1.5,labels=rep(letters[1],3))
+text(x=1:3, y=max(m1_c.pr2$uci)+2,labels=rep(letters[1],3))
 
 # plot raw data:
 sr_ub<-sum_dat$sp_rich[sum_dat$fire_cat=="Unburnt"]
@@ -718,7 +718,7 @@ title(mgp=c(2.3,0.8,0),xlab="Fire Category")
 mtext(as.expression(bquote(Delta~"AICc ="~.(paste(round(m5.tab2$Delta_AICc[m5.tab2$Modnames=="location"]-m5.tab2$Delta_AICc[m5.tab2$Modnames=="null"],2),sep="")))), side=3,line=0.1,adj=1,col="darkgreen", cex=0.75)
 mtext(text="(c)", side = 3, line = 0.5, adj = 0, cex = 1)
 m5_b_diff
-text(x=1:3, y=max(m5_b.pr2$uci)+0.15,labels=c(letters[1],rep(letters[2],2)))
+text(x=1:3, y=max(m5_b.pr2$uci)+0.2,labels=c(letters[1],rep(letters[2],2)))
 
 # plot raw data:
 sh_ubH<-sum_dat$shann_ind[sum_dat$fire_cat=="Unburnt" & sum_dat$location=="Hincks"]
@@ -758,7 +758,7 @@ title(mgp=c(2.3,0.8,0),xlab="Fire Category")
 mtext(as.expression(bquote(Delta~"AICc ="~.(paste(round(m2.tab2$Delta_AICc[m2.tab2$Modnames=="fire"]-m2.tab2$Delta_AICc[m2.tab2$Modnames=="null"],2),sep="")))), side=3,line=0.1,adj=1,col="darkorange2", cex=0.75)
 mtext(text="(b)", side = 3, line = 0.5, adj = 0, cex = 1)
 m2_c_diff
-text(x=1:3, y=max(m2_c.pr2$uci)+1,labels=c(letters[1],rep(letters[2],2)))
+text(x=1:3, y=max(m2_c.pr2$uci)+1.5,labels=c(letters[1],rep(letters[2],2)))
 
 points(jitter(rep(1,length(si2_ub)),factor=4),si2_ub, pch=20,col=rgb(0,0,0,0.2))
 points(jitter(rep(2,length(si2_m)),factor=4),si2_m, pch=20,col=rgb(0,0,0,0.2))
@@ -780,7 +780,7 @@ title(mgp=c(2.3,0.8,0),xlab="Fire category")
 mtext(as.expression(bquote(Delta~"AICc ="~.(paste(round(m6.tab2$Delta_AICc[m6.tab2$Modnames=="fire"]-m6.tab2$Delta_AICc[m6.tab2$Modnames=="null"],2),sep="")))), side=3,line=0.1,adj=1,col="darkorange2", cex=0.75)
 mtext(text="(d)", side = 3, line = 0.5, adj = 0, cex = 1)
 m6_c_diff
-text(x=1:3, y=max(m6_c.pr2$uci)+0.04,labels=c(letters[1],letters[2],paste(letters[1],letters[2],sep="",collapse="")))
+text(x=1:3, y=max(m6_c.pr2$uci)+0.06,labels=c(letters[1],letters[2],paste(letters[1],letters[2],sep="",collapse="")))
 
 points(jitter(rep(1,length(ev_ub)),factor=4),ev_ub, pch=20,col=rgb(0,0,0,0.2))
 points(jitter(rep(2,length(ev_m)),factor=4),ev_m, pch=20,col=rgb(0,0,0,0.2))
