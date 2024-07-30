@@ -23,7 +23,7 @@ invisible(lapply(paste("02_functions/",dir("02_functions"),sep=""), function(x) 
 
 # data fully processed and ready to analyse 9th May 2023 in sum_dat
 
-head(sum_dat, 6);dim(sum_dat)
+head(sum_dat, 3);dim(sum_dat)
 
 #### MODELS
 

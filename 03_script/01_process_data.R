@@ -8,6 +8,51 @@
 
 ### Script authors: Amber Lim & Annabel Smith 
 
+# load workspace
+load("04_workspaces/processed_data.RData")
+
+# load packages
+library("lme4"); library("vegan")
+
+# Peer-review processing updates
+
+# R2 Comment 6 Line 363: There are no explicit models of dominance, such as the Berger-Parker index. Consider exploring Fisher’s alpha as an additional metric. 
+
+# R2 Comment 13 A further way to explore how patterns of commonness and rarity reflect patterns of richness would be to rank the community from most to least common, and vice versa, and iteratively assess how well the richness calculated via these two ordered rankings matches patterns of overall species richness. This approach is similar to the method used by Lennon et al. https://onlinelibrary.wiley.com/doi/abs/10.1046/j.1461-0248.2004.00548.x
+
+# -------- Berger-Parker  -------- #
+
+library(BiodiversityR)
+
+# R2 Comment 6 Line 363: There are no explicit models of dominance, such as the Berger-Parker index. Consider exploring Fisher’s alpha as an additional metric. 
+
+# Full data set (site x species matrix):
+# 14 sites, standardised for trap effort (captures / 1000 trap nights)
+head(sp_div2, 3); dim(sp_div2)
+
+# Rare species(site x species matrix):
+head(sp_div_25, 3); dim(sp_div_25)
+head(sp_div_5, 3); dim(sp_div_5)
+
+# Processed metrics with site data:
+head(sum_dat, 2);dim(sum_dat)
+
+# 
+
+diversityresult(sp_div2,index="Berger", method="each site",sortit=F)
+
+fa.all<-fisher.alpha(sp_div2)
+fa.sp25<-fisher.alpha(sp_div_25)
+fa.sp5<-fisher.alpha(sp_div_5)
+
+# merge data:
+sum_dat <- merge(sum_dat, sr.rare, by="site", all.x = T, all.y = F)
+head(sum_dat, 6);dim(sum_dat)
+
+
+# -------- Pre-review data processing  -------- #
+
+# ----
 # Key questions:
 
 # what can we tell about the influence of fire on rare species from comparing species richness to diversity estimates?
@@ -24,8 +69,6 @@
 
 # Data processing:
 # March 2020
-
-library("lme4"); library("vegan")
 
 # Set up the data:
 
@@ -372,6 +415,10 @@ sum_dat$Hmax_5<-log(sum_dat$sr_5)
 sum_dat$even2_5<-sum_dat$shann_ind5/sum_dat$Hmax_5
 
 dir()
-save.image("04_workspaces/processed_data.RData")
+# save.image("04_workspaces/processed_data.RData")
+
+# ----
+
+
 
 
