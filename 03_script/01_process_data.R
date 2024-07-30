@@ -37,7 +37,12 @@ head(sp_div_5, 3); dim(sp_div_5)
 # Processed metrics with site data:
 head(sum_dat, 2);dim(sum_dat)
 
-# 
+# Caruso et al. 2007: 
+# Equation (2) was thus used to calculate the Berger–Parker index for each replicate sample with no further standardization
+# Eqn. 2:
+# K = NS / NT
+# where Ni is the abundance of the i-th species, NS indicates the abundance of the most abundant species, NT and S respectively are the total number of individuals and of species in a community sample
+  
 
 diversityresult(sp_div2,index="Berger", method="each site",sortit=F)
 
