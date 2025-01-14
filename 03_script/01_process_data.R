@@ -9,6 +9,7 @@
 ### Script authors: Amber Lim & Annabel Smith 
 
 # load workspace
+# this must be loaded to include components processed elsewhere; don't start fresh here:
 load("04_workspaces/processed_data.RData")
 
 # load packages
@@ -36,14 +37,15 @@ library("lme4"); library("vegan")
 # full data set:
 
 dat2<-read.table("01_data/all_reptile_data.txt",header=T)
-head(dat2)
+head(dat2); dim(dat2)
 
 # species abundance data:
 sp_div<-as.data.frame.matrix(t(table(dat2$name, dat2$site)))
 head(sp_div,3); dim(sp_div)
 
 # standardise the data by trap effort:
-head(dat1, 3)
+# dat1 is not loaded here; it is taken from the previous processing step
+head(dat1, 3); dim(dat1)
 rownames(sp_div)
 
 xdat<-dat1[which(dat1$site %in% rownames(sp_div)),]
@@ -180,8 +182,6 @@ row.names(rare.data) <- 1:nrow(rare.data)
 head(sum_dat, 6);dim(sum_dat)
 head(rare.data); dim(rare.data)
 
-### UP TO HERE, NEED TO RE-DO THE SPECIES RICHNESS OF RARE SPECIES, BEFORE GOING TO BERGER PARKER
-
 # What about species richness of rare species?
 
 head(sp_div_5, 3); dim(sp_div_5)
@@ -237,7 +237,6 @@ dir()
 
 # It's the maximum proportional abundance
 
-
 # Full data set (site x species matrix):
 # 14 sites, standardised for trap effort (captures / 1000 trap nights)
 head(sp_div2, 3); dim(sp_div2)
@@ -249,7 +248,6 @@ head(sp_div_5, 3); dim(sp_div_5)
 # Processed metrics with site data:
 head(sum_dat, 2);dim(sum_dat)
 
-
 # merge data:
 sum_dat <- merge(sum_dat, sr.rare, by="site", all.x = T, all.y = F)
 head(sum_dat, 6);dim(sum_dat)
@@ -259,16 +257,39 @@ head(rel_abund2,3); dim(rel_abund2)
 
 bergpark<-data.frame(site=names(apply(rel_abund2,1,function(x) max(x))),bp_ind=apply(rel_abund2,1,function(x) max(x)))
 
-bergpark$site==sum_dat$site
+# plot(bergpark$bp_ind, sum_dat$shann_ind)
+# plot(sum_dat$fire_cat, bergpark$bp_ind)
 
-plot(bergpark$bp_ind, sum_dat$shann_ind)
-plot(sum_dat$fire_cat, bergpark$bp_ind)
+# Add Berger-Parker to main data set:
 
+# these should all be true:
+table(bergpark$site==sum_dat$site)
+bergpark
 
+sum_dat<-merge(sum_dat, bergpark, by.x="site", by.y="site", all.x=T, all.y=F)
+head(sum_dat, 3);dim(sum_dat)
 
 # Fisher's alpha:
 
-fa.all<-fisher.alpha(sp_div2)
-fa.sp25<-fisher.alpha(sp_div_25)
-fa.sp5<-fisher.alpha(sp_div_5)
+# from Beck & Schwanghart 2010 MEE:
+# "indices that are mostly aﬀected by species of medium abundance (such as Fisher’s a) are preferential over those aﬀected mostly by common species (e.g. Shannon’s entropy) as they tend to produce stable values in repeated sampling of the same community, but high discrimination between diﬀerent communities"
+
+head(sp_div2, 3); dim(sp_div2)
+
+# Don't do Fisher's alpha for the rare species. As stated in the MS: "For the community of rare species, we did not model diversity metrics that required proportional abundances (Simpson’s Diversity, Shannon’s Diversity, Berger-Parker Dominance) because the abundance data were dominated by zeros and ones"
+fa.all<-data.frame(site=names(fisher.alpha(sp_div2)),fa.all=fisher.alpha(sp_div2))
+# fa.sp25<-fisher.alpha(sp_div_25)
+# fa.sp5<-fisher.alpha(sp_div_5)
+
+# Add Fisher's alpha to main data set:
+ 
+# these should all be true:
+table(fa.all$site==sum_dat$site)
+fa.all
+
+sum_dat<-merge(sum_dat, fa.all, by.x="site", by.y="site", all.x=T, all.y=F)
+head(sum_dat, 3);dim(sum_dat)
+
+# save.image("04_workspaces/processed_data.RData")
+
 
