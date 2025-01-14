@@ -17,6 +17,7 @@ load("04_workspaces/analysed_data.RData")
 
 library("MASS")
 library(AICcmodavg)
+library(mgcv)
 
 # Load functions:
 invisible(lapply(paste("02_functions/",dir("02_functions"),sep=""), function(x) source(x)))
@@ -253,6 +254,33 @@ m5_b.pr2$se<-m5_b.pr$se
 m5_b.pr2$lci<-m5_b.pr$fit-(m5_b.pr2$se*1.96)
 m5_b.pr2$uci<-m5_b.pr$fit+(m5_b.pr2$se*1.96)
 
+# new update 14 Jan 2025:
+# Should evenness and Berger Parker be modelled with a beta gam, rather than Gamma glm, because the values range between zero and 1?
+
+# From Ella's thesis: "...GAMM with a beta distribution using the ‘gamm’ function in mgcv (Wood 2017)"
+
+# species diversity as even2:
+# even2 as a function of fire category (generalized linear model)
+m6_a_gam <- gam(even2~fire_cat*location,data = sum_dat, family = "betar")
+m6_b_gam <- gam(even2~fire_cat+location,data = sum_dat, family = "betar")
+m6_c_gam <- gam(even2~fire_cat,data = sum_dat, family = "betar")
+m6_d_gam <- gam(even2~1,data = sum_dat, family = "betar")
+
+summary(m6_a_gam);anova(m6_a_gam) 
+summary(m6_b_gam);anova(m6_b_gam) 
+summary(m6_c_gam);anova(m6_c_gam) 
+
+#Likelihood ratio test - compare more complicated model (interaction model) with simpler model 
+anova(m6_a_gam, m6_b_gam, test = "F") 
+anova(m6_b_gam, m6_c_gam, test = "F") 
+anova(m6_c_gam, m6_d_gam, test = "F") 
+
+AICc(m6_a_gam) # 
+AICc(m6_b_gam) # 
+AICc(m6_c_gam) # 
+AICc(m6_d_gam) # 
+
+# This is the old set of models for evenness, with a gamma distribution, which I don't think is right:
 # species diversity as even2:
 # even2 as a function of fire category (generalized linear model)
 m6_a <- glm(even2~fire_cat*location,data = sum_dat, family = "Gamma")
@@ -354,6 +382,18 @@ m8_c.pr2$fit<-m8_c.pr$fit
 m8_c.pr2$se<-m8_c.pr$se
 m8_c.pr2$lci<-m8_c.pr$fit-(m8_c.pr2$se*1.96)
 m8_c.pr2$uci<-m8_c.pr$fit+(m8_c.pr2$se*1.96)
+
+# ---*** MODEL BERGER-PARKER & FISHER'S ALPHA ***--- #
+
+# Whole community only
+
+# First, what is the form of the data, and what type of models do we use?
+# Berger-Parker ranges from 0 to 1, with 0 indicating complete evenness or equal abundance among all species in the community. 
+# This should probably be either binomial or 
+head(sum_dat,3); dim(sum_dat)
+
+hist(sum_dat$bp_ind)
+
 
 # make AICc table of for all response variables:
 
