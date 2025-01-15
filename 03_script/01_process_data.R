@@ -8,8 +8,7 @@
 
 ### Script authors: Amber Lim & Annabel Smith 
 
-# load workspace
-# this must be loaded to include components processed elsewhere; don't start fresh here:
+# load workspace (unless starting fresh)
 load("04_workspaces/processed_data.RData")
 
 # load packages
@@ -30,7 +29,8 @@ library("lme4"); library("vegan")
 
 # how does fire influence functional rarity (sensu Violle et al. 2017, TREE)? We might not get this far... Just noting it down as an interesting aspect. 
 
-# Following Rabinowitz (1981), we could look at rarity based on: geographic range, habitat specificity and local abundance. We've been talking about abundance-related rarity, but we could also look at geographical rarity - i.e. the proportion of sites in which each species occurs. Habitat specificity would have to be done through the literature. 
+# Following Rabinowitz (1981), we could look at rarity based on: geographic range, habitat specificity and local abundance. We've been talking about abundance-related rarity, but we could also look at geographical rarity - i.e. the proportion of sites in which each species occurs. Habitat specificity would have to be done through the literature. This might be difficult with the current data set. 
+# ----
 
 # THE DATA:
 
@@ -43,9 +43,19 @@ head(dat2); dim(dat2)
 sp_div<-as.data.frame.matrix(t(table(dat2$name, dat2$site)))
 head(sp_div,3); dim(sp_div)
 
-# standardise the data by trap effort:
-# dat1 is not loaded here; it is taken from the previous processing step
-head(dat1, 3); dim(dat1)
+# dat1 was from the original analysis (AGRC1032); raw, unstandardised abundances with seasons separate:
+
+# make TSF2, TSFscale, TSF2scale, obs_effect:
+dat1<-read.table("01_data/sp_summaries.txt",header=T)
+dat1$TSF2<-dat1$TSF^2
+dat1$TSFscale<-scale(dat1$TSF,center=T,scale=T)
+dat1$TSF2scale<-scale(dat1$TSF^2,center=T,scale=T)
+dat1$obs_effect<-as.numeric(1:nrow(dat1))
+dat1$effort<-as.numeric(dat1$effort)
+head(dat1,3); dim(dat1)
+
+# standardise data by trap effort:
+
 rownames(sp_div)
 
 xdat<-dat1[which(dat1$site %in% rownames(sp_div)),]
@@ -123,10 +133,10 @@ sp_div2 <- as.data.frame(sp_div2)
 # captures / 1000 trap nights. 2 seasons of data combined
 head(sp_div2, 3); dim(sp_div2)
 
-# rearranging so unburnt is baseline
+# rearrange so unburnt is baseline
 sum_dat$fire_cat <- factor(sum_dat$fire_cat, levels = c("Unburnt", "Medium", "Burnt"))
 
-# making site a factor
+# make site a factor
 sum_dat$site <- as.factor(sum_dat$site)
 
 # List of 14 sites, taking site column and calling "H" to create 2 different variables for site, either "H" or "P"
@@ -135,20 +145,22 @@ sum_dat$location[which(unlist(gregexpr("H", sum_dat$site)) == 1)] <- "H"
 sum_dat$location[which(unlist(gregexpr("H", sum_dat$site)) == -1)] <- "P"
 
 # processed data of 14 sites with species diversity metrics
-head(sum_dat, 6);dim(sum_dat)
+head(sum_dat, 3);dim(sum_dat)
 
-#list of species
+# list of species
 colnames(sp_div2)
 
-#summing columns
+# sum columns
 sum(sp_div2$A_nor)
 sp_sum <- data.frame(sp=names(apply(sp_div2, MARGIN = 2, FUN = sum)),abundance=apply(sp_div2, MARGIN = 2, FUN = sum))
 row.names(sp_sum) <- 1:nrow(sp_sum)
-#write.table(sp_sum, file="SpeciesAbundance.txt", row.names = F, sep = "\t", quote = F)
+# write.table(sp_sum, file="SpeciesAbundance.txt", row.names = F, sep = "\t", quote = F)
 
 head(sp_sum);dim(sp_sum)
 
-# reading in species data, quantifying based on proportion of species (25%) vs maximum (5%)
+# quantify based on proportion of species (25%) vs maximum (5%)
+
+# species data 
 dir()
 sp_sum2 <- read.table("01_data/R_species_list.txt", header =T)
 
@@ -176,10 +188,10 @@ head(sp_div_25, 3); dim(sp_div_25)
 sp_div_5 <- sp_div2[,which(colnames(sp_div2)%in%sp_5)]
 head(sp_div_5, 3); dim(sp_div_5)
 
-rare.data <- data.frame(site=names(rowSums(sp_div_25)), rel_abund_25 = rowSums(sp_div_25), pres_25 = ifelse(rowSums(sp_div_25) == 0, 0, 1), rel_abund_5 = rowSums(sp_div_5), pres_5 = ifelse(rowSums(sp_div_5) == 0, 0, 1))
+rare.data <- data.frame(site=names(rowSums(sp_div_25)), abund_25 = rowSums(sp_div_25), pres_25 = ifelse(rowSums(sp_div_25) == 0, 0, 1), abund_5 = rowSums(sp_div_5), pres_5 = ifelse(rowSums(sp_div_5) == 0, 0, 1))
 
 row.names(rare.data) <- 1:nrow(rare.data)
-head(sum_dat, 6);dim(sum_dat)
+head(sum_dat, 3);dim(sum_dat)
 head(rare.data); dim(rare.data)
 
 # What about species richness of rare species?
@@ -196,9 +208,7 @@ head(sr.rare); dim(sr.rare)
 
 # combining data sets into sum_dat
 sum_dat <- merge(sum_dat, rare.data, by="site", all.x = T, all.y = F)
-
-sum_dat <- merge(sum_dat, sr.rare, by="site", all.x = T, all.y = F)
-head(sum_dat, 6);dim(sum_dat)
+head(sum_dat, 3);dim(sum_dat)
 
 # From the MS: "For the community of rare species, we did not model diversity metrics that required proportional abundances (Simpson’s Diversity, Shannon’s Diversity, Berger-Parker Dominance) because the abundance data were dominated by zeros and ones."
 
@@ -250,7 +260,7 @@ head(sum_dat, 2);dim(sum_dat)
 
 # merge data:
 sum_dat <- merge(sum_dat, sr.rare, by="site", all.x = T, all.y = F)
-head(sum_dat, 6);dim(sum_dat)
+head(sum_dat, 3);dim(sum_dat)
 
 # Relative abundance already calculated
 head(rel_abund2,3); dim(rel_abund2)

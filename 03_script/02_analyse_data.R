@@ -30,16 +30,14 @@ head(sum_dat, 3);dim(sum_dat)
 
 # ----
 
-# species richness as a function of fire category (generalized linear model with negative binomial linear structure).
-
-# Effect of fire can vary depending on location - fire cat*location have no effect on species richness, fire cat AND location have no effect on species richness.
+# --** species richness (negative binomial GLM)
 
 m1_a <- glm.nb(sp_rich~fire_cat*location,data = sum_dat)
 m1_b <- glm.nb(sp_rich~fire_cat+location,data = sum_dat)
 m1_c <- glm.nb(sp_rich~fire_cat,data = sum_dat)
 m1_d <- glm.nb(sp_rich~1,data = sum_dat)
 
-#Likelihood ratio test - compares more complicated model (interaction model) with simpler model 
+#Likelihood ratio test
 anova(m1_a, m1_b, test = "F") 
 anova(m1_b, m1_c, test = "F") 
 anova(m1_c, m1_d, test = "F") 
@@ -47,6 +45,7 @@ anova(m1_c, m1_d, test = "F")
 summary(m1_a);anova(m1_a) 
 summary(m1_b);anova(m1_b) 
 summary(m1_c);anova(m1_c) 
+
 AICc(m1_a) #100.3
 AICc(m1_b) #85.3
 AICc(m1_c) #80.55
@@ -55,15 +54,9 @@ AICc(m1_d) #74.7
 m1.set<-list("fire x location"= m1_a, "location"= m1_b, "fire"= m1_c, "null"= m1_d)
 m1.tab<-aictab(cand.set = m1.set, second.ord = T, sort = T)
 
-#write.table(m1.tab,file="m1_tab.txt", quote = F, sep = "\t", row.names=F)
-
-# plot fire+location for abund_25 + shannons
-
-#data frame for fire only predictions
+# fire only predictions (m1_c):
 
 fireonly.pr<-data.frame(fire_cat = factor(levels(sum_dat$fire_cat),levels = levels(sum_dat$fire_cat)))
-
-# fire predictions for models to plot graphs, m1_c
 
 m1_c.pr<-predict(object = m1_c, newdata = fireonly.pr,type = "response", se.fit = T)
 m1_c.pr2<-data.frame(fireonly.pr)
@@ -72,19 +65,20 @@ m1_c.pr2$se<-m1_c.pr$se
 m1_c.pr2$lci<-m1_c.pr$fit-(m1_c.pr2$se*1.96)
 m1_c.pr2$uci<-m1_c.pr$fit+(m1_c.pr2$se*1.96)
 
-#save.image("04_workspaces/analysed_data.RData")
+# save.image("04_workspaces/analysed_data.RData")
 
 head(sum_dat, 6);dim(sum_dat)
 
+# --** simpson's index (Gamma GLM)
+
 summary(sum_dat$simps_ind2) 
 
-# simpson's index as a function of fire category (generalized linear model)
 m2_a <- glm(simps_ind2~fire_cat*location,data = sum_dat, family = "Gamma")
 m2_b <- glm(simps_ind2~fire_cat+location,data = sum_dat, family = "Gamma")
 m2_c <- glm(simps_ind2~fire_cat,data = sum_dat, family = "Gamma")
 m2_d <- glm(simps_ind2~1,data = sum_dat, family = "Gamma")
 
-# Likelihood ratio test - compare more complicated model (interaction model) with simpler model 
+# Likelihood ratio test 
 anova(m2_a, m2_b, test = "F") 
 anova(m2_b, m2_c, test = "F") 
 anova(m2_c, m2_d, test = "F") 
@@ -92,6 +86,7 @@ anova(m2_c, m2_d, test = "F")
 summary(m2_a);anova(m2_a) 
 summary(m2_b);anova(m2_b) 
 summary(m2_c);anova(m2_c) 
+
 AICc(m2_a) #73.9
 AICc(m2_b) #60.7
 AICc(m2_c) #59.2
@@ -100,14 +95,10 @@ AICc(m2_d) #58.5
 m2.set<-list("fire x location"= m2_a, "location"= m2_b, "fire"= m2_c, "null"= m2_d)
 m2.tab<-aictab(cand.set = m2.set, second.ord = T, sort = T)
 
-#write.table(m2.tab,file="m2_tab.txt", quote = F, sep = "\t", row.names=F)
+# fire only predictions (m2_c)
 
 summary(m2_c)
-
-# data frame for fire only predictions
-fireonly.pr<-data.frame(fire_cat = factor(levels(sum_dat$fire_cat),levels = levels(sum_dat$fire_cat)))
-
-# fire predictions for models to plot graphs
+fireonly.pr
 
 m2_c.pr<-predict(object = m2_c, newdata = fireonly.pr,type = "response", se.fit = T)
 m2_c.pr2<-data.frame(fireonly.pr)
@@ -116,7 +107,9 @@ m2_c.pr2$se<-m2_c.pr$se
 m2_c.pr2$lci<-m2_c.pr$fit-(m2_c.pr2$se*1.96)
 m2_c.pr2$uci<-m2_c.pr$fit+(m2_c.pr2$se*1.96)
 
-# abund_25 as a function of fire category (generalized linear model with negative binomial linear structure)
+# --** abund_25 (negative binomial GLM)
+
+head(sum_dat, 2);dim(sum_dat)
 
 m3_a <- glm.nb(abund_25~fire_cat*location,data = sum_dat)
 m3_b <- glm.nb(abund_25~fire_cat+location,data = sum_dat)
