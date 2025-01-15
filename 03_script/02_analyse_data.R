@@ -92,6 +92,7 @@ AICc(m2_b) #60.7
 AICc(m2_c) #59.2
 AICc(m2_d) #58.5
 
+# simpson's index model set:
 m2.set<-list("fire x location"= m2_a, "location"= m2_b, "fire"= m2_c, "null"= m2_d)
 m2.tab<-aictab(cand.set = m2.set, second.ord = T, sort = T)
 
@@ -124,14 +125,11 @@ AICc(m3_b) #51.8
 AICc(m3_c) #53.1
 AICc(m3_d) #50.4
 
-# Plot fire cat = c
-
+# Abund 25 model set:
 m3.set<-list("fire x location"= m3_a, "location"= m3_b, "fire"= m3_c, "null"= m3_d)
 m3.tab<-aictab(cand.set = m3.set, second.ord = T, sort = T)
 
-#write.table(m3.tab,file="m3_tab.txt", quote = F, sep = "\t", row.names=F)
-
-#predictions for models to plot graphs
+# (not used) predictions for fire only model
 fireonly.pr<-data.frame(fire_cat = factor(levels(sum_dat$fire_cat),levels = levels(sum_dat$fire_cat)))
 m3_c.pr<-predict(object = m3_c, newdata = fireonly.pr,type = "response", se.fit = T)
 m3_c.pr2<-data.frame(fireonly.pr)
@@ -162,7 +160,7 @@ m3_b.pr2$se<-exp(m3_b.pr2$se)
 m3_b.pr2$lci<-exp(m3_b.pr2$lci)
 m3_b.pr2$uci<-exp(m3_b.pr2$uci)
 
-# abund_5 as a function of fire category (generalized linear model with negative binomial linear structure)
+# --** abund_5 (negative binomial GLM)
 m4_a <- glm.nb(abund_5~fire_cat*location,data = sum_dat)
 m4_b <- glm.nb(abund_5~fire_cat+location,data = sum_dat)
 m4_c <- glm.nb(abund_5~fire_cat,data = sum_dat)
@@ -171,18 +169,17 @@ m4_d <- glm.nb(abund_5~1,data = sum_dat)
 summary(m4_a);anova(m4_a) 
 summary(m4_b);anova(m4_b) 
 summary(m4_c);anova(m4_c) 
+
 AICc(m4_a) #92.4
 AICc(m4_b) #78.5
 AICc(m4_c) #74.0
 AICc(m4_d) #67.7
 
+# abund 5 model set:
 m4.set<-list("fire x location"= m4_a, "location"= m4_b, "fire"= m4_c, "null"= m4_d)
 m4.tab<-aictab(cand.set = m4.set, second.ord = T, sort = T)
 
-#write.table(m4.tab,file="m4_tab.txt", quote = F, sep = "\t", row.names=F)
-
-# abund_5 predictions for models to plot graphs
-fireonly.pr<-data.frame(fire_cat = factor(levels(sum_dat$fire_cat),levels = levels(sum_dat$fire_cat)))
+# abund_5 predictions 
 m4_c.pr<-predict(object = m4_c, newdata = fireonly.pr,type = "link", se.fit = T)
 m4_c.pr2<-data.frame(fireonly.pr)
 m4_c.pr2$fit<-m4_c.pr$fit
@@ -197,15 +194,13 @@ m4_c.pr2$uci<-exp(m4_c.pr2$uci)
 
 summary(sum_dat$shann_ind)
 
-#species diversity as shannon's index:
-
-# shann_ind as a function of fire category (generalized linear model)
+# --** shannon's index (Gamma GLM)
 m5_a <- glm(shann_ind~fire_cat*location,data = sum_dat, family = "Gamma")
 m5_b <- glm(shann_ind~fire_cat+location,data = sum_dat, family = "Gamma")
 m5_c <- glm(shann_ind~fire_cat,data = sum_dat, family = "Gamma")
 m5_d <- glm(shann_ind~1,data = sum_dat, family = "Gamma")
 
-#Likelihood ratio test - compares more complicated model (interaction model) with simpler model 
+# Likelihood ratio test
 anova(m5_a, m5_b, test = "F") 
 anova(m5_b, m5_c, test = "F") 
 anova(m5_c, m5_d, test = "F") 
@@ -213,18 +208,17 @@ anova(m5_c, m5_d, test = "F")
 summary(m5_a);anova(m5_a) 
 summary(m5_b);anova(m5_b) 
 summary(m5_c);anova(m5_c) 
+
 AICc(m5_a) #13.5
 AICc(m5_b) #1.8
 AICc(m5_c) #3.7
 AICc(m5_d) #5.3
 
+# shannon's model set:
 m5.set<-list("fire x location"= m5_a, "location"= m5_b, "fire"= m5_c, "null"= m5_d)
 m5.tab<-aictab(cand.set = m5.set, second.ord = T, sort = T)
 
-#write.table(m5.tab,file="m5_tab.txt", quote = F, sep = "\t", row.names=F)
-
-#predictions for models to plot 
-fireonly.pr<-data.frame(fire_cat = factor(levels(sum_dat$fire_cat),levels = levels(sum_dat$fire_cat)))
+# (not used) shannon's fire only predictions:
 m5_c.pr<-predict(object = m5_c, newdata = fireonly.pr,type = "response", se.fit = T)
 m5_c.pr2<-data.frame(fireonly.pr)
 m5_c.pr2$fit<-m5_c.pr$fit
@@ -232,13 +226,9 @@ m5_c.pr2$se<-m5_c.pr$se
 m5_c.pr2$lci<-m5_c.pr$fit-(m5_c.pr2$se*1.96)
 m5_c.pr2$uci<-m5_c.pr$fit+(m5_c.pr2$se*1.96)
 
-#data frame for fire + location predictions
+# fire + location predictions for models to plot, m5_b
 
 summary(m5_b)
-
-locationfire.pr<-data.frame(location = rep(factor(levels(sum_dat$location),levels = levels(sum_dat$location)),3),fire_cat = c(rep(levels(sum_dat$fire_cat)[1],2),rep(levels(sum_dat$fire_cat)[2],2),rep(levels(sum_dat$fire_cat)[3],2)))
-
-# fire + location predictions for models to plot, m5_b
 
 m5_b.pr<-predict(object = m5_b, newdata = locationfire.pr,type = "response", se.fit = T)
 m5_b.pr2<-data.frame(locationfire.pr)
@@ -247,31 +237,37 @@ m5_b.pr2$se<-m5_b.pr$se
 m5_b.pr2$lci<-m5_b.pr$fit-(m5_b.pr2$se*1.96)
 m5_b.pr2$uci<-m5_b.pr$fit+(m5_b.pr2$se*1.96)
 
-# new update 14 Jan 2025:
-# Should evenness and Berger Parker be modelled with a beta gam, rather than Gamma glm, because the values range between zero and 1?
+# --** species evenness (even2):
+
+# update 14 Jan 2025:
+
+# Should evenness and Berger Parker be modelled with a beta gam, rather than Gamma glm, because the values range between zero and 1? Probably yes, so re-doing this model set. 
 
 # From Ella's thesis: "...GAMM with a beta distribution using the ‘gamm’ function in mgcv (Wood 2017)"
 
-# species diversity as even2:
-# even2 as a function of fire category (generalized linear model)
-m6_a_gam <- gam(even2~fire_cat*location,data = sum_dat, family = "betar")
-m6_b_gam <- gam(even2~fire_cat+location,data = sum_dat, family = "betar")
-m6_c_gam <- gam(even2~fire_cat,data = sum_dat, family = "betar")
-m6_d_gam <- gam(even2~1,data = sum_dat, family = "betar")
+# even2 (beta regression)
+m6_a_beta <- gam(even2~fire_cat*location,data = sum_dat, family = "betar")
+m6_b_beta <- gam(even2~fire_cat+location,data = sum_dat, family = "betar")
+m6_c_beta <- gam(even2~fire_cat,data = sum_dat, family = "betar")
+m6_d_beta <- gam(even2~1,data = sum_dat, family = "betar")
 
-summary(m6_a_gam);anova(m6_a_gam) 
-summary(m6_b_gam);anova(m6_b_gam) 
-summary(m6_c_gam);anova(m6_c_gam) 
+summary(m6_a_beta);anova(m6_a_beta) 
+summary(m6_b_beta);anova(m6_b_beta) 
+summary(m6_c_beta);anova(m6_c_beta) 
 
-#Likelihood ratio test - compare more complicated model (interaction model) with simpler model 
-anova(m6_a_gam, m6_b_gam, test = "F") 
-anova(m6_b_gam, m6_c_gam, test = "F") 
-anova(m6_c_gam, m6_d_gam, test = "F") 
+# Likelihood ratio test 
+anova(m6_a_beta, m6_b_beta, test = "F") 
+anova(m6_b_beta, m6_c_beta, test = "F") 
+anova(m6_c_beta, m6_d_beta, test = "F") 
 
-AICc(m6_a_gam) # 
-AICc(m6_b_gam) # 
-AICc(m6_c_gam) # 
-AICc(m6_d_gam) # 
+AICc(m6_a_beta) # 
+AICc(m6_b_beta) # 
+AICc(m6_c_beta) # 
+AICc(m6_d_beta) # 
+
+### ----UP TO HERE 16TH JAN
+# save.image("04_workspaces/analysed_data.RData")
+
 
 # This is the old set of models for evenness, with a gamma distribution, which I don't think is right:
 # species diversity as even2:
