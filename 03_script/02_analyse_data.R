@@ -26,14 +26,43 @@ invisible(lapply(paste("02_functions/",dir("02_functions"),sep=""), function(x) 
 
 head(sum_dat, 3);dim(sum_dat)
 
+# Data distributions and model types:
+# ----
+# whole community:
 summary(sum_dat$sp_rich) # neg bin
 summary(sum_dat$simps_ind2) # gamma
 summary(sum_dat$shann_ind) # gamma 
 summary(sum_dat$even2) # beta
+
+summary(sum_dat$bp_ind) # beta
+summary(sum_dat$fa.all) # gamma
+
+# rare species:
 summary(sum_dat$abund_25) # neg bin
 summary(sum_dat$abund_5) # neg bin
 summary(sum_dat$sr_25) # neg bin
 summary(sum_dat$sr_5) # neg bin
+
+# Data distributions:
+dev.new(width=6,height=12, dpi=70, pointsize=16,noRStudioGD = T)
+par(mfrow=c(5,2),mar=c(4,4,1,1), mgp=c(2.5,1,0))
+
+# whole community:
+hist(sum_dat$sp_rich, xlab="",main="species richness", font.main=1, las=1) 
+hist(sum_dat$simps_ind2, xlab="",main="simpson's index", font.main=1, las=1) 
+hist(sum_dat$shann_ind, xlab="",main="shannon's index", font.main=1, las=1)
+hist(sum_dat$even2, xlim=c(0,1), xlab="",main="evenness", font.main=1, las=1) 
+
+hist(sum_dat$bp_ind, xlim=c(0,1), xlab="",main="berger-parker", font.main=1, las=1) 
+hist(sum_dat$fa.all, xlab="",main="fisher's alpha", font.main=1, las=1)
+
+# rare species:
+hist(sum_dat$abund_25, xlab="",main="abundance 25", font.main=1, las=1) 
+hist(sum_dat$abund_5, xlab="",main="abundance 5", font.main=1, las=1) 
+hist(sum_dat$sr_25, xlab="",main="richness 25", font.main=1, las=1) 
+hist(sum_dat$sr_5, xlab="",main="richness 5", font.main=1, las=1) 
+
+# ----
 
 #### MODELS
 
@@ -157,7 +186,9 @@ m5_c.pr2$se<-m5_c.pr$se
 m5_c.pr2$lci<-m5_c.pr$fit-(m5_c.pr2$se*1.96)
 m5_c.pr2$uci<-m5_c.pr$fit+(m5_c.pr2$se*1.96)
 
-# fire + location predictions for models to plot, m5_b
+# fire + location predictions, m5_b
+
+locationfire.pr<-data.frame(location = rep(factor(levels(sum_dat$location),levels = levels(sum_dat$location)),3),fire_cat = c(rep(levels(sum_dat$fire_cat)[1],2),rep(levels(sum_dat$fire_cat)[2],2),rep(levels(sum_dat$fire_cat)[3],2)))
 
 summary(m5_b)
 
@@ -201,26 +232,63 @@ AICc(m6_b_beta) #
 AICc(m6_c_beta) # 
 AICc(m6_d_beta) # 
 
-
 # evenness model set
 m6.set<-list("fire x location"= m6_a_beta, "location"= m6_b_beta, "fire"= m6_c_beta, "null"= m6_d_beta)
 
 # cannot use aictab for beta models, so need to construct our own:
+m6.tab<-data.frame(Modnames=c("fire x location", "location", "fire", "null"))
 
 # K:
-attributes(logLik.gam(m6_a_beta))$df
-attributes(logLik.gam(m6_b_beta))$df
-attributes(logLik.gam(m6_c_beta))$df
-attributes(logLik.gam(m6_d_beta))$df
+m6.tab$K<-c(attributes(logLik.gam(m6_a_beta))$df,attributes(logLik.gam(m6_b_beta))$df,attributes(logLik.gam(m6_c_beta))$df,attributes(logLik.gam(m6_d_beta))$df)
 
-logLik.gam(m6_a_beta)
-logLik.gam(m6_b_beta)
-logLik.gam(m6_c_beta)
-logLik.gam(m6_d_beta)
+# AICc:
+m6.tab$AICc<-c(AICc(m6_a_beta), AICc(m6_b_beta), AICc(m6_c_beta), AICc(m6_d_beta))
+
+# Log-likelihood
+m6.tab$LL<-round(c(logLik.gam(m6_a_beta),
+                   logLik.gam(m6_b_beta),
+                   logLik.gam(m6_c_beta),
+                   logLik.gam(m6_d_beta)),2)
+
+# Order:
+m6.tab<-m6.tab[order(m6.tab$AICc),]
+rownames(m6.tab)<-1:nrow(m6.tab)
+
+# Delta AICc
+
+m6.tab$Delta_AICc<-round(c(0,m6.tab$AICc[-1] - m6.tab$AICc[1]),2)
+
+# Model likelihood: the relative likelihood of the model given the data (exp(-0.5*delta[i]))
+
+m6.tab$ModelLik<-round(exp(-0.5*m6.tab$Delta_AICc),2)
+
+# AICc weight
+
+# https://brianomeara.info/aic.html: Akaike weights are the relative likelihood divided by the sum of these values across all models.
+
+m6.tab$AICcWt<-round(m6.tab$ModelLik/sum(m6.tab$ModelLik),2)
+
+# Cumulative weight
+
+m6.tab$Cum.Wt<-round(cumsum(m6.tab$AICcWt),2)
+
+# Reorder so they align with the others (note LL needs to be added before the change in order):
+m6.tab<-m6.tab[,colnames(data.frame(m1.tab))]
 
 # save.image("04_workspaces/analysed_data.RData")
 
-# predictions for models 
+# fire + location predictions, m6_b_beta
+
+summary(m6_b_beta)
+
+m6_b.pr<-predict(object = m6_b_beta, newdata = locationfire.pr,type = "response", se.fit = T)
+m6_b.pr2<-data.frame(locationfire.pr)
+m6_b.pr2$fit<-m6_b.pr$fit
+m6_b.pr2$se<-m6_b.pr$se
+m6_b.pr2$lci<-m6_b.pr$fit-(m6_b.pr2$se*1.96)
+m6_b.pr2$uci<-m6_b.pr$fit+(m6_b.pr2$se*1.96)
+
+# fire-only predictions (not used)
 m6_c.pr<-predict(object = m6_c, newdata = fireonly.pr,type = "response", se.fit = T)
 m6_c.pr2<-data.frame(fireonly.pr)
 m6_c.pr2$fit<-m6_c.pr$fit
@@ -228,7 +296,7 @@ m6_c.pr2$se<-m6_c.pr$se
 m6_c.pr2$lci<-m6_c.pr$fit-(m6_c.pr2$se*1.96)
 m6_c.pr2$uci<-m6_c.pr$fit+(m6_c.pr2$se*1.96)
 
-# This is the old set of models for evenness, with a gamma distribution, which I don't think is right:
+# This is the old set of models for evenness, with a gamma distribution, which is not exactly right:
 # ----
 # species diversity as even2:
 # even2 as a function of fire category (generalized linear model)
@@ -303,9 +371,7 @@ m3_c.pr2$uci<-m3_c.pr$fit+(m3_c.pr2$se*1.96)
 
 summary(m3_b)
 
-locationfire.pr<-data.frame(location = rep(factor(levels(sum_dat$location),levels = levels(sum_dat$location)),3),fire_cat = c(rep(levels(sum_dat$fire_cat)[1],2),rep(levels(sum_dat$fire_cat)[2],2),rep(levels(sum_dat$fire_cat)[3],2)))
-
-# fire + location predictions for models to plot graphs, use m3_b
+# fire + location predictions, m3_b
 
 m3_b.pr<-predict(object = m3_b, newdata = locationfire.pr,type = "link", se.fit = T)
 m3_b.pr2<-data.frame(locationfire.pr)
@@ -354,8 +420,6 @@ m4_c.pr2$fit<-exp(m4_c.pr2$fit)
 m4_c.pr2$se<-exp(m4_c.pr2$se)
 m4_c.pr2$lci<-exp(m4_c.pr2$lci)
 m4_c.pr2$uci<-exp(m4_c.pr2$uci)
-
-summary(sum_dat$shann_ind)
 
 # ---- 
 
@@ -437,6 +501,26 @@ m8_c.pr2$uci<-m8_c.pr$fit+(m8_c.pr2$se*1.96)
 
 # ----
 
+
+# save.image("04_workspaces/analysed_data.RData")
+
+# UP-TO-HERE 16th Jan. 
+# Just finished revising the code to make sure the model types were appropriate for the data and to get everything streamlined and in the right order. 
+# now we can model bp and fa
+
+# ---*** MODEL BERGER-PARKER & FISHER'S ALPHA ***--- #
+
+# Whole community only
+
+# First, what is the form of the data, and what type of models do we use?
+# Berger-Parker ranges from 0 to 1, with 0 indicating complete evenness or equal abundance among all species in the community. 
+# This should probably be either binomial or 
+head(sum_dat,3); dim(sum_dat)
+
+hist(sum_dat$bp_ind)
+
+
+
 # make AICc table of for all response variables:
 
 m1.tab2<-data.frame(response="Species Richness",m1.tab)
@@ -456,19 +540,6 @@ combi.tab<-rbind(m1.tab2, m2.tab2, m3.tab2, m4.tab2, m5.tab2, m6.tab2, m7.tab2, 
 # save.image("04_workspaces/analysed_data.RData")
 
 # ----
-
-
-# ---*** MODEL BERGER-PARKER & FISHER'S ALPHA ***--- #
-
-# Whole community only
-
-# First, what is the form of the data, and what type of models do we use?
-# Berger-Parker ranges from 0 to 1, with 0 indicating complete evenness or equal abundance among all species in the community. 
-# This should probably be either binomial or 
-head(sum_dat,3); dim(sum_dat)
-
-hist(sum_dat$bp_ind)
-
 
 
 #### CONTRASTS
