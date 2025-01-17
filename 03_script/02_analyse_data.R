@@ -809,6 +809,7 @@ m10_b_diff
 ## UP TO HERE
 # Need to update all the plots. Remove the a, b, c, etc. from the plots (no need to include statistical tests)
 # update the whole community plot to include the bp and fa
+# Presented in the MS as follows: species richness, Shannon-Weiner’s Diversity Index (hereafter Shannon’s Diversity), Inverse Simpson’s Diversity Index (hereafter Simpson’s Diversity), Fisher’s alpha, Berger-Parker Index, and evenness
 
 #### RARE SPECIES assemblage ----
 
