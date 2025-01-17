@@ -26,8 +26,7 @@ invisible(lapply(paste("02_functions/",dir("02_functions"),sep=""), function(x) 
 
 head(sum_dat, 3);dim(sum_dat)
 
-# Data distributions and model types:
-# ----
+# Data distributions and model types: ----
 # whole community:
 summary(sum_dat$sp_rich) # neg bin
 summary(sum_dat$simps_ind2) # gamma
@@ -66,10 +65,7 @@ hist(sum_dat$sr_5, xlab="",main="richness 5", font.main=1, las=1)
 
 #### MODELS
 
-# ----
-
-# --** species richness (negative binomial GLM)
-# ----
+# ** species richness (negative binomial GLM) ----
 
 m1_a <- glm.nb(sp_rich~fire_cat*location,data = sum_dat)
 m1_b <- glm.nb(sp_rich~fire_cat+location,data = sum_dat)
@@ -110,8 +106,7 @@ head(sum_dat, 6);dim(sum_dat)
 
 # ---- 
 
-# --** simpson's index (Gamma GLM)
-# ---- 
+# ** simpson's index (Gamma GLM) ---- 
 
 summary(sum_dat$simps_ind2) 
 
@@ -152,8 +147,7 @@ m2_c.pr2$uci<-m2_c.pr$fit+(m2_c.pr2$se*1.96)
 
 # ---- 
 
-# --** shannon's index (Gamma GLM)
-# ---- 
+# ** shannon's index (Gamma GLM) ---- 
 
 m5_a <- glm(shann_ind~fire_cat*location,data = sum_dat, family = "Gamma")
 m5_b <- glm(shann_ind~fire_cat+location,data = sum_dat, family = "Gamma")
@@ -201,8 +195,7 @@ m5_b.pr2$uci<-m5_b.pr$fit+(m5_b.pr2$se*1.96)
 
 # ---- 
 
-# --** species evenness (even2) (beta regression):
-# ---- 
+# ** species evenness (even2) (beta regression): ---- 
 
 # update 14 Jan 2025:
 
@@ -296,46 +289,11 @@ m6_c.pr2$se<-m6_c.pr$se
 m6_c.pr2$lci<-m6_c.pr$fit-(m6_c.pr2$se*1.96)
 m6_c.pr2$uci<-m6_c.pr$fit+(m6_c.pr2$se*1.96)
 
-# This is the old set of models for evenness, with a gamma distribution, which is not exactly right:
-# ----
-# species diversity as even2:
-# even2 as a function of fire category (generalized linear model)
-# m6_a <- glm(even2~fire_cat*location,data = sum_dat, family = "Gamma")
-# m6_b <- glm(even2~fire_cat+location,data = sum_dat, family = "Gamma")
-# m6_c <- glm(even2~fire_cat,data = sum_dat, family = "Gamma")
-# m6_d <- glm(even2~1,data = sum_dat, family = "Gamma")
-
-# Likelihood ratio test 
-# anova(m6_a, m6_b, test = "F") 
-# anova(m6_b, m6_c, test = "F") 
-# anova(m6_c, m6_d, test = "F") 
-
-# summary(m6_a);anova(m6_a) 
-# summary(m6_b);anova(m6_b) 
-# summary(m6_c);anova(m6_c) 
-# AICc(m6_a) # -16.7
-# AICc(m6_b) # -27.4
-# AICc(m6_c) # -27.7
-# AICc(m6_d) # -27.4
-
-# predictions for models (not used)
-# fireonly.pr<-data.frame(fire_cat = factor(levels(sum_dat$fire_cat),levels = levels(sum_dat$fire_cat)))
-# m6_c.pr<-predict(object = m6_c, newdata = fireonly.pr,type = "response", se.fit = T)
-# m6_c.pr2<-data.frame(fireonly.pr)
-# m6_c.pr2$fit<-m6_c.pr$fit
-# m6_c.pr2$se<-m6_c.pr$se
-# m6_c.pr2$lci<-m6_c.pr$fit-(m6_c.pr2$se*1.96)
-# m6_c.pr2$uci<-m6_c.pr$fit+(m6_c.pr2$se*1.96)
-
-# m6.set<-list("fire x location"= m6_a, "location"= m6_b, "fire"= m6_c, "null"= m6_d)
-# m6.tab<-aictab(cand.set = m6.set, second.ord = T, sort = T)
-
 # ----
 
 # abundance of RARE SPECIES (negative binomial GLM)
 
-# --** abund_25 (negative binomial GLM)
-# ---- 
+# ** abund_25 (negative binomial GLM) ---- 
 
 head(sum_dat, 2);dim(sum_dat)
 
@@ -387,8 +345,7 @@ m3_b.pr2$uci<-exp(m3_b.pr2$uci)
 
 # ---- 
 
-# --** abund_5 (negative binomial GLM)
-# ---- 
+# ** abund_5 (negative binomial GLM) ---- 
 
 m4_a <- glm.nb(abund_5~fire_cat*location,data = sum_dat)
 m4_b <- glm.nb(abund_5~fire_cat+location,data = sum_dat)
@@ -427,8 +384,7 @@ m4_c.pr2$uci<-exp(m4_c.pr2$uci)
 
 head(sum_dat,3); dim(sum_dat)
 
-# Rare species richness, lowest 25 %
-# ----
+# Rare species richness, lowest 25 % ----
 
 m7_a <- glm.nb(sr_25~fire_cat*location,data = sum_dat)
 m7_b <- glm.nb(sr_25~fire_cat+location,data = sum_dat)
@@ -464,8 +420,7 @@ m7_c.pr2$uci<-m7_c.pr$fit+(m7_c.pr2$se*1.96)
 
 # ----
 
-# Rare species richness, max 5 %
-# ----
+# Rare species richness, max 5 % ----
 
 m8_a <- glm.nb(sr_5~fire_cat*location,data = sum_dat)
 m8_b <- glm.nb(sr_5~fire_cat+location,data = sum_dat)
@@ -501,27 +456,136 @@ m8_c.pr2$uci<-m8_c.pr$fit+(m8_c.pr2$se*1.96)
 
 # ----
 
-
 # save.image("04_workspaces/analysed_data.RData")
-
-# UP-TO-HERE 16th Jan. 
-# Just finished revising the code to make sure the model types were appropriate for the data and to get everything streamlined and in the right order. 
-# now we can model bp and fa
 
 # ---*** MODEL BERGER-PARKER & FISHER'S ALPHA ***--- #
 
 # Whole community only
 
-# First, what is the form of the data, and what type of models do we use?
-# Berger-Parker ranges from 0 to 1, with 0 indicating complete evenness or equal abundance among all species in the community. 
-# This should probably be either binomial or 
+# Berger-Parker (beta regression) ----
+# Berger-Parker ranges from 0 to 1, with 0 indicating complete evenness or equal abundance among all species in the community; model as beta regression
+
 head(sum_dat,3); dim(sum_dat)
 
-hist(sum_dat$bp_ind)
+# bp (beta regression)
+m9_a <- gam(bp_ind~fire_cat*location,data = sum_dat, family = "betar",method="ML")
+m9_b <- gam(bp_ind~fire_cat+location,data = sum_dat, family = "betar",method="ML")
+m9_c <- gam(bp_ind~fire_cat,data = sum_dat, family = "betar",method="ML")
+m9_d <- gam(bp_ind~1,data = sum_dat, family = "betar",method="ML")
 
+summary(m9_a);anova(m9_a) 
+summary(m9_b);anova(m9_b) 
+summary(m9_c);anova(m9_c) 
 
+# Likelihood ratio test 
+anova(m9_a, m9_b, test = "F") 
+anova(m9_b, m9_c, test = "F") 
+anova(m9_c, m9_d, test = "F") 
 
-# make AICc table of for all response variables:
+AICc(m9_a) # 
+AICc(m9_b) # 
+AICc(m9_c) # 
+AICc(m9_d) # 
+
+# bp model set
+
+# cannot use aictab for beta models, so need to construct our own:
+m9.tab<-data.frame(Modnames=c("fire x location", "location", "fire", "null"))
+
+# K:
+m9.tab$K<-c(attributes(logLik.gam(m9_a))$df,attributes(logLik.gam(m9_b))$df,attributes(logLik.gam(m9_c))$df,attributes(logLik.gam(m9_d))$df)
+
+# AICc:
+m9.tab$AICc<-c(AICc(m9_a), AICc(m9_b), AICc(m9_c), AICc(m9_d))
+
+# Log-likelihood
+m9.tab$LL<-round(c(logLik.gam(m9_a),
+                   logLik.gam(m9_b),
+                   logLik.gam(m9_c),
+                   logLik.gam(m9_d)),2)
+
+# Order:
+m9.tab<-m9.tab[order(m9.tab$AICc),]
+rownames(m9.tab)<-1:nrow(m9.tab)
+
+# Delta AICc
+
+m9.tab$Delta_AICc<-round(c(0,m9.tab$AICc[-1] - m9.tab$AICc[1]),2)
+
+# Model likelihood: the relative likelihood of the model given the data (exp(-0.5*delta[i]))
+
+m9.tab$ModelLik<-round(exp(-0.5*m9.tab$Delta_AICc),2)
+
+# AICc weight
+
+# https://brianomeara.info/aic.html: Akaike weights are the relative likelihood divided by the sum of these values across all models.
+
+m9.tab$AICcWt<-round(m9.tab$ModelLik/sum(m9.tab$ModelLik),2)
+
+# Cumulative weight
+
+m9.tab$Cum.Wt<-round(cumsum(m9.tab$AICcWt),2)
+
+# Reorder so they align with the others (note LL needs to be added before the change in order):
+m9.tab<-m9.tab[,colnames(data.frame(m1.tab))]
+
+# save.image("04_workspaces/analysed_data.RData")
+
+# fire-only predictions 
+m9_c.pr<-predict(object = m9_c, newdata = fireonly.pr,type = "response", se.fit = T)
+m9_c.pr2<-data.frame(fireonly.pr)
+m9_c.pr2$fit<-m9_c.pr$fit
+m9_c.pr2$se<-m9_c.pr$se
+m9_c.pr2$lci<-m9_c.pr2$fit-(m9_c.pr2$se*1.96)
+m9_c.pr2$uci<-m9_c.pr2$fit+(m9_c.pr2$se*1.96)
+
+# ----
+
+# Fisher's alpha (gamma) ----
+
+# Fisher's alpha is positive continuous; model as gamma
+
+head(sum_dat, 3); dim(sum_dat)
+
+m10_a <- glm(fa.all~fire_cat*location,data = sum_dat, family = "Gamma")
+m10_b <- glm(fa.all~fire_cat+location,data = sum_dat, family = "Gamma")
+m10_c <- glm(fa.all~fire_cat,data = sum_dat, family = "Gamma")
+m10_d <- glm(fa.all~1,data = sum_dat, family = "Gamma")
+
+# Likelihood ratio test 
+anova(m10_a, m10_b, test = "F") 
+anova(m10_b, m10_c, test = "F") 
+anova(m10_c, m10_d, test = "F") 
+
+summary(m10_a);anova(m10_a) 
+summary(m10_b);anova(m10_b) 
+summary(m10_c);anova(m10_c) 
+
+AICc(m10_a) 
+AICc(m10_b) 
+AICc(m10_c) 
+AICc(m10_d)
+
+# fa model set:
+m10.set<-list("fire x location"= m10_a, "location"= m10_b, "fire"= m10_c, "null"= m10_d)
+m10.tab<-aictab(cand.set = m10.set, second.ord = T, sort = T)
+
+# fire + location predictions, m10_b
+
+summary(m10_b)
+
+m10_b.pr<-predict(object = m10_b, newdata = locationfire.pr,type = "response", se.fit = T)
+m10_b.pr2<-data.frame(locationfire.pr)
+m10_b.pr2$fit<-m10_b.pr$fit
+m10_b.pr2$se<-m10_b.pr$se
+m10_b.pr2$lci<-m10_b.pr2$fit-(m10_b.pr2$se*1.96)
+m10_b.pr2$uci<-m10_b.pr2$fit+(m10_b.pr2$se*1.96)
+
+# ----
+
+# save.image("04_workspaces/analysed_data.RData")
+
+# AICc table: all response variables ----
 
 m1.tab2<-data.frame(response="Species Richness",m1.tab)
 m2.tab2<-data.frame(response="Simpson's Index",m2.tab)
@@ -532,31 +596,33 @@ m6.tab2<-data.frame(response="Evenness",m6.tab)
 m7.tab2<-data.frame(response="Richness Lowest 25%",m7.tab)
 m8.tab2<-data.frame(response="Richness Max. 5%",m8.tab)
 
-# Added m7 and m8 to combi.tab (richness of rare species):
-combi.tab<-rbind(m1.tab2, m2.tab2, m3.tab2, m4.tab2, m5.tab2, m6.tab2, m7.tab2, m8.tab2)
+m9.tab2<-data.frame(response="Berger-Parker",m9.tab)
+m10.tab2<-data.frame(response="Fisher's Alpha",m10.tab)
 
-# write.table(combi.tab,file="megatable.txt", quote = F, sep = "\t", row.names=F)
+# Added m7 and m8 to combi.tab (richness of rare species):
+combi.tab<-rbind(m1.tab2, m2.tab2, m3.tab2, m4.tab2, m5.tab2, m6.tab2, m7.tab2, m8.tab2, m9.tab2, m10.tab2)
+
+# write.table(combi.tab,file="AIC_all.txt", quote = F, sep = "\t", row.names=F)
 
 # save.image("04_workspaces/analysed_data.RData")
 
 # ----
 
+#### CONTRASTS ----
 
-#### CONTRASTS
+# Not used in new MS
+
+# Set up contrast matrices ----
 
 # fire only contrasts
 
-# ----
+# There are 3 contrasts for three fire categories (u:m, u:b, m:b)
 
-#There are 3 contrasts for three fire categories (u:m, u:b, m:b)
-
-summary(m1_c) #glm.nb model
-
-# fireonly.pr<-data.frame(fire_cat = factor(levels(sum_dat$fire_cat),levels = levels(sum_dat$fire_cat)))
+summary(m1_c) # glm.nb model
 
 fireonly_contrast<-data.frame(contrast=paste(combn(fireonly.pr$fire_cat,2)[1,],combn(fireonly.pr$fire_cat,2)[2,],sep=':'))
 
-#Create unique model matrix
+# Create unique model matrix
 
 fireonly_conmod <- lm(formula = sp_rich ~ fire_cat, data = sum_dat,x=T)$x
 
@@ -568,7 +634,7 @@ rownames(umm_fireonly) <- 1:nrow(umm_fireonly)
 umm_fireonly <- umm_fireonly[c(1,3,2),]
 rownames(umm_fireonly) <- 1:nrow(umm_fireonly)
 
-#Create a difference matrix
+# Create a difference matrix
 
 # Each row must be a vector with a length equal to the number of rows in the unique model matrix (umm_fireonly), e.g. three rows in umm_fireonly matrix will give 3 contrasts. Each row will specify one contrast.
 
@@ -589,13 +655,13 @@ fireonly_contrast
 
 # fire + location contrasts
 
-#There are 6 contrasts for three categories within each site (hu:hm, hu:hb, hm:hb, pu:pm, pu:pb, pm:pb)
+# There are 6 contrasts for three categories within each site (hu:hm, hu:hb, hm:hb, pu:pm, pu:pb, pm:pb)
 
-summary(m3_b) #glm.nb model
+summary(m3_b) # glm.nb model
 
 fireloc_contrast<-data.frame(location=rep(c('Hincks','Pinks'),rep(3,2)),contrast=paste(combn(fireonly.pr$fire_cat,2)[1,],combn(fireonly.pr$fire_cat,2)[2,],sep=':'))
 
-#Create unique model matrix
+# Create unique model matrix
 
 fireloc_conmod <- lm(abund_25 ~ fire_cat + location, data = sum_dat,x=T)$x
 
@@ -607,7 +673,7 @@ rownames(umm_fireloc) <- 1:nrow(umm_fireloc)
 umm_fireloc <- umm_fireloc[c(1,3,2,5,6,4),]
 rownames(umm_fireloc) <- 1:nrow(umm_fireloc)
 
-#Create a difference matrix
+# Create a difference matrix
 
 # Each row must be a vector with a length equal to the number of rows in the unique model matrix (umm_fireonly), e.g. three rows in umm_fireonly matrix will give 3 contrasts. Each row will specify one contrast.
 
@@ -629,17 +695,19 @@ diffm_fireloc
 # and we have the names for the contrasts
 fireloc_contrast
 
-#save.image("04_workspaces/analysed_data.RData")
+# save.image("04_workspaces/analysed_data.RData")
 
-#calculate the differences and CI's (abun)
+# ----
+
+# Calculate differences and CI's ----
 
 summary(m1_c) # Species richness, fire only, glm.nb model
+
 # significance based on 'diff', 0 insignificant, 1 significant / lci and uci also show significance based on whether lci + uci cross 0
 
 m1_c_diff<-data.frame(contrast=fireonly_contrast,diff.est(model = m1_c,unique.mod.mat = umm_fireonly,diff.matrix = diffm_fireonly))
 
 m1_c_diff$diff <- ifelse(sign(m1_c_diff$lci)==sign(m1_c_diff$uci),1,0)
-
 
 summary(m2_c) # Simpsons Index, fire only, Gamma glm
 
@@ -647,13 +715,11 @@ m2_c_diff<-data.frame(contrast=fireonly_contrast,diff.est(model = m2_c,unique.mo
 
 m2_c_diff$diff <- ifelse(sign(m2_c_diff$lci)==sign(m2_c_diff$uci),1,0)
 
-
 summary(m3_b) # Abund lowest 25%, fire + location, glm.nb model
 
 m3_b_diff<-data.frame(contrast=fireloc_contrast,diff.est(model = m3_b,unique.mod.mat = umm_fireloc,diff.matrix = diffm_fireloc))
 
 m3_b_diff$diff <- ifelse(sign(m3_b_diff$lci)==sign(m3_b_diff$uci),1,0)
-
 
 summary (m4_c) # Abund 5% of max, fire only, glm.nb model
 
@@ -661,20 +727,17 @@ m4_c_diff<-data.frame(contrast=fireonly_contrast,diff.est(model = m4_c,unique.mo
 
 m4_c_diff$diff <- ifelse(sign(m4_c_diff$lci)==sign(m4_c_diff$uci),1,0)
 
-
 summary (m5_b) # Shannon's index, fire + location, Gamma glm
 
 m5_b_diff<-data.frame(contrast=fireloc_contrast,diff.est(model = m5_b,unique.mod.mat = umm_fireloc,diff.matrix = diffm_fireloc))
 
 m5_b_diff$diff <- ifelse(sign(m5_b_diff$lci)==sign(m5_b_diff$uci),1,0)
 
+summary (m6_b_beta) # Evenness, fire + location, beta gam
 
-summary (m6_c) # Evenness, fire only, Gamma glm
+m6_b_diff<-data.frame(contrast=fireloc_contrast,diff.est(model = m6_b_beta,unique.mod.mat = umm_fireloc,diff.matrix = diffm_fireloc))
 
-m6_c_diff<-data.frame(contrast=fireonly_contrast,diff.est(model = m6_c,unique.mod.mat = umm_fireonly,diff.matrix = diffm_fireonly))
-
-m6_c_diff$diff <- ifelse(sign(m6_c_diff$lci)==sign(m6_c_diff$uci),1,0)
-
+m6_b_diff$diff <- ifelse(sign(m6_b_diff$lci)==sign(m6_b_diff$uci),1,0)
 
 summary (m7_c) # Rare species lowest 25%, fire only, glm.nb
 
@@ -682,14 +745,29 @@ m7_c_diff<-data.frame(contrast=fireonly_contrast,diff.est(model = m7_c,unique.mo
 
 m7_c_diff$diff <- ifelse(sign(m7_c_diff$lci)==sign(m7_c_diff$uci),1,0)
 
-
 summary (m8_c) # Rare species 5% max, fire only, glm.nb
 
 m8_c_diff<-data.frame(contrast=fireonly_contrast,diff.est(model = m8_c,unique.mod.mat = umm_fireonly,diff.matrix = diffm_fireonly))
 
 m8_c_diff$diff <- ifelse(sign(m8_c_diff$lci)==sign(m8_c_diff$uci),1,0)
 
-# Summary of all contrasts:
+summary (m9_c) # Berger-Parker, fire only, beta gam
+
+m9_c_diff<-data.frame(contrast=fireonly_contrast,diff.est(model = m9_c,unique.mod.mat = umm_fireonly,diff.matrix = diffm_fireonly))
+
+m9_c_diff$diff <- ifelse(sign(m9_c_diff$lci)==sign(m9_c_diff$uci),1,0)
+
+summary (m10_b) # Fisher's alpha, fire + location, gamma
+
+m10_b_diff<-data.frame(contrast=fireloc_contrast,diff.est(model = m10_b,unique.mod.mat = umm_fireloc,diff.matrix = diffm_fireloc))
+
+m10_b_diff$diff <- ifelse(sign(m10_b_diff$lci)==sign(m10_b_diff$uci),1,0)
+
+# ----
+
+# save.image("04_workspaces/analysed_data.RData")
+
+# Summary of all contrasts ----
 
 summary(m1_c) # Species richness, fire only, glm.nb model,
 m1_c_diff
@@ -706,8 +784,8 @@ m4_c_diff
 summary (m5_b) # Shannon's index, fire + location, Gamma glm
 m5_b_diff
 
-summary (m6_c) # Evenness, fire only, Gamma glm
-m6_c_diff
+summary (m6_b_beta) # Evenness, fire + location, beta gam
+m6_b_diff
 
 summary (m7_c) # Rare species richness, lowest 25%, fire only, glm.nb
 m7_c_diff
@@ -715,15 +793,24 @@ m7_c_diff
 summary (m8_c) # Rare species richness, 5% max, fire only, glm.nb
 m8_c_diff
 
-#save.image("04_workspaces/analysed_data.RData")
+summary (m9_c) # Berger-Parker, fire only, beta gam
+m9_c_diff
+
+summary (m10_b) # Fisher's alpha, fire + location, gamma
+m10_b_diff
 
 # ----
+
+# save.image("04_workspaces/analysed_data.RData")
 
 #### PLOTS
 
-#### RARE SPECIES assemblage
+# 17th Jan 2025
+## UP TO HERE
+# Need to update all the plots. Remove the a, b, c, etc. from the plots (no need to include statistical tests)
+# update the whole community plot to include the bp and fa
 
-# ----
+#### RARE SPECIES assemblage ----
 
 #### Species richness of rare species on the same figure as abundance of rare species:
 
@@ -739,7 +826,7 @@ head(sum_dat,3); dim(sum_dat)
 # m3_b: sum_dat$abund_25
 
 dev.new(width=7, height=6, dpi=80, pointsize=14, noRStudioGD = T)
-par(mfrow=c(2,2), mar=c(4.5,4,1,1), mgp=c(2.8,0.8,0), oma=c(0,0,1,6))
+par(mfrow=c(2,2), mar=c(4.5,4,1,1), mgp=c(2.2,0.8,0), oma=c(0,0,1,6))
 
 # species richness (5% of max.)
 plot(c(1:3),m8_c.pr2$fit, xlim=c(0.5,3.5), pch=20, xaxt="n",ylim= c((min(m8_c.pr2$lci)),max(m8_c.pr2$uci)+2),ylab="Richness (5% of max.)",xlab="", las = 1, cex = 2.5)
@@ -838,16 +925,15 @@ points(jitter(rep(3+0.15,length(abund25_bP)),factor=4),abund25_bP, pch=17,col=rg
 
 # ----
 
-#### ALL SPECIES assemblage
-
-# ----
+#### ALL SPECIES assemblage ----
 
 #### Species richness all species:
 
 # m1_c: sum_dat$sp_rich
 # m2_c: sum_dat$simps_ind2
 # m5_b: sum_dat$shann_ind
-# m6_c: sum_dat$even2
+# m6_b_beta: sum_dat$even2
+# 
 
 dev.new(width=7, height=6, dpi=80, pointsize=14, noRStudioGD = T)
 par(mfrow=c(2,2), mar=c(4.5,4,1,1), mgp=c(2.8,0.8,0), oma=c(0,0,1,6))
@@ -955,7 +1041,8 @@ points(jitter(rep(3,length(ev_b)),factor=4),ev_b, pch=20,col=rgb(0,0,0,0.2))
 
 # ----
 
-# Rank abundance plot for appendix:
+# Rank abundance plot for appendix ----
+
 # Use captures / 1000 trap nights, 2 seasons of data combined
 head(sp_div2, 3); dim(sp_div2)
 
@@ -1075,4 +1162,6 @@ for(i in 1:length(diff.list)){
     axis(side=2,at=1:6,labels=rev(c("H U:M","H U:B","H M:B","P U:M","P U:B","P M:B")), las=1)
   } # close if nrow == 6
 }
+
+# ----
 
