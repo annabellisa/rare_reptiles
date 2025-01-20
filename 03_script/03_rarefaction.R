@@ -6,7 +6,7 @@
 
 # ---------- 03_rarefaction  ---------- #
 
-### Script authors: Amber Lim & Annabel Smith
+### Script authors: Annabel Smith & Amber Lim
 
 # Load and tidy workspace and remove everything except necessary objects:
 # load("04_workspaces/analysed_data.RData"); rm(list=setdiff(ls(), c("sum_dat","rare.data","sp_div2","sp_div_25","sp_div_5")))
@@ -50,7 +50,7 @@ head(sp_div_5, 3); dim(sp_div_5)
 
 # ----
 
-# Analysis
+# Analysis ----
 
 # Full site x species matrix (14 x 41)
 head(sum_dat,3)
@@ -108,7 +108,9 @@ head(asy_dat,3); dim(asy_dat)
 
 # save.image("04_workspaces/rarefaction.RData")
 
-# Plot iNext object
+# ----
+
+# Plot iNext object ----
 
 # Plot size-based, then coverage-based
 e_size<-est_dat$size_based
@@ -126,7 +128,6 @@ e_size[which(e_size$Method=="Observed"),]
 e_cov[which(e_cov$Method=="Observed"),]
 
 e_size[e_size$m<100,]
-
 
 # q.col.test<-hcl.colors(16, palette = "viridis", alpha = 1)
 # plot(1:16, 1:16, pch=20, col=q.col.test, cex=3)
@@ -178,7 +179,7 @@ for (j in 1:length(assemb.q)){
 
 # plot legend:
 par(xpd=NA)
-legend(x=1600,y=max(y.lim.var), title = "Fire category", legend = levels(assemb.q), pt.cex = 2, pch = c(20, 20, 20), bty = "n", title.adj=0,col=assemb.col)
+legend(x=1600,y=max(y.lim.var), title = "Fire category", legend = c("Long","Medium","Recent"), pt.cex = 2, pch = c(20, 20, 20), bty = "n", title.adj=0,col=assemb.col)
 legend(x=1550,y=max(y.lim.var)-7, title = "", legend = unique(e_size$Method)[c(1,3)], lty = c(1,2), bty = "n", title.adj=0)
 par(xpd=F)
 
@@ -211,6 +212,8 @@ for(i in 1:length(orders.q)){
   } # close j assemblage
   
 } # close order
+
+# ----
 
 # Plot sample coverage against the number of individuals 
 
@@ -283,13 +286,13 @@ i=1
   
 # plot legend:
 par(xpd=NA)
-legend(x=320,y=1, title = "Fire category", legend = levels(assemb.q), pt.cex = 2, pch = c(20, 20, 20), bty = "n", title.adj=0,col=assemb.col)
+legend(x=320,y=1, title = "Fire category", legend = c("Long","Medium","Recent"), pt.cex = 2, pch = c(20, 20, 20), bty = "n", title.adj=0,col=assemb.col)
 legend(x=300,y=0.6, title = "", legend = unique(e_size$Method)[c(1,3)], lty = c(1,2), bty = "n", title.adj=0)
 par(xpd=F)
 
-
-
 # save.image("04_workspaces/rarefaction.RData")
+
+
 
 
 
