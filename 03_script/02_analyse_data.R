@@ -281,14 +281,6 @@ m6_b.pr2$se<-m6_b.pr$se
 m6_b.pr2$lci<-m6_b.pr$fit-(m6_b.pr2$se*1.96)
 m6_b.pr2$uci<-m6_b.pr$fit+(m6_b.pr2$se*1.96)
 
-# fire-only predictions (not used)
-m6_c.pr<-predict(object = m6_c, newdata = fireonly.pr,type = "response", se.fit = T)
-m6_c.pr2<-data.frame(fireonly.pr)
-m6_c.pr2$fit<-m6_c.pr$fit
-m6_c.pr2$se<-m6_c.pr$se
-m6_c.pr2$lci<-m6_c.pr$fit-(m6_c.pr2$se*1.96)
-m6_c.pr2$uci<-m6_c.pr$fit+(m6_c.pr2$se*1.96)
-
 # ----
 
 # abundance of RARE SPECIES (negative binomial GLM)
@@ -313,15 +305,6 @@ AICc(m3_d) #50.4
 # Abund 25 model set:
 m3.set<-list("fire x location"= m3_a, "location"= m3_b, "fire"= m3_c, "null"= m3_d)
 m3.tab<-aictab(cand.set = m3.set, second.ord = T, sort = T)
-
-# (not used) predictions for fire only model
-fireonly.pr<-data.frame(fire_cat = factor(levels(sum_dat$fire_cat),levels = levels(sum_dat$fire_cat)))
-m3_c.pr<-predict(object = m3_c, newdata = fireonly.pr,type = "response", se.fit = T)
-m3_c.pr2<-data.frame(fireonly.pr)
-m3_c.pr2$fit<-m3_c.pr$fit
-m3_c.pr2$se<-m3_c.pr$se
-m3_c.pr2$lci<-m3_c.pr$fit-(m3_c.pr2$se*1.96)
-m3_c.pr2$uci<-m3_c.pr$fit+(m3_c.pr2$se*1.96)
 
 # Abund 25 fire + location predictions
 
@@ -608,9 +591,7 @@ combi.tab<-rbind(m1.tab2, m2.tab2, m3.tab2, m4.tab2, m5.tab2, m6.tab2, m7.tab2, 
 
 # ----
 
-#### CONTRASTS ----
-
-# Not used in new MS
+#### CONTRASTS (not used in new MS) ----
 
 # Set up contrast matrices ----
 
@@ -941,12 +922,11 @@ points(jitter(rep(3+0.15,length(abund25_bP)),factor=4),abund25_bP, pch=17,col=rg
 # m9_c: sum_dat$bp (fire only); m9.tab
 # m6_b_beta: sum_dat$even2 (fire + location); m6.tab
 
-
 dev.new(width=7, height=9, dpi=80, pointsize=17.5, noRStudioGD = T)
-par(mfrow=c(3,2), mar=c(4.5,4,1,1), mgp=c(2.2,0.8,0), oma=c(0,0,1,6))
+par(mfrow=c(3,2), mar=c(4.5,4,1,1), mgp=c(2.3,0.6,0), oma=c(0,0,1,6))
 
 # species richness; fire only
-plot(c(1:3),m1_c.pr2$fit, xlim=c(0.5,3.5), pch=20, xaxt="n",ylim= c((min(m1_c.pr2$lci)),max(sum_dat$sp_rich)),ylab="Species Richness",xlab="", las = 1, cex = 2.5)
+plot(c(1:3),m1_c.pr2$fit, xlim=c(0.5,3.5), pch=20, xaxt="n",ylim=c((min(m1_c.pr2$lci)),max(sum_dat$sp_rich)),ylab="Species Richness",xlab="", las = 1, cex = 2.5)
 arrows(c(1:3),m1_c.pr2$lci,c(1:3),m1_c.pr2$uci,length=0.03,code=3,angle=90)
 axis(1,at=c(1:3),labels=F)
 axis(1,at=c(1,2,3.15), cex.axis=1,labels=new.xlab,tick=F)
@@ -1024,7 +1004,7 @@ points(jitter(rep(1,length(si2_ub)),factor=4),si2_ub, pch=20,col=rgb(0,0,0,0.2))
 points(jitter(rep(2,length(si2_m)),factor=4),si2_m, pch=20,col=rgb(0,0,0,0.2))
 points(jitter(rep(3,length(si2_b)),factor=4),si2_b, pch=20,col=rgb(0,0,0,0.2))
 
-# fa.all plots; fire+location
+# Fisher's alpha; fire+location
 
 # m10_b: sum_dat$fa.all (fire + location); m10.tab
 # m10_b.pr2
@@ -1059,34 +1039,67 @@ points(jitter(rep(2+0.15,length(fa_mP)),factor=4),fa_mP, pch=17,col=rgb(0,0,0,0.
 points(jitter(rep(3-0.15,length(fa_bH)),factor=4),fa_bH, pch=15,col=rgb(0,0,0,0.2))
 points(jitter(rep(3+0.15,length(fa_bP)),factor=4),fa_bP, pch=17,col=rgb(0,0,0,0.2))
 
+# Berger-Parker; fire only
 
+# m9_c: sum_dat$bp (fire only); m9.tab
+# m9_c.pr2
 
-
-
-
-# evenness plots for fire
-
-# run first as this is used for ylim
 # plot raw data:
-ev_ub<-sum_dat$even2[sum_dat$fire_cat=="Unburnt"]
-ev_m<-sum_dat$even2[sum_dat$fire_cat=="Medium"]
-ev_b<-sum_dat$even2[sum_dat$fire_cat=="Burnt"]
+# run first as this is used for ylim
+bp_ub<-sum_dat$bp_ind[sum_dat$fire_cat=="Unburnt"]
+bp_m<-sum_dat$bp_ind[sum_dat$fire_cat=="Medium"]
+bp_b<-sum_dat$bp_ind[sum_dat$fire_cat=="Burnt"]
 
-plot(c(1:3),m6_c.pr2$fit, xlim=c(0.5,3.5), pch=20, xaxt="n",ylim= c(min(ev_m),max(m6_c.pr2$uci)+0.08),ylab="Evenness",xlab="", las = 1, cex = 2.5)
-arrows(c(1:3),m6_c.pr2$lci,c(1:3),m6_c.pr2$uci,length=0.03,code=3,angle=90)
+plot(c(1:3),m9_c.pr2$fit, xlim=c(0.5,3.5), pch=20, xaxt="n",ylim=c((min(m9_c.pr2$lci)),max(m9_c.pr2$uci)),ylab="Berger Parker Index",xlab="", las = 1, cex = 2.5)
+arrows(c(1:3),m9_c.pr2$lci,c(1:3),m9_c.pr2$uci,length=0.03,code=3,angle=90)
 axis(1,at=c(1:3),labels=F)
-axis(1,at=c(0.8,2,3.2),labels=m6_c.pr2$fire_cat,tick=F)
-title(mgp=c(2.3,0.8,0),xlab="Fire category")
-mtext(as.expression(bquote(Delta~"AICc ="~.(paste(round(m6.tab2$Delta_AICc[m6.tab2$Modnames=="fire"]-m6.tab2$Delta_AICc[m6.tab2$Modnames=="null"],2),sep="")))), side=3,line=0.1,adj=1,col="darkorange2", cex=0.75)
-mtext(text="(d)", side = 3, line = 0.5, adj = 0, cex = 1)
-m6_c_diff
-text(x=1:3, y=max(m6_c.pr2$uci)+0.06,labels=c(letters[1],letters[2],paste(letters[1],letters[2],sep="",collapse="")))
+axis(1,at=c(1,2,3.15), cex.axis=1,labels=new.xlab,tick=F)
+title(mgp=c(2.3,0.8,0),xlab="Fire Category")
+mtext(as.expression(bquote(Delta~"AICc ="~.(paste(round(m9.tab$Delta_AICc[m9.tab$Modnames=="fire"]-m9.tab$Delta_AICc[m9.tab$Modnames=="null"],2),sep="")))), side=3,line=0.1,adj=1,col="red", cex=0.7)
+mtext(text="(e)", side = 3, line = 0.5, adj = 0, cex = 0.8)
 
-points(jitter(rep(1,length(ev_ub)),factor=4),ev_ub, pch=20,col=rgb(0,0,0,0.2))
-points(jitter(rep(2,length(ev_m)),factor=4),ev_m, pch=20,col=rgb(0,0,0,0.2))
-points(jitter(rep(3,length(ev_b)),factor=4),ev_b, pch=20,col=rgb(0,0,0,0.2))
+points(jitter(rep(1,length(bp_ub)),factor=4),bp_ub, pch=20,col=rgb(0,0,0,0.2))
+points(jitter(rep(2,length(bp_m)),factor=4),bp_m, pch=20,col=rgb(0,0,0,0.2))
+points(jitter(rep(3,length(bp_b)),factor=4),bp_b, pch=20,col=rgb(0,0,0,0.2))
+
+# evenness
+
+# m6_b_beta: sum_dat$even2 (fire + location); m6.tab
+# m6_b.pr2
+
+plot(c(1:3)-0.15,m6_b.pr2$fit[m6_b.pr2$location=="Hincks"], xlim=c(0.5,3.5), pch=15, xaxt="n",ylim=c((min(sum_dat$even2)),max(sum_dat$even2)),ylab="Evenness",xlab="", las = 1, cex = 1.5)
+
+points(c(1:3)+0.15,m6_b.pr2$fit[m6_b.pr2$location=="Pinks"], xlim=c(0.5,3.5), pch=17, cex = 1.5)
+arrows(c(1:3)-0.15,m6_b.pr2$lci[m6_b.pr2$location=="Hincks"],c(1:3)-0.15,m6_b.pr2$uci[m6_b.pr2$location=="Hincks"],length=0.03,code=3,angle=90)
+arrows(c(1:3)+0.15,m6_b.pr2$lci[m6_b.pr2$location=="Pinks"],c(1:3)+0.15,m6_b.pr2$uci[m6_b.pr2$location=="Pinks"],length=0.03,code=3,angle=90)
+
+axis(1,at=c(1:3),labels=F)
+axis(1,at=c(1,2,3.15),labels=new.xlab,tick=F)
+title(mgp=c(2.3,0.8,0),xlab="Fire Category")
+mtext(as.expression(bquote(Delta~"AICc ="~.(paste(round(m6.tab$Delta_AICc[m6.tab$Modnames=="location"]-m6.tab$Delta_AICc[m6.tab$Modnames=="null"],2),sep="")))), side=3,line=0.1,adj=1,col="darkorange2", cex=0.7)
+
+mtext(text="(f)", side = 3, line = 0.5, adj = 0, cex = 0.8)
+
+# plot raw data:
+ev_ubH<-sum_dat$even2[sum_dat$fire_cat=="Unburnt" & sum_dat$location=="Hincks"]
+ev_ubP<-sum_dat$even2[sum_dat$fire_cat=="Unburnt" & sum_dat$location=="Pinks"]
+ev_mH<-sum_dat$even2[sum_dat$fire_cat=="Medium" & sum_dat$location=="Hincks"]
+ev_mP<-sum_dat$even2[sum_dat$fire_cat=="Medium" & sum_dat$location=="Pinks"]
+ev_bH<-sum_dat$even2[sum_dat$fire_cat=="Burnt" & sum_dat$location=="Hincks"]
+ev_bP<-sum_dat$even2[sum_dat$fire_cat=="Burnt" & sum_dat$location=="Pinks"]
+
+points(jitter(rep(1-0.15,length(ev_ubH)),factor=4),ev_ubH, pch=15,col=rgb(0,0,0,0.2))
+points(jitter(rep(1+0.15,length(ev_ubP)),factor=4),ev_ubP, pch=17,col=rgb(0,0,0,0.2))
+
+points(jitter(rep(2-0.15,length(ev_mH)),factor=4),ev_mH, pch=15,col=rgb(0,0,0,0.2))
+points(jitter(rep(2+0.15,length(ev_mP)),factor=4),ev_mP, pch=17,col=rgb(0,0,0,0.2))
+
+points(jitter(rep(3-0.15,length(ev_bH)),factor=4),ev_bH, pch=15,col=rgb(0,0,0,0.2))
+points(jitter(rep(3+0.15,length(ev_bP)),factor=4),ev_bP, pch=17,col=rgb(0,0,0,0.2))
 
 # ----
+
+# save.image("04_workspaces/analysed_data.RData")
 
 # Rank abundance plot for appendix ----
 
@@ -1130,23 +1143,43 @@ hist(sp_abund$total_abund[sp_abund$total_abund<10], breaks=seq(0,10,by=1), main=
 title(xlab="Abundance", mgp=c(2,1,0))
 title(main="(d) Less than 10", mgp=c(2,1,0), adj = 0, font.main = 1, cex.main=0.95)
 
-# Create table of model coefficients for top models:
+# ----
+
+# Coefficients for top models ----
 
 # Whole reptile community:
+
+# m1_c: sum_dat$sp_rich (fire only); m1.tab
+# m5_b: sum_dat$shann_ind (fire + location); m5.tab
+# m2_c: sum_dat$simps_ind2 (fire only); m2.tab
+# m10_b: sum_dat$fa.all (fire + location); m10.tab
+# m9_c: sum_dat$bp (fire only); m9.tab
+# m6_b_beta: sum_dat$even2 (fire + location); m6.tab
+
 all.coef<-rbind(
   matrix(data=c("Species richness","","",""),nrow=1,ncol=4),
   round(summary(m1_c)$coefficients,3)[,1:4], # Species richness, fire only, glm.nb model
-
-  matrix(data=c("Simpson's Diversity Index","","",""),nrow=1,ncol=4),
-  round(summary(m2_c)$coefficients,3)[,1:4], # Simpsons Index, fire only, Gamma glm
-
+  
   matrix(data=c("Shannon's Diversity Index", "","",""),nrow=1,ncol=4),
   round(summary(m5_b)$coefficients,3)[,1:4], # Shannon's index, fire + location, Gamma glm
-
+  matrix(data=c("Simpson's Diversity Index","","",""),nrow=1,ncol=4),
+  round(summary(m2_c)$coefficients,3)[,1:4], # Simpsons Index, fire only, Gamma glm
+  
+  matrix(data=c("Fisher's Alpha","","",""),nrow=1,ncol=4),
+  round(summary(m10_b)$coefficients,3)[,1:4], # Fisher's Alpha, fire + location, Gamma glm
+  
+  matrix(data=c("Berger-Parker","","",""),nrow=1,ncol=4),
+  round(summary(m9_c)$p.table,3)[,1:4], # Berger-Parker, fire only, beta gam
+  
   matrix(data=c("Evenness", "","",""),nrow=1,ncol=4),
-  round(summary(m6_c)$coefficients,3)[,1:4], # Evenness, fire only, Gamma glm
+  round(summary(m6_b_beta)$p.table,3)[,1:4], # Evenness, fire + location, beta gam
 
 # Rare species:
+
+# m8_c: sum_dat$sr_5 (fire only); m8_c.pr2; m8.tab
+# m7_c: sum_dat$sr_25 (fire only); m7_c.pr2; m7.tab
+# m4_c: sum_dat$abund_5 (fire only); m4_c.pr2; m4.tab
+# m3_b: sum_dat$abund_25 (fire + location); m3_b.pr2; m3.tab
 
 matrix(data=c("Richness (5% of max.)", "","",""),nrow=1,ncol=4),
 round(summary(m8_c)$coefficients,3)[,1:4], # Rare species richness 5% max, fire only, glm.nb
@@ -1155,16 +1188,18 @@ matrix(data=c("Richness (lowest 25%)", "","",""),nrow=1,ncol=4),
 round(summary(m7_c)$coefficients,3)[,1:4], # Rare species richness, lowest 25%, fire only, glm.nb
 
 matrix(data=c("Abundance (5% of max.)", "","",""),nrow=1,ncol=4),
-round(summary(m4_c)$coefficients,3)[,1:4], # Abund 5% of max, fire only, glm.nb model
+round(summary(m4_c)$coefficients,3)[,1:4], # Abund 5% of max, fire only, glm.nb 
 
 matrix(data=c("Abundance (lowest 25%)", "","",""),nrow=1,ncol=4),
-round(summary(m3_b)$coefficients,3)[,1:4] # Abund lowest 25%, fire + location, glm.nb model
+round(summary(m3_b)$coefficients,3)[,1:4] # Abund lowest 25%, fire + location, glm.nb 
 )
 
 all.coef2<-as.data.frame(all.coef)
 # write.table(all.coef2,file="all.coef2.txt",quote=F,sep="\t",row.names = T)
 
-# Plot effect sizes for all contrasts:
+# ----
+
+# Plot effect sizes for all contrasts (not used in new MS) ---- 
 
 diff.list<-list(
   # Species richness, fire only, glm.nb model
