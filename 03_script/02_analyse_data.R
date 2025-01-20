@@ -805,12 +805,6 @@ m10_b_diff
 
 #### PLOTS
 
-# 17th Jan 2025
-## UP TO HERE
-# Need to update all the plots. Remove the a, b, c, etc. from the plots (no need to include statistical tests)
-# update the whole community plot to include the bp and fa
-# Presented in the MS as follows: species richness, Shannon-Weiner’s Diversity Index (hereafter Shannon’s Diversity), Inverse Simpson’s Diversity Index (hereafter Simpson’s Diversity), Fisher’s alpha, Berger-Parker Index, and evenness
-
 #### RARE SPECIES assemblage ----
 
 #### Species richness of rare species on the same figure as abundance of rare species:
@@ -826,20 +820,26 @@ head(sum_dat,3); dim(sum_dat)
 # m4_c: sum_dat$abund_5
 # m3_b: sum_dat$abund_25
 
+# Update new axis labels
+# make sure they're in the right order (m8_c.pr2$fire_cat;m3_b.pr2$fire_cat)
+
+new.xlab<-c("Long","Medium","Recent")
+
 dev.new(width=7, height=6, dpi=80, pointsize=14, noRStudioGD = T)
 par(mfrow=c(2,2), mar=c(4.5,4,1,1), mgp=c(2.2,0.8,0), oma=c(0,0,1,6))
 
 # species richness (5% of max.)
-plot(c(1:3),m8_c.pr2$fit, xlim=c(0.5,3.5), pch=20, xaxt="n",ylim= c((min(m8_c.pr2$lci)),max(m8_c.pr2$uci)+2),ylab="Richness (5% of max.)",xlab="", las = 1, cex = 2.5)
+plot(c(1:3),m8_c.pr2$fit, xlim=c(0.5,3.5), pch=20, xaxt="n",ylim=c(0,10),ylab="Richness (5% of max.)",xlab="", las = 1, cex = 2.5)
 arrows(c(1:3),m8_c.pr2$lci,c(1:3),m8_c.pr2$uci,length=0.03,code=3,angle=90)
 axis(1,at=c(1:3),labels=F)
-axis(1,at=c(0.8,2,3.2), cex.axis=1,labels=m8_c.pr2$fire_cat,tick=F)
+
+axis(1,at=c(1,2,3.15), cex.axis=1,labels=new.xlab,tick=F)
 title(mgp=c(2.3,0.8,0),xlab="Fire Category")
 m8.tab2
 mtext(as.expression(bquote(Delta~"AICc ="~.(paste(round(m8.tab2$Delta_AICc[m8.tab2$Modnames=="fire"]-m1.tab2$Delta_AICc[m8.tab2$Modnames=="null"],2),sep="")))),side=3,line=0.1,adj=1,col="red", cex=0.75)
 mtext(text="(a)", side = 3, line = 0.5, adj = 0, cex = 1)
 m8_c_diff
-text(x=1:3, y=max(m8_c.pr2$uci)+1,labels=c(letters[1],paste(letters[1],letters[2],sep="",collapse=""),letters[2]))
+# text(x=1:3, y=max(m8_c.pr2$uci)+1,labels=c(letters[1],paste(letters[1],letters[2],sep="",collapse=""),letters[2]))
 
 # plot raw data:
 sr5_ub<-sum_dat$sr_5[sum_dat$fire_cat=="Unburnt"]
@@ -853,13 +853,13 @@ points(jitter(rep(3,length(sr5_b)),factor=4),sr5_b, pch=20,col=rgb(0,0,0,0.2))
 plot(c(1:3),m7_c.pr2$fit, xlim=c(0.5,3.5), pch=20, xaxt="n",ylim= c((min(m7_c.pr2$lci)),max(m7_c.pr2$uci)+1),ylab="Richness (lowest 25%)",xlab="", las = 1, cex = 2.5)
 arrows(c(1:3),m7_c.pr2$lci,c(1:3),m7_c.pr2$uci,length=0.03,code=3,angle=90)
 axis(1,at=c(1:3),labels=F)
-axis(1,at=c(0.8,2,3.2),labels=m7_c.pr2$fire_cat,tick=F, cex.axis=1)
+axis(1,at=c(1,2,3.15),labels=new.xlab,tick=F, cex.axis=1)
 title(mgp=c(2.3,0.8,0),xlab="Fire Category")
 m7.tab2
 mtext(as.expression(bquote(Delta~"AICc ="~.(paste(round(m7.tab2$Delta_AICc[m7.tab2$Modnames=="fire"]-m7.tab2$Delta_AICc[m7.tab2$Modnames=="null"],2),sep="")))), side=3,line=0.1,adj=1,col="red", cex=0.75)
 mtext(text="(b)", side = 3, line = 0.5, adj = 0, cex = 1)
 m7_c_diff # no differences
-text(x=1:3, y=max(m7_c.pr2$uci)+0.5,labels=rep(letters[1],3))
+# text(x=1:3, y=max(m7_c.pr2$uci)+0.5,labels=rep(letters[1],3))
 
 # plot raw data:
 sr25_ub<-sum_dat$sr_25[sum_dat$fire_cat=="Unburnt"]
@@ -875,15 +875,15 @@ legend(x=4,y=max(m7_c.pr2$uci)+1.1, title = "Location", legend = c("Fire only", 
 par(xpd=F)
 
 # Abundance (5% of max.)
-plot(c(1:3),m4_c.pr2$fit, xlim=c(0.5,3.5), pch=20, xaxt="n",ylim= c((min(m4_c.pr2$lci)),max(m4_c.pr2$uci)+2),ylab="Abundance (5% of max.)",xlab="", las = 1, cex = 2.5)
+plot(c(1:3),m4_c.pr2$fit, xlim=c(0.5,3.5), pch=20, xaxt="n",ylim= c(0,max(m4_c.pr2$uci)+2),ylab="Abundance (5% of max.)",xlab="", las = 1, cex = 2.5)
 arrows(c(1:3),m4_c.pr2$lci,c(1:3),m4_c.pr2$uci,length=0.03,code=3,angle=90)
 axis(1,at=c(1:3),labels=F)
-axis(1,at=c(0.8,2,3.2),cex.axis=1,labels=m4_c.pr2$fire_cat,tick=F)
+axis(1,at=c(1,2,3.15),cex.axis=1,labels=new.xlab,tick=F)
 title(mgp=c(2.3,0.8,0),xlab="Fire Category")
 mtext(as.expression(bquote(Delta~"AICc ="~.(paste(round(m4.tab2$Delta_AICc[m4.tab2$Modnames=="fire"]-m4.tab2$Delta_AICc[m4.tab2$Modnames=="null"],2),sep="")))), side=3,line=0.1,adj=1,col="red", cex=0.75)
 mtext(text="(c)", side = 3, line = 0.5, adj = 0, cex = 1)
 m4_c_diff # no differences
-text(x=1:3, y=max(m4_c.pr2$uci)+1,labels=rep(letters[1],3))
+# text(x=1:3, y=max(m4_c.pr2$uci)+1,labels=rep(letters[1],3))
 
 # plot raw data:
 abund5_ub<-sum_dat$abund_5[sum_dat$fire_cat=="Unburnt"]
@@ -895,17 +895,17 @@ points(jitter(rep(2,length(abund5_m)),factor=4),abund5_m, pch=20,col=rgb(0,0,0,0
 points(jitter(rep(3,length(abund5_b)),factor=4),abund5_b, pch=20,col=rgb(0,0,0,0.2))
 
 # Abundance (Lowest 25%)
-plot(c(1:3)-0.15,m3_b.pr2$fit[m3_b.pr2$location=="Hincks"], xlim=c(0.5,3.5), pch=15, xaxt="n",ylim= c((min(m3_b.pr2$lci)),max(m3_b.pr2$uci)+2),ylab="Abundance (lowest 25%)",xlab="", las = 1, cex = 1.5)
+plot(c(1:3)-0.15,m3_b.pr2$fit[m3_b.pr2$location=="Hincks"], xlim=c(0.5,3.5), pch=15, xaxt="n",ylim= c((min(m3_b.pr2$lci)),max(m3_b.pr2$uci)),ylab="Abundance (lowest 25%)",xlab="", las = 1, cex = 1.5)
 points(c(1:3)+0.15,m3_b.pr2$fit[m3_b.pr2$location=="Pinks"], xlim=c(0.5,3.5), pch=17, cex = 1.5)
 arrows(c(1:3)-0.15,m3_b.pr2$lci[m3_b.pr2$location=="Hincks"],c(1:3)-0.15,m3_b.pr2$uci[m3_b.pr2$location=="Hincks"],length=0.03,code=3,angle=90)
 arrows(c(1:3)+0.15,m3_b.pr2$lci[m3_b.pr2$location=="Pinks"],c(1:3)+0.15,m3_b.pr2$uci[m3_b.pr2$location=="Pinks"],length=0.03,code=3,angle=90)
 axis(1,at=c(1:3),labels=F)
-axis(1,at=c(0.8,2,3.2), cex.axis=1,labels=m3_b.pr2$fire_cat[m3_b.pr2$location=="Hincks"],tick=F)
+axis(1,at=c(1,2,3.15), cex.axis=1,labels=new.xlab,tick=F)
 title(mgp=c(2.3,0.8,0),xlab="Fire Category")
 mtext(as.expression(bquote(Delta~"AICc ="~.(paste(round(m3.tab2$Delta_AICc[m3.tab2$Modnames=="location"]-m3.tab2$Delta_AICc[m3.tab2$Modnames=="null"],2),sep="")))), side=3,line=0.1,adj=1,col="darkorange2", cex=0.75)
 mtext(text="(d)", side = 3, line = 0.5, adj = 0, cex = 1)
 m3_b_diff
-text(x=1:3, y=max(m3_b.pr2$uci)+1,labels=c(letters[1],paste(letters[1],letters[2],sep="",collapse=""),letters[2]))
+# text(x=1:3, y=max(m3_b.pr2$uci)+1,labels=c(letters[1],paste(letters[1],letters[2],sep="",collapse=""),letters[2]))
 
 # plot raw data:
 abund25_ubH<-sum_dat$abund_25[sum_dat$fire_cat=="Unburnt" & sum_dat$location=="Hincks"]
@@ -930,26 +930,32 @@ points(jitter(rep(3+0.15,length(abund25_bP)),factor=4),abund25_bP, pch=17,col=rg
 
 #### Species richness all species:
 
-# m1_c: sum_dat$sp_rich
-# m2_c: sum_dat$simps_ind2
-# m5_b: sum_dat$shann_ind
-# m6_b_beta: sum_dat$even2
-# 
+# Remove the a, b, c, etc. from the plots 
+# update the whole community plot to include the bp and fa
+# Presented in the MS as follows: species richness, Shannon-Weiner’s Diversity Index (hereafter Shannon’s Diversity), Inverse Simpson’s Diversity Index (hereafter Simpson’s Diversity), Fisher’s alpha, Berger-Parker Index, and evenness
 
-dev.new(width=7, height=6, dpi=80, pointsize=14, noRStudioGD = T)
-par(mfrow=c(2,2), mar=c(4.5,4,1,1), mgp=c(2.8,0.8,0), oma=c(0,0,1,6))
+# m1_c: sum_dat$sp_rich (fire only); m1.tab
+# m5_b: sum_dat$shann_ind (fire + location); m5.tab
+# m2_c: sum_dat$simps_ind2 (fire only); m2.tab
+# m10_b: sum_dat$fa.all (fire + location); m10.tab
+# m9_c: sum_dat$bp (fire only); m9.tab
+# m6_b_beta: sum_dat$even2 (fire + location); m6.tab
 
-# species richness
-plot(c(1:3),m1_c.pr2$fit, xlim=c(0.5,3.5), pch=20, xaxt="n",ylim= c((min(m1_c.pr2$lci)),max(m1_c.pr2$uci)+3),ylab="Species Richness",xlab="", las = 1, cex = 2.5)
+
+dev.new(width=7, height=9, dpi=80, pointsize=17.5, noRStudioGD = T)
+par(mfrow=c(3,2), mar=c(4.5,4,1,1), mgp=c(2.2,0.8,0), oma=c(0,0,1,6))
+
+# species richness; fire only
+plot(c(1:3),m1_c.pr2$fit, xlim=c(0.5,3.5), pch=20, xaxt="n",ylim= c((min(m1_c.pr2$lci)),max(sum_dat$sp_rich)),ylab="Species Richness",xlab="", las = 1, cex = 2.5)
 arrows(c(1:3),m1_c.pr2$lci,c(1:3),m1_c.pr2$uci,length=0.03,code=3,angle=90)
 axis(1,at=c(1:3),labels=F)
-axis(1,at=c(0.8,2,3.2), cex.axis=1,labels=m1_c.pr2$fire_cat,tick=F)
+axis(1,at=c(1,2,3.15), cex.axis=1,labels=new.xlab,tick=F)
 title(mgp=c(2.3,0.8,0),xlab="Fire Category")
 m1.tab2
-mtext(as.expression(bquote(Delta~"AICc ="~.(paste(round(m1.tab2$Delta_AICc[m1.tab2$Modnames=="fire"]-m1.tab2$Delta_AICc[m1.tab2$Modnames=="null"],2),sep="")))), side=3,line=0.1,adj=1,col="red", cex=0.75)
-mtext(text="(a)", side = 3, line = 0.5, adj = 0, cex = 1)
+mtext(as.expression(bquote(Delta~"AICc ="~.(paste(round(m1.tab2$Delta_AICc[m1.tab2$Modnames=="fire"]-m1.tab2$Delta_AICc[m1.tab2$Modnames=="null"],2),sep="")))), side=3,line=0.1,adj=1,col="red", cex=0.70)
+mtext(text="(a)", side = 3, line = 0.5, adj = 0, cex = 0.8)
 m1_c_diff # no differences
-text(x=1:3, y=max(m1_c.pr2$uci)+2,labels=rep(letters[1],3))
+# text(x=1:3, y=max(m1_c.pr2$uci)+2,labels=rep(letters[1],3))
 
 # plot raw data:
 sr_ub<-sum_dat$sp_rich[sum_dat$fire_cat=="Unburnt"]
@@ -960,19 +966,19 @@ points(jitter(rep(1,length(sr_ub)),factor=4),sr_ub, pch=20,col=rgb(0,0,0,0.2))
 points(jitter(rep(2,length(sr_m)),factor=4),sr_m, pch=20,col=rgb(0,0,0,0.2))
 points(jitter(rep(3,length(sr_b)),factor=4),sr_b, pch=20,col=rgb(0,0,0,0.2))
 
-# shann_ind plots for fire+location
+# shann_ind; fire+location
 
-plot(c(1:3)-0.15,m5_b.pr2$fit[m5_b.pr2$location=="Hincks"], xlim=c(0.5,3.5), pch=15, xaxt="n",ylim= c((min(m5_b.pr2$lci)),max(m5_b.pr2$uci)+0.28),ylab="Shannon's Diversity",xlab="", las = 1, cex = 1.5)
+plot(c(1:3)-0.15,m5_b.pr2$fit[m5_b.pr2$location=="Hincks"], xlim=c(0.5,3.5), pch=15, xaxt="n",ylim= c((min(m5_b.pr2$lci)),max(m5_b.pr2$uci)),ylab="Shannon's Diversity",xlab="", las = 1, cex = 1.5)
 points(c(1:3)+0.15,m5_b.pr2$fit[m5_b.pr2$location=="Pinks"], xlim=c(0.5,3.5), pch=17, cex = 1.5)
 arrows(c(1:3)-0.15,m5_b.pr2$lci[m5_b.pr2$location=="Hincks"],c(1:3)-0.15,m5_b.pr2$uci[m5_b.pr2$location=="Hincks"],length=0.03,code=3,angle=90)
 arrows(c(1:3)+0.15,m5_b.pr2$lci[m5_b.pr2$location=="Pinks"],c(1:3)+0.15,m5_b.pr2$uci[m5_b.pr2$location=="Pinks"],length=0.03,code=3,angle=90)
 axis(1,at=c(1:3),labels=F)
-axis(1,at=c(0.8,2,3.2),labels=m5_b.pr2$fire_cat[m5_b.pr2$location=="Hincks"],tick=F)
+axis(1,at=c(1,2,3.15),labels=new.xlab,tick=F)
 title(mgp=c(2.3,0.8,0),xlab="Fire Category")
-mtext(as.expression(bquote(Delta~"AICc ="~.(paste(round(m5.tab2$Delta_AICc[m5.tab2$Modnames=="location"]-m5.tab2$Delta_AICc[m5.tab2$Modnames=="null"],2),sep="")))), side=3,line=0.1,adj=1,col="darkgreen", cex=0.75)
-mtext(text="(c)", side = 3, line = 0.5, adj = 0, cex = 1)
+mtext(as.expression(bquote(Delta~"AICc ="~.(paste(round(m5.tab2$Delta_AICc[m5.tab2$Modnames=="location"]-m5.tab2$Delta_AICc[m5.tab2$Modnames=="null"],2),sep="")))), side=3,line=0.1,adj=1,col="darkgreen", cex=0.7)
+mtext(text="(b)", side = 3, line = 0.5, adj = 0, cex = 0.8)
 m5_b_diff
-text(x=1:3, y=max(m5_b.pr2$uci)+0.2,labels=c(letters[1],rep(letters[2],2)))
+# text(x=1:3, y=max(m5_b.pr2$uci)+0.2,labels=c(letters[1],rep(letters[2],2)))
 
 # plot raw data:
 sh_ubH<-sum_dat$shann_ind[sum_dat$fire_cat=="Unburnt" & sum_dat$location=="Hincks"]
@@ -993,10 +999,10 @@ points(jitter(rep(3+0.15,length(sh_bP)),factor=4),sh_bP, pch=17,col=rgb(0,0,0,0.
 
 # plot legend:
 par(xpd=NA)
-legend(x=3.8,y=max(m5_b.pr2$uci)+0.3, title = "Location", legend = c("Fire only", "Hincks","Pinkaw."), pt.cex = 1.5, pch = c(16, 15, 17), bty = "n", title.adj=0)
+legend(x=4,y=max(m5_b.pr2$uci), title = "Location", legend = c("Fire only", "Hincks","Pinkaw."), pt.cex = 1.5, pch = c(16, 15, 17), bty = "n", title.adj=0)
 par(xpd=F)
 
-# simps diversity index, no changes required
+# simps diversity index; fire only
 
 # plot raw data:
 # run first as this is used for ylim
@@ -1004,19 +1010,59 @@ si2_ub<-sum_dat$simps_ind2[sum_dat$fire_cat=="Unburnt"]
 si2_m<-sum_dat$simps_ind2[sum_dat$fire_cat=="Medium"]
 si2_b<-sum_dat$simps_ind2[sum_dat$fire_cat=="Burnt"]
 
-plot(c(1:3),m2_c.pr2$fit, xlim=c(0.5,3.5), pch=20, xaxt="n",ylim= c(min(si2_b),max(m2_c.pr2$uci)+2),ylab="Simpson's Diversity",xlab="", las = 1, cex = 2.5)
+plot(c(1:3),m2_c.pr2$fit, xlim=c(0.5,3.5), pch=20, xaxt="n",ylim= c(min(si2_b),max(sum_dat$simps_ind2)+1),ylab="Simpson's Diversity",xlab="", las = 1, cex = 2.5)
 arrows(c(1:3),m2_c.pr2$lci,c(1:3),m2_c.pr2$uci,length=0.03,code=3,angle=90)
 axis(1,at=c(1:3),labels=F)
-axis(1,at=c(0.8,2,3.2), cex.axis=1,labels=m2_c.pr2$fire_cat,tick=F)
+axis(1,at=c(1,2,3.15), cex.axis=1,labels=new.xlab,tick=F)
 title(mgp=c(2.3,0.8,0),xlab="Fire Category")
-mtext(as.expression(bquote(Delta~"AICc ="~.(paste(round(m2.tab2$Delta_AICc[m2.tab2$Modnames=="fire"]-m2.tab2$Delta_AICc[m2.tab2$Modnames=="null"],2),sep="")))), side=3,line=0.1,adj=1,col="darkorange2", cex=0.75)
-mtext(text="(b)", side = 3, line = 0.5, adj = 0, cex = 1)
+mtext(as.expression(bquote(Delta~"AICc ="~.(paste(round(m2.tab2$Delta_AICc[m2.tab2$Modnames=="fire"]-m2.tab2$Delta_AICc[m2.tab2$Modnames=="null"],2),sep="")))), side=3,line=0.1,adj=1,col="darkorange2", cex=0.7)
+mtext(text="(c)", side = 3, line = 0.5, adj = 0, cex = 0.8)
 m2_c_diff
-text(x=1:3, y=max(m2_c.pr2$uci)+1.5,labels=c(letters[1],rep(letters[2],2)))
+# text(x=1:3, y=max(m2_c.pr2$uci)+1.5,labels=c(letters[1],rep(letters[2],2)))
 
 points(jitter(rep(1,length(si2_ub)),factor=4),si2_ub, pch=20,col=rgb(0,0,0,0.2))
 points(jitter(rep(2,length(si2_m)),factor=4),si2_m, pch=20,col=rgb(0,0,0,0.2))
 points(jitter(rep(3,length(si2_b)),factor=4),si2_b, pch=20,col=rgb(0,0,0,0.2))
+
+# fa.all plots; fire+location
+
+# m10_b: sum_dat$fa.all (fire + location); m10.tab
+# m10_b.pr2
+
+plot(c(1:3)-0.15,m10_b.pr2$fit[m10_b.pr2$location=="Hincks"], xlim=c(0.5,3.5), pch=15, xaxt="n",ylim= c((min(m10_b.pr2$lci)),max(m10_b.pr2$uci)),ylab="",xlab="", las = 1, cex = 1.5)
+
+title(ylab=as.expression(bquote("Fisher's"~alpha)),mgp=c(2.2,0.8,0))
+
+points(c(1:3)+0.15,m10_b.pr2$fit[m10_b.pr2$location=="Pinks"], xlim=c(0.5,3.5), pch=17, cex = 1.5)
+arrows(c(1:3)-0.15,m10_b.pr2$lci[m10_b.pr2$location=="Hincks"],c(1:3)-0.15,m10_b.pr2$uci[m10_b.pr2$location=="Hincks"],length=0.03,code=3,angle=90)
+arrows(c(1:3)+0.15,m10_b.pr2$lci[m10_b.pr2$location=="Pinks"],c(1:3)+0.15,m10_b.pr2$uci[m10_b.pr2$location=="Pinks"],length=0.03,code=3,angle=90)
+axis(1,at=c(1:3),labels=F)
+axis(1,at=c(1,2,3.15),labels=new.xlab,tick=F)
+title(mgp=c(2.3,0.8,0),xlab="Fire Category")
+mtext(as.expression(bquote(Delta~"AICc ="~.(paste(round(m10.tab$Delta_AICc[m10.tab$Modnames=="location"]-m10.tab$Delta_AICc[m10.tab$Modnames=="null"],2),sep="")))), side=3,line=0.1,adj=1,col="darkgreen", cex=0.7)
+mtext(text="(d)", side = 3, line = 0.5, adj = 0, cex = 0.8)
+
+# plot raw data:
+fa_ubH<-sum_dat$fa.all[sum_dat$fire_cat=="Unburnt" & sum_dat$location=="Hincks"]
+fa_ubP<-sum_dat$fa.all[sum_dat$fire_cat=="Unburnt" & sum_dat$location=="Pinks"]
+fa_mH<-sum_dat$fa.all[sum_dat$fire_cat=="Medium" & sum_dat$location=="Hincks"]
+fa_mP<-sum_dat$fa.all[sum_dat$fire_cat=="Medium" & sum_dat$location=="Pinks"]
+fa_bH<-sum_dat$fa.all[sum_dat$fire_cat=="Burnt" & sum_dat$location=="Hincks"]
+fa_bP<-sum_dat$fa.all[sum_dat$fire_cat=="Burnt" & sum_dat$location=="Pinks"]
+
+points(jitter(rep(1-0.15,length(fa_ubH)),factor=4),fa_ubH, pch=15,col=rgb(0,0,0,0.2))
+points(jitter(rep(1+0.15,length(fa_ubP)),factor=4),fa_ubP, pch=17,col=rgb(0,0,0,0.2))
+
+points(jitter(rep(2-0.15,length(fa_mH)),factor=4),fa_mH, pch=15,col=rgb(0,0,0,0.2))
+points(jitter(rep(2+0.15,length(fa_mP)),factor=4),fa_mP, pch=17,col=rgb(0,0,0,0.2))
+
+points(jitter(rep(3-0.15,length(fa_bH)),factor=4),fa_bH, pch=15,col=rgb(0,0,0,0.2))
+points(jitter(rep(3+0.15,length(fa_bP)),factor=4),fa_bP, pch=17,col=rgb(0,0,0,0.2))
+
+
+
+
+
 
 # evenness plots for fire
 
