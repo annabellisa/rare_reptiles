@@ -1002,7 +1002,7 @@ arrows(c(1:3),m1_c.pr2$lci,c(1:3),m1_c.pr2$uci,length=0.03,code=3,angle=90)
 points(c(1:3),m1_c.pr2$fit,cex = 2.5,pch=20)
 axis(1,at=c(1:3),labels=F)
 axis(1,at=c(1,2,3.15), cex.axis=1,labels=new.xlab,tick=F)
-title(mgp=c(2.3,0.8,0),xlab="Fire Category")
+title(mgp=c(2.1,0.8,0),xlab="Fire Category")
 m1.tab2
 mtext(as.expression(bquote(Delta~"AICc ="~.(paste(round(m1.tab2$Delta_AICc[m1.tab2$Modnames=="fire"]-m1.tab2$Delta_AICc[m1.tab2$Modnames=="null"],2),sep="")))), side=3,line=0.1,adj=1,col="red", cex=0.70)
 mtext(text="(a)", side = 3, line = 0.5, adj = 0, cex = 0.8)
@@ -1029,7 +1029,7 @@ arrows(c(1:3)-0.15,m5_b.pr2$lci[m5_b.pr2$location=="Hincks"],c(1:3)-0.15,m5_b.pr
 arrows(c(1:3)+0.15,m5_b.pr2$lci[m5_b.pr2$location=="Pinks"],c(1:3)+0.15,m5_b.pr2$uci[m5_b.pr2$location=="Pinks"],length=0.03,code=3,angle=90)
 axis(1,at=c(1:3),labels=F)
 axis(1,at=c(1,2,3.15),labels=new.xlab,tick=F)
-title(mgp=c(2.3,0.8,0),xlab="Fire Category")
+title(mgp=c(2.1,0.8,0),xlab="Fire Category")
 mtext(as.expression(bquote(Delta~"AICc ="~.(paste(round(m5.tab2$Delta_AICc[m5.tab2$Modnames=="location"]-m5.tab2$Delta_AICc[m5.tab2$Modnames=="null"],2),sep="")))), side=3,line=0.1,adj=1,col="darkgreen", cex=0.7)
 mtext(text="(b)", side = 3, line = 0.5, adj = 0, cex = 0.8)
 m5_b_diff
@@ -1057,10 +1057,6 @@ par(xpd=NA)
 legend(x=4,y=max(m5_b.pr2$uci), title = "Location", legend = c("Fire only", "Hincks","Pinkaw."), pt.cex = 1.5, pch = c(16, 15, 17), bty = "n", title.adj=0)
 par(xpd=F)
 
-### 21ST JAN, UP TO HERE
-## NEED TO UPDATE THE PLOTS WITH 85%
-## UPDATE AICS BASED ON NEW MODEL SELECTION
-
 # simps diversity index; fire only
 
 # plot raw data:
@@ -1069,13 +1065,13 @@ si2_ub<-sum_dat$simps_ind2[sum_dat$fire_cat=="Unburnt"]
 si2_m<-sum_dat$simps_ind2[sum_dat$fire_cat=="Medium"]
 si2_b<-sum_dat$simps_ind2[sum_dat$fire_cat=="Burnt"]
 
-plot(c(1:3),m2_c.pr2$fit, xlim=c(0.5,3.5), pch=20, xaxt="n",ylim= c(min(si2_b),max(sum_dat$simps_ind2)+1),ylab="Simpson's Diversity",xlab="", las = 1, cex = 2.5, type="n")
+plot(c(1:3),m2_c.pr2$fit, xlim=c(0.5,3.5), pch=20, xaxt="n",ylim=c(min(si2_b),max(sum_dat$simps_ind2)+1),ylab="Simpson's Diversity",xlab="", las = 1, cex = 2.5, type="n")
 arrows(c(1:3),m2_c.pr2$lci85,c(1:3),m2_c.pr2$uci85,length=0,lwd=4,col="grey20")
 arrows(c(1:3),m2_c.pr2$lci,c(1:3),m2_c.pr2$uci,length=0.03,code=3,angle=90)
 points(c(1:3),m2_c.pr2$fit, cex=2.5, pch=20)
 axis(1,at=c(1:3),labels=F)
 axis(1,at=c(1,2,3.15), cex.axis=1,labels=new.xlab,tick=F)
-title(mgp=c(2.3,0.8,0),xlab="Fire Category")
+title(mgp=c(2.1,0.8,0),xlab="Fire Category")
 mtext(as.expression(bquote(Delta~"AICc ="~.(paste(round(m2.tab2$Delta_AICc[m2.tab2$Modnames=="fire"]-m2.tab2$Delta_AICc[m2.tab2$Modnames=="null"],2),sep="")))), side=3,line=0.1,adj=1,col="red", cex=0.7)
 mtext(text="(c)", side = 3, line = 0.5, adj = 0, cex = 0.8)
 m2_c_diff
@@ -1090,16 +1086,22 @@ points(jitter(rep(3,length(si2_b)),factor=4),si2_b, pch=20,col=rgb(0,0,0,0.2))
 # m10_b: sum_dat$fa.all (fire + location); m10.tab
 # m10_b.pr2
 
-plot(c(1:3)-0.15,m10_b.pr2$fit[m10_b.pr2$location=="Hincks"], xlim=c(0.5,3.5), pch=15, xaxt="n",ylim= c((min(m10_b.pr2$lci)),max(m10_b.pr2$uci)),ylab="",xlab="", las = 1, cex = 1.5)
+plot(c(1:3)-0.15,m10_b.pr2$fit[m10_b.pr2$location=="Hincks"], xlim=c(0.5,3.5), pch=15, xaxt="n",ylim= c((min(sum_dat$fa.all)),max(m10_b.pr2$uci)),ylab="",xlab="", las = 1, cex = 1.5, type="n")
 
 title(ylab=as.expression(bquote("Fisher's"~alpha)),mgp=c(2.2,0.8,0))
 
-points(c(1:3)+0.15,m10_b.pr2$fit[m10_b.pr2$location=="Pinks"], xlim=c(0.5,3.5), pch=17, cex = 1.5)
+arrows(c(1:3)-0.15,m10_b.pr2$lci85[m10_b.pr2$location=="Hincks"],c(1:3)-0.15,m10_b.pr2$uci85[m10_b.pr2$location=="Hincks"],length=0,lwd=4,col="grey20")
+arrows(c(1:3)+0.15,m10_b.pr2$lci85[m10_b.pr2$location=="Pinks"],c(1:3)+0.15,m10_b.pr2$uci85[m10_b.pr2$location=="Pinks"],length=0,lwd=4,col="grey20")
+
 arrows(c(1:3)-0.15,m10_b.pr2$lci[m10_b.pr2$location=="Hincks"],c(1:3)-0.15,m10_b.pr2$uci[m10_b.pr2$location=="Hincks"],length=0.03,code=3,angle=90)
 arrows(c(1:3)+0.15,m10_b.pr2$lci[m10_b.pr2$location=="Pinks"],c(1:3)+0.15,m10_b.pr2$uci[m10_b.pr2$location=="Pinks"],length=0.03,code=3,angle=90)
+
+points(c(1:3)-0.15,m10_b.pr2$fit[m10_b.pr2$location=="Hincks"], xlim=c(0.5,3.5), pch=15, cex = 1.5)
+points(c(1:3)+0.15,m10_b.pr2$fit[m10_b.pr2$location=="Pinks"], xlim=c(0.5,3.5), pch=17, cex = 1.5)
+
 axis(1,at=c(1:3),labels=F)
 axis(1,at=c(1,2,3.15),labels=new.xlab,tick=F)
-title(mgp=c(2.3,0.8,0),xlab="Fire Category")
+title(mgp=c(2.1,0.8,0),xlab="Fire Category")
 mtext(as.expression(bquote(Delta~"AICc ="~.(paste(round(m10.tab$Delta_AICc[m10.tab$Modnames=="location"]-m10.tab$Delta_AICc[m10.tab$Modnames=="null"],2),sep="")))), side=3,line=0.1,adj=1,col="darkgreen", cex=0.7)
 mtext(text="(d)", side = 3, line = 0.5, adj = 0, cex = 0.8)
 
@@ -1125,19 +1127,25 @@ points(jitter(rep(3+0.15,length(fa_bP)),factor=4),fa_bP, pch=17,col=rgb(0,0,0,0.
 # m9_c: sum_dat$bp (fire only); m9.tab
 # m9_c.pr2
 
+m9.ciraw<-c(min(sum_dat$bp_ind),max(sum_dat$bp_ind),min(m9_c.pr2$lci),max(m9_c.pr2$uci))
+
+plot(c(1:3),m9_c.pr2$fit, xlim=c(0.5,3.5), pch=20, xaxt="n",ylim=c(min(m9.ciraw),max(m9.ciraw)),ylab="Berger Parker Index",xlab="", las = 1, cex = 2.5, type="n")
+
+arrows(c(1:3),m9_c.pr2$lci85,c(1:3),m9_c.pr2$uci85,length=0,lwd=4,col="grey20")
+
+arrows(c(1:3),m9_c.pr2$lci,c(1:3),m9_c.pr2$uci,length=0.03,code=3,angle=90)
+points(c(1:3),m9_c.pr2$fit,cex=2.5,pch=20)
+
+axis(1,at=c(1:3),labels=F)
+axis(1,at=c(1,2,3.15), cex.axis=1,labels=new.xlab,tick=F)
+title(mgp=c(2.1,0.8,0),xlab="Fire Category")
+mtext(as.expression(bquote(Delta~"AICc ="~.(paste(round(m9.tab$Delta_AICc[m9.tab$Modnames=="fire"]-m9.tab$Delta_AICc[m9.tab$Modnames=="null"],2),sep="")))), side=3,line=0.1,adj=1,col="red", cex=0.7)
+mtext(text="(e)", side = 3, line = 0.5, adj = 0, cex = 0.8)
+
 # plot raw data:
-# run first as this is used for ylim
 bp_ub<-sum_dat$bp_ind[sum_dat$fire_cat=="Unburnt"]
 bp_m<-sum_dat$bp_ind[sum_dat$fire_cat=="Medium"]
 bp_b<-sum_dat$bp_ind[sum_dat$fire_cat=="Burnt"]
-
-plot(c(1:3),m9_c.pr2$fit, xlim=c(0.5,3.5), pch=20, xaxt="n",ylim=c((min(m9_c.pr2$lci)),max(m9_c.pr2$uci)),ylab="Berger Parker Index",xlab="", las = 1, cex = 2.5)
-arrows(c(1:3),m9_c.pr2$lci,c(1:3),m9_c.pr2$uci,length=0.03,code=3,angle=90)
-axis(1,at=c(1:3),labels=F)
-axis(1,at=c(1,2,3.15), cex.axis=1,labels=new.xlab,tick=F)
-title(mgp=c(2.3,0.8,0),xlab="Fire Category")
-mtext(as.expression(bquote(Delta~"AICc ="~.(paste(round(m9.tab$Delta_AICc[m9.tab$Modnames=="fire"]-m9.tab$Delta_AICc[m9.tab$Modnames=="null"],2),sep="")))), side=3,line=0.1,adj=1,col="red", cex=0.7)
-mtext(text="(e)", side = 3, line = 0.5, adj = 0, cex = 0.8)
 
 points(jitter(rep(1,length(bp_ub)),factor=4),bp_ub, pch=20,col=rgb(0,0,0,0.2))
 points(jitter(rep(2,length(bp_m)),factor=4),bp_m, pch=20,col=rgb(0,0,0,0.2))
@@ -1148,16 +1156,23 @@ points(jitter(rep(3,length(bp_b)),factor=4),bp_b, pch=20,col=rgb(0,0,0,0.2))
 # m6_b_beta: sum_dat$even2 (fire + location); m6.tab
 # m6_b.pr2
 
-plot(c(1:3)-0.15,m6_b.pr2$fit[m6_b.pr2$location=="Hincks"], xlim=c(0.5,3.5), pch=15, xaxt="n",ylim=c((min(sum_dat$even2)),max(sum_dat$even2)),ylab="Evenness",xlab="", las = 1, cex = 1.5)
+m6.ciraw<-c(min(sum_dat$even2),max(sum_dat$even2),min(m6_b.pr2$lci),max(m6_b.pr2$uci))
 
-points(c(1:3)+0.15,m6_b.pr2$fit[m6_b.pr2$location=="Pinks"], xlim=c(0.5,3.5), pch=17, cex = 1.5)
+plot(c(1:3)-0.15,m6_b.pr2$fit[m6_b.pr2$location=="Hincks"], xlim=c(0.5,3.5), pch=15, xaxt="n",ylim=c((min(m6.ciraw)),max(m6.ciraw)),ylab="Evenness",xlab="", las = 1, cex = 1.5, type="n")
+
+arrows(c(1:3)-0.15,m6_b.pr2$lci85[m6_b.pr2$location=="Hincks"],c(1:3)-0.15,m6_b.pr2$uci85[m6_b.pr2$location=="Hincks"],length=0,lwd=4,col="grey20")
+arrows(c(1:3)+0.15,m6_b.pr2$lci85[m6_b.pr2$location=="Pinks"],c(1:3)+0.15,m6_b.pr2$uci85[m6_b.pr2$location=="Pinks"],length=0,lwd=4,col="grey20")
+
 arrows(c(1:3)-0.15,m6_b.pr2$lci[m6_b.pr2$location=="Hincks"],c(1:3)-0.15,m6_b.pr2$uci[m6_b.pr2$location=="Hincks"],length=0.03,code=3,angle=90)
 arrows(c(1:3)+0.15,m6_b.pr2$lci[m6_b.pr2$location=="Pinks"],c(1:3)+0.15,m6_b.pr2$uci[m6_b.pr2$location=="Pinks"],length=0.03,code=3,angle=90)
 
+points(c(1:3)-0.15,m6_b.pr2$fit[m6_b.pr2$location=="Hincks"], xlim=c(0.5,3.5), pch=15, cex = 1.5)
+points(c(1:3)+0.15,m6_b.pr2$fit[m6_b.pr2$location=="Pinks"], xlim=c(0.5,3.5), pch=17, cex = 1.5)
+
 axis(1,at=c(1:3),labels=F)
 axis(1,at=c(1,2,3.15),labels=new.xlab,tick=F)
-title(mgp=c(2.3,0.8,0),xlab="Fire Category")
-mtext(as.expression(bquote(Delta~"AICc ="~.(paste(round(m6.tab$Delta_AICc[m6.tab$Modnames=="location"]-m6.tab$Delta_AICc[m6.tab$Modnames=="null"],2),sep="")))), side=3,line=0.1,adj=1,col="darkorange2", cex=0.7)
+title(mgp=c(2.1,0.8,0),xlab="Fire Category")
+mtext(as.expression(bquote(Delta~"AICc ="~.(paste(round(m6.tab$Delta_AICc[m6.tab$Modnames=="location"]-m6.tab$Delta_AICc[m6.tab$Modnames=="null"],2),sep="")))), side=3,line=0.1,adj=1,col="red", cex=0.7)
 
 mtext(text="(f)", side = 3, line = 0.5, adj = 0, cex = 0.8)
 
