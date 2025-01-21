@@ -91,14 +91,27 @@ m1.tab<-aictab(cand.set = m1.set, second.ord = T, sort = T)
 
 # fire only predictions (m1_c):
 
+# For neg bin models, predict on the link scale and backtransform after, to ensure CIs are bounded by zero:
+
 fireonly.pr<-data.frame(fire_cat = factor(levels(sum_dat$fire_cat),levels = levels(sum_dat$fire_cat)))
 
-m1_c.pr<-predict(object = m1_c, newdata = fireonly.pr,type = "response", se.fit = T)
+m1_c.pr<-predict(object = m1_c, newdata = fireonly.pr,type = "link", se.fit = T)
 m1_c.pr2<-data.frame(fireonly.pr)
 m1_c.pr2$fit<-m1_c.pr$fit
 m1_c.pr2$se<-m1_c.pr$se
 m1_c.pr2$lci<-m1_c.pr$fit-(m1_c.pr2$se*1.96)
 m1_c.pr2$uci<-m1_c.pr$fit+(m1_c.pr2$se*1.96)
+
+m1_c.pr2$lci85<-m1_c.pr$fit-(m1_c.pr2$se*1.44)
+m1_c.pr2$uci85<-m1_c.pr$fit+(m1_c.pr2$se*1.44)
+
+m1_c.pr2$fit<-exp(m1_c.pr2$fit)
+m1_c.pr2$se<-exp(m1_c.pr2$se)
+m1_c.pr2$lci<-exp(m1_c.pr2$lci)
+m1_c.pr2$uci<-exp(m1_c.pr2$uci)
+
+m1_c.pr2$lci85<-exp(m1_c.pr2$lci85)
+m1_c.pr2$uci85<-exp(m1_c.pr2$uci85)
 
 # save.image("04_workspaces/analysed_data.RData")
 
@@ -145,6 +158,9 @@ m2_c.pr2$se<-m2_c.pr$se
 m2_c.pr2$lci<-m2_c.pr$fit-(m2_c.pr2$se*1.96)
 m2_c.pr2$uci<-m2_c.pr$fit+(m2_c.pr2$se*1.96)
 
+m2_c.pr2$lci85<-m2_c.pr2$fit-(m2_c.pr2$se*1.44)
+m2_c.pr2$uci85<-m2_c.pr2$fit+(m2_c.pr2$se*1.44)
+
 # ---- 
 
 # ** shannon's index (Gamma GLM) ---- 
@@ -172,14 +188,6 @@ AICc(m5_d) #5.3
 m5.set<-list("fire x location"= m5_a, "location"= m5_b, "fire"= m5_c, "null"= m5_d)
 m5.tab<-aictab(cand.set = m5.set, second.ord = T, sort = T)
 
-# (not used) shannon's fire only predictions:
-m5_c.pr<-predict(object = m5_c, newdata = fireonly.pr,type = "response", se.fit = T)
-m5_c.pr2<-data.frame(fireonly.pr)
-m5_c.pr2$fit<-m5_c.pr$fit
-m5_c.pr2$se<-m5_c.pr$se
-m5_c.pr2$lci<-m5_c.pr$fit-(m5_c.pr2$se*1.96)
-m5_c.pr2$uci<-m5_c.pr$fit+(m5_c.pr2$se*1.96)
-
 # fire + location predictions, m5_b
 
 locationfire.pr<-data.frame(location = rep(factor(levels(sum_dat$location),levels = levels(sum_dat$location)),3),fire_cat = c(rep(levels(sum_dat$fire_cat)[1],2),rep(levels(sum_dat$fire_cat)[2],2),rep(levels(sum_dat$fire_cat)[3],2)))
@@ -192,6 +200,9 @@ m5_b.pr2$fit<-m5_b.pr$fit
 m5_b.pr2$se<-m5_b.pr$se
 m5_b.pr2$lci<-m5_b.pr$fit-(m5_b.pr2$se*1.96)
 m5_b.pr2$uci<-m5_b.pr$fit+(m5_b.pr2$se*1.96)
+
+m5_b.pr2$lci85<-m5_b.pr2$fit-(m5_b.pr2$se*1.44)
+m5_b.pr2$uci85<-m5_b.pr2$fit+(m5_b.pr2$se*1.44)
 
 # ---- 
 
@@ -281,6 +292,9 @@ m6_b.pr2$se<-m6_b.pr$se
 m6_b.pr2$lci<-m6_b.pr$fit-(m6_b.pr2$se*1.96)
 m6_b.pr2$uci<-m6_b.pr$fit+(m6_b.pr2$se*1.96)
 
+m6_b.pr2$lci85<-m6_b.pr2$fit-(m6_b.pr2$se*1.44)
+m6_b.pr2$uci85<-m6_b.pr2$fit+(m6_b.pr2$se*1.44)
+
 # ----
 
 # abundance of RARE SPECIES (negative binomial GLM)
@@ -308,11 +322,10 @@ m3.tab<-aictab(cand.set = m3.set, second.ord = T, sort = T)
 
 # Abund 25 fire + location predictions
 
-# For abundance model predictions (abund_25 and abund_5), predict on link scale and back-transform with exp(); neg. binomial models have log link function. For all other models, use the response scale. 
-
 summary(m3_b)
 
 # fire + location predictions, m3_b
+# For neg bin models, predict on the link scale and backtransform after, to ensure CIs are bounded by zero:
 
 m3_b.pr<-predict(object = m3_b, newdata = locationfire.pr,type = "link", se.fit = T)
 m3_b.pr2<-data.frame(locationfire.pr)
@@ -321,10 +334,16 @@ m3_b.pr2$se<-m3_b.pr$se
 m3_b.pr2$lci<-m3_b.pr$fit-(m3_b.pr2$se*1.96)
 m3_b.pr2$uci<-m3_b.pr$fit+(m3_b.pr2$se*1.96)
 
+m3_b.pr2$lci85<-m3_b.pr2$fit-(m3_b.pr2$se*1.44)
+m3_b.pr2$uci85<-m3_b.pr2$fit+(m3_b.pr2$se*1.44)
+
 m3_b.pr2$fit<-exp(m3_b.pr2$fit)
 m3_b.pr2$se<-exp(m3_b.pr2$se)
 m3_b.pr2$lci<-exp(m3_b.pr2$lci)
 m3_b.pr2$uci<-exp(m3_b.pr2$uci)
+
+m3_b.pr2$lci85<-exp(m3_b.pr2$lci85)
+m3_b.pr2$uci85<-exp(m3_b.pr2$uci85)
 
 # ---- 
 
@@ -349,6 +368,7 @@ m4.set<-list("fire x location"= m4_a, "location"= m4_b, "fire"= m4_c, "null"= m4
 m4.tab<-aictab(cand.set = m4.set, second.ord = T, sort = T)
 
 # abund_5 predictions 
+# For neg bin models, predict on the link scale and backtransform after, to ensure CIs are bounded by zero:
 m4_c.pr<-predict(object = m4_c, newdata = fireonly.pr,type = "link", se.fit = T)
 m4_c.pr2<-data.frame(fireonly.pr)
 m4_c.pr2$fit<-m4_c.pr$fit
@@ -356,10 +376,16 @@ m4_c.pr2$se<-m4_c.pr$se
 m4_c.pr2$lci<-m4_c.pr$fit-(m4_c.pr2$se*1.96)
 m4_c.pr2$uci<-m4_c.pr$fit+(m4_c.pr2$se*1.96)
 
+m4_c.pr2$lci85<-m4_c.pr2$fit-(m4_c.pr2$se*1.44)
+m4_c.pr2$uci85<-m4_c.pr2$fit+(m4_c.pr2$se*1.44)
+
 m4_c.pr2$fit<-exp(m4_c.pr2$fit)
 m4_c.pr2$se<-exp(m4_c.pr2$se)
 m4_c.pr2$lci<-exp(m4_c.pr2$lci)
 m4_c.pr2$uci<-exp(m4_c.pr2$uci)
+
+m4_c.pr2$lci85<-exp(m4_c.pr2$lci85)
+m4_c.pr2$uci85<-exp(m4_c.pr2$uci85)
 
 # ---- 
 
@@ -394,12 +420,24 @@ m7.tab<-aictab(cand.set = m7.set, second.ord = T, sort = T)
 #data frame for fire only predictions
 fireonly.pr
 
-m7_c.pr<-predict(object = m7_c, newdata = fireonly.pr,type = "response", se.fit = T)
+# For neg bin models, predict on the link scale and backtransform after, to ensure CIs are bounded by zero:
+m7_c.pr<-predict(object = m7_c, newdata = fireonly.pr,type = "link", se.fit = T)
 m7_c.pr2<-data.frame(fireonly.pr)
 m7_c.pr2$fit<-m7_c.pr$fit
 m7_c.pr2$se<-m7_c.pr$se
 m7_c.pr2$lci<-m7_c.pr$fit-(m7_c.pr2$se*1.96)
 m7_c.pr2$uci<-m7_c.pr$fit+(m7_c.pr2$se*1.96)
+
+m7_c.pr2$lci85<-m7_c.pr2$fit-(m7_c.pr2$se*1.44)
+m7_c.pr2$uci85<-m7_c.pr2$fit+(m7_c.pr2$se*1.44)
+
+m7_c.pr2$fit<-exp(m7_c.pr2$fit)
+m7_c.pr2$se<-exp(m7_c.pr2$se)
+m7_c.pr2$lci<-exp(m7_c.pr2$lci)
+m7_c.pr2$uci<-exp(m7_c.pr2$uci)
+
+m7_c.pr2$lci85<-exp(m7_c.pr2$lci85)
+m7_c.pr2$uci85<-exp(m7_c.pr2$uci85)
 
 # ----
 
@@ -410,7 +448,7 @@ m8_b <- glm.nb(sr_5~fire_cat+location,data = sum_dat)
 m8_c <- glm.nb(sr_5~fire_cat,data = sum_dat)
 m8_d <- glm.nb(sr_5~1,data = sum_dat)
 
-#Likelihood ratio test - compare more complicated model (interaction model) with simpler model 
+#Likelihood ratio test
 anova(m8_a, m8_b, test = "F") 
 anova(m8_b, m8_c, test = "F") 
 anova(m8_c, m8_d, test = "F") 
@@ -428,14 +466,27 @@ m8.set<-list("fire x location"= m8_a, "location"= m8_b, "fire"= m8_c, "null"= m8
 m8.tab<-aictab(cand.set = m8.set, second.ord = T, sort = T)
 
 #data frame for fire only predictions
+# For neg bin models, predict on the link scale and backtransform after, to ensure CIs are bounded by zero:
+
 fireonly.pr
 
-m8_c.pr<-predict(object = m8_c, newdata = fireonly.pr,type = "response", se.fit = T)
+m8_c.pr<-predict(object = m8_c, newdata = fireonly.pr,type = "link", se.fit = T)
 m8_c.pr2<-data.frame(fireonly.pr)
 m8_c.pr2$fit<-m8_c.pr$fit
 m8_c.pr2$se<-m8_c.pr$se
 m8_c.pr2$lci<-m8_c.pr$fit-(m8_c.pr2$se*1.96)
 m8_c.pr2$uci<-m8_c.pr$fit+(m8_c.pr2$se*1.96)
+
+m8_c.pr2$lci85<-m8_c.pr2$fit-(m8_c.pr2$se*1.44)
+m8_c.pr2$uci85<-m8_c.pr2$fit+(m8_c.pr2$se*1.44)
+
+m8_c.pr2$fit<-exp(m8_c.pr2$fit)
+m8_c.pr2$se<-exp(m8_c.pr2$se)
+m8_c.pr2$lci<-exp(m8_c.pr2$lci)
+m8_c.pr2$uci<-exp(m8_c.pr2$uci)
+
+m8_c.pr2$lci85<-exp(m8_c.pr2$lci85)
+m8_c.pr2$uci85<-exp(m8_c.pr2$uci85)
 
 # ----
 
@@ -522,6 +573,9 @@ m9_c.pr2$se<-m9_c.pr$se
 m9_c.pr2$lci<-m9_c.pr2$fit-(m9_c.pr2$se*1.96)
 m9_c.pr2$uci<-m9_c.pr2$fit+(m9_c.pr2$se*1.96)
 
+m9_c.pr2$lci85<-m9_c.pr2$fit-(m9_c.pr2$se*1.44)
+m9_c.pr2$uci85<-m9_c.pr2$fit+(m9_c.pr2$se*1.44)
+
 # ----
 
 # Fisher's alpha (gamma) ----
@@ -563,6 +617,9 @@ m10_b.pr2$fit<-m10_b.pr$fit
 m10_b.pr2$se<-m10_b.pr$se
 m10_b.pr2$lci<-m10_b.pr2$fit-(m10_b.pr2$se*1.96)
 m10_b.pr2$uci<-m10_b.pr2$fit+(m10_b.pr2$se*1.96)
+
+m10_b.pr2$lci85<-m10_b.pr2$fit-(m10_b.pr2$se*1.44)
+m10_b.pr2$uci85<-m10_b.pr2$fit+(m10_b.pr2$se*1.44)
 
 # ----
 
@@ -810,8 +867,10 @@ dev.new(width=7, height=6, dpi=80, pointsize=14, noRStudioGD = T)
 par(mfrow=c(2,2), mar=c(4.5,4,1,1), mgp=c(2.2,0.8,0), oma=c(0,0,1,6))
 
 # species richness (5% of max.)
-plot(c(1:3),m8_c.pr2$fit, xlim=c(0.5,3.5), pch=20, xaxt="n",ylim=c(0,10),ylab="Richness (5% of max.)",xlab="", las = 1, cex = 2.5)
+plot(c(1:3),m8_c.pr2$fit, xlim=c(0.5,3.5), pch=20, xaxt="n",ylim=c(0,10),ylab="Richness (5% of max.)",xlab="", las = 1, cex = 2.5, type="n")
+arrows(c(1:3),m8_c.pr2$lci85,c(1:3),m8_c.pr2$uci85,length=0,lwd=4,col="grey20")
 arrows(c(1:3),m8_c.pr2$lci,c(1:3),m8_c.pr2$uci,length=0.03,code=3,angle=90)
+points(c(1:3),m8_c.pr2$fit,cex = 2.5,pch=20)
 axis(1,at=c(1:3),labels=F)
 
 axis(1,at=c(1,2,3.15), cex.axis=1,labels=new.xlab,tick=F)
@@ -831,8 +890,10 @@ points(jitter(rep(2,length(sr5_m)),factor=4),sr5_m, pch=20,col=rgb(0,0,0,0.2))
 points(jitter(rep(3,length(sr5_b)),factor=4),sr5_b, pch=20,col=rgb(0,0,0,0.2))
 
 # species richness (Lowest 25%)
-plot(c(1:3),m7_c.pr2$fit, xlim=c(0.5,3.5), pch=20, xaxt="n",ylim= c((min(m7_c.pr2$lci)),max(m7_c.pr2$uci)+1),ylab="Richness (lowest 25%)",xlab="", las = 1, cex = 2.5)
+plot(c(1:3),m7_c.pr2$fit, xlim=c(0.5,3.5), pch=20, xaxt="n",ylim= c((min(sum_dat$sr_25)),max(m7_c.pr2$uci)+1),ylab="Richness (lowest 25%)",xlab="", las = 1, cex = 2.5, type="n")
+arrows(c(1:3),m7_c.pr2$lci85,c(1:3),m7_c.pr2$uci85,length=0,lwd=4,col="grey20")
 arrows(c(1:3),m7_c.pr2$lci,c(1:3),m7_c.pr2$uci,length=0.03,code=3,angle=90)
+points(c(1:3),m7_c.pr2$fit, pch=20, cex=2.5)
 axis(1,at=c(1:3),labels=F)
 axis(1,at=c(1,2,3.15),labels=new.xlab,tick=F, cex.axis=1)
 title(mgp=c(2.3,0.8,0),xlab="Fire Category")
@@ -856,8 +917,10 @@ legend(x=4,y=max(m7_c.pr2$uci)+1.1, title = "Location", legend = c("Fire only", 
 par(xpd=F)
 
 # Abundance (5% of max.)
-plot(c(1:3),m4_c.pr2$fit, xlim=c(0.5,3.5), pch=20, xaxt="n",ylim= c(0,max(m4_c.pr2$uci)+2),ylab="Abundance (5% of max.)",xlab="", las = 1, cex = 2.5)
+plot(c(1:3),m4_c.pr2$fit, xlim=c(0.5,3.5), pch=20, xaxt="n",ylim= c(0,max(m4_c.pr2$uci)+2),ylab="Abundance (5% of max.)",xlab="", las = 1, cex = 2.5, type="n")
+arrows(c(1:3),m4_c.pr2$lci85,c(1:3),m4_c.pr2$uci85,length=0,lwd=4,col="grey20")
 arrows(c(1:3),m4_c.pr2$lci,c(1:3),m4_c.pr2$uci,length=0.03,code=3,angle=90)
+points(c(1:3),m4_c.pr2$fit, cex=2.5, pch=20)
 axis(1,at=c(1:3),labels=F)
 axis(1,at=c(1,2,3.15),cex.axis=1,labels=new.xlab,tick=F)
 title(mgp=c(2.3,0.8,0),xlab="Fire Category")
@@ -876,14 +939,18 @@ points(jitter(rep(2,length(abund5_m)),factor=4),abund5_m, pch=20,col=rgb(0,0,0,0
 points(jitter(rep(3,length(abund5_b)),factor=4),abund5_b, pch=20,col=rgb(0,0,0,0.2))
 
 # Abundance (Lowest 25%)
-plot(c(1:3)-0.15,m3_b.pr2$fit[m3_b.pr2$location=="Hincks"], xlim=c(0.5,3.5), pch=15, xaxt="n",ylim= c((min(m3_b.pr2$lci)),max(m3_b.pr2$uci)),ylab="Abundance (lowest 25%)",xlab="", las = 1, cex = 1.5)
-points(c(1:3)+0.15,m3_b.pr2$fit[m3_b.pr2$location=="Pinks"], xlim=c(0.5,3.5), pch=17, cex = 1.5)
+plot(c(1:3)-0.15,m3_b.pr2$fit[m3_b.pr2$location=="Hincks"], xlim=c(0.5,3.5), pch=15, xaxt="n",ylim= c((min(sum_dat$abund_25)),max(m3_b.pr2$uci)),ylab="Abundance (lowest 25%)",xlab="", las = 1, cex = 1.5, type="n")
+arrows(c(1:3)-0.15,m3_b.pr2$lci85[m3_b.pr2$location=="Hincks"],c(1:3)-0.15,m3_b.pr2$uci85[m3_b.pr2$location=="Hincks"],length=0,lwd=4,col="grey20")
+arrows(c(1:3)+0.15,m3_b.pr2$lci85[m3_b.pr2$location=="Pinks"],c(1:3)+0.15,m3_b.pr2$uci85[m3_b.pr2$location=="Pinks"],length=0,lwd=4,col="grey20")
 arrows(c(1:3)-0.15,m3_b.pr2$lci[m3_b.pr2$location=="Hincks"],c(1:3)-0.15,m3_b.pr2$uci[m3_b.pr2$location=="Hincks"],length=0.03,code=3,angle=90)
 arrows(c(1:3)+0.15,m3_b.pr2$lci[m3_b.pr2$location=="Pinks"],c(1:3)+0.15,m3_b.pr2$uci[m3_b.pr2$location=="Pinks"],length=0.03,code=3,angle=90)
+points(c(1:3)-0.15,m3_b.pr2$fit[m3_b.pr2$location=="Hincks"], xlim=c(0.5,3.5), pch=15, cex = 1.5)
+points(c(1:3)+0.15,m3_b.pr2$fit[m3_b.pr2$location=="Pinks"], xlim=c(0.5,3.5), pch=17, cex = 1.5)
+
 axis(1,at=c(1:3),labels=F)
 axis(1,at=c(1,2,3.15), cex.axis=1,labels=new.xlab,tick=F)
 title(mgp=c(2.3,0.8,0),xlab="Fire Category")
-mtext(as.expression(bquote(Delta~"AICc ="~.(paste(round(m3.tab2$Delta_AICc[m3.tab2$Modnames=="location"]-m3.tab2$Delta_AICc[m3.tab2$Modnames=="null"],2),sep="")))), side=3,line=0.1,adj=1,col="darkorange2", cex=0.75)
+mtext(as.expression(bquote(Delta~"AICc ="~.(paste(round(m3.tab2$Delta_AICc[m3.tab2$Modnames=="location"]-m3.tab2$Delta_AICc[m3.tab2$Modnames=="null"],2),sep="")))), side=3,line=0.1,adj=1,col="red", cex=0.75)
 mtext(text="(d)", side = 3, line = 0.5, adj = 0, cex = 1)
 m3_b_diff
 # text(x=1:3, y=max(m3_b.pr2$uci)+1,labels=c(letters[1],paste(letters[1],letters[2],sep="",collapse=""),letters[2]))
@@ -926,8 +993,13 @@ dev.new(width=7, height=9, dpi=80, pointsize=17.5, noRStudioGD = T)
 par(mfrow=c(3,2), mar=c(4.5,4,1,1), mgp=c(2.3,0.6,0), oma=c(0,0,1,6))
 
 # species richness; fire only
-plot(c(1:3),m1_c.pr2$fit, xlim=c(0.5,3.5), pch=20, xaxt="n",ylim=c((min(m1_c.pr2$lci)),max(sum_dat$sp_rich)),ylab="Species Richness",xlab="", las = 1, cex = 2.5)
+
+m1.ciraw<-c(min(sum_dat$sp_rich),max(sum_dat$sp_rich),min(m1_c.pr2$lci),max(m1_c.pr2$uci))
+
+plot(c(1:3),m1_c.pr2$fit, xlim=c(0.5,3.5), pch=20, xaxt="n",ylim=c(min(m1.ciraw),max(m1.ciraw)),ylab="Species Richness",xlab="", las = 1, cex = 2.5, type="n")
+arrows(c(1:3),m1_c.pr2$lci85,c(1:3),m1_c.pr2$uci85,length=0,lwd=4,col="grey20")
 arrows(c(1:3),m1_c.pr2$lci,c(1:3),m1_c.pr2$uci,length=0.03,code=3,angle=90)
+points(c(1:3),m1_c.pr2$fit,cex = 2.5,pch=20)
 axis(1,at=c(1:3),labels=F)
 axis(1,at=c(1,2,3.15), cex.axis=1,labels=new.xlab,tick=F)
 title(mgp=c(2.3,0.8,0),xlab="Fire Category")
@@ -948,7 +1020,10 @@ points(jitter(rep(3,length(sr_b)),factor=4),sr_b, pch=20,col=rgb(0,0,0,0.2))
 
 # shann_ind; fire+location
 
-plot(c(1:3)-0.15,m5_b.pr2$fit[m5_b.pr2$location=="Hincks"], xlim=c(0.5,3.5), pch=15, xaxt="n",ylim= c((min(m5_b.pr2$lci)),max(m5_b.pr2$uci)),ylab="Shannon's Diversity",xlab="", las = 1, cex = 1.5)
+plot(c(1:3)-0.15,m5_b.pr2$fit[m5_b.pr2$location=="Hincks"], xlim=c(0.5,3.5), pch=15, xaxt="n",ylim= c((min(m5_b.pr2$lci)),max(m5_b.pr2$uci)),ylab="Shannon's Diversity",xlab="", las = 1, cex = 1.5, type="n")
+arrows(c(1:3)-0.15,m5_b.pr2$lci85[m5_b.pr2$location=="Hincks"],c(1:3)-0.15,m5_b.pr2$uci85[m5_b.pr2$location=="Hincks"],length=0,lwd=4,col="grey20")
+arrows(c(1:3)+0.15,m5_b.pr2$lci85[m5_b.pr2$location=="Pinks"],c(1:3)+0.15,m5_b.pr2$uci85[m5_b.pr2$location=="Pinks"],length=0,lwd=4,col="grey20")
+points(c(1:3)-0.15,m5_b.pr2$fit[m5_b.pr2$location=="Hincks"], xlim=c(0.5,3.5), pch=15, cex = 1.5)
 points(c(1:3)+0.15,m5_b.pr2$fit[m5_b.pr2$location=="Pinks"], xlim=c(0.5,3.5), pch=17, cex = 1.5)
 arrows(c(1:3)-0.15,m5_b.pr2$lci[m5_b.pr2$location=="Hincks"],c(1:3)-0.15,m5_b.pr2$uci[m5_b.pr2$location=="Hincks"],length=0.03,code=3,angle=90)
 arrows(c(1:3)+0.15,m5_b.pr2$lci[m5_b.pr2$location=="Pinks"],c(1:3)+0.15,m5_b.pr2$uci[m5_b.pr2$location=="Pinks"],length=0.03,code=3,angle=90)
@@ -982,6 +1057,10 @@ par(xpd=NA)
 legend(x=4,y=max(m5_b.pr2$uci), title = "Location", legend = c("Fire only", "Hincks","Pinkaw."), pt.cex = 1.5, pch = c(16, 15, 17), bty = "n", title.adj=0)
 par(xpd=F)
 
+### 21ST JAN, UP TO HERE
+## NEED TO UPDATE THE PLOTS WITH 85%
+## UPDATE AICS BASED ON NEW MODEL SELECTION
+
 # simps diversity index; fire only
 
 # plot raw data:
@@ -990,12 +1069,14 @@ si2_ub<-sum_dat$simps_ind2[sum_dat$fire_cat=="Unburnt"]
 si2_m<-sum_dat$simps_ind2[sum_dat$fire_cat=="Medium"]
 si2_b<-sum_dat$simps_ind2[sum_dat$fire_cat=="Burnt"]
 
-plot(c(1:3),m2_c.pr2$fit, xlim=c(0.5,3.5), pch=20, xaxt="n",ylim= c(min(si2_b),max(sum_dat$simps_ind2)+1),ylab="Simpson's Diversity",xlab="", las = 1, cex = 2.5)
+plot(c(1:3),m2_c.pr2$fit, xlim=c(0.5,3.5), pch=20, xaxt="n",ylim= c(min(si2_b),max(sum_dat$simps_ind2)+1),ylab="Simpson's Diversity",xlab="", las = 1, cex = 2.5, type="n")
+arrows(c(1:3),m2_c.pr2$lci85,c(1:3),m2_c.pr2$uci85,length=0,lwd=4,col="grey20")
 arrows(c(1:3),m2_c.pr2$lci,c(1:3),m2_c.pr2$uci,length=0.03,code=3,angle=90)
+points(c(1:3),m2_c.pr2$fit, cex=2.5, pch=20)
 axis(1,at=c(1:3),labels=F)
 axis(1,at=c(1,2,3.15), cex.axis=1,labels=new.xlab,tick=F)
 title(mgp=c(2.3,0.8,0),xlab="Fire Category")
-mtext(as.expression(bquote(Delta~"AICc ="~.(paste(round(m2.tab2$Delta_AICc[m2.tab2$Modnames=="fire"]-m2.tab2$Delta_AICc[m2.tab2$Modnames=="null"],2),sep="")))), side=3,line=0.1,adj=1,col="darkorange2", cex=0.7)
+mtext(as.expression(bquote(Delta~"AICc ="~.(paste(round(m2.tab2$Delta_AICc[m2.tab2$Modnames=="fire"]-m2.tab2$Delta_AICc[m2.tab2$Modnames=="null"],2),sep="")))), side=3,line=0.1,adj=1,col="red", cex=0.7)
 mtext(text="(c)", side = 3, line = 0.5, adj = 0, cex = 0.8)
 m2_c_diff
 # text(x=1:3, y=max(m2_c.pr2$uci)+1.5,labels=c(letters[1],rep(letters[2],2)))
