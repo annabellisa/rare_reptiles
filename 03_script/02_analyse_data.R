@@ -648,7 +648,7 @@ combi.tab<-rbind(m1.tab2, m2.tab2, m3.tab2, m4.tab2, m5.tab2, m6.tab2, m7.tab2, 
 
 # ----
 
-#### CONTRASTS (not used in new MS) ----
+#### CONTRASTS (not used in new MS) 
 
 # Set up contrast matrices ----
 
