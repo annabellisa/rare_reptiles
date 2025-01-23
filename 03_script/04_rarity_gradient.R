@@ -22,6 +22,7 @@ invisible(lapply(paste("02_functions/",dir("02_functions"),sep=""), function(x) 
 # Load libraries:
 library("MASS")
 library(AICcmodavg)
+library(scales)
 
 # THE DATA ----
 
@@ -72,6 +73,8 @@ rich.all<-apply(sp_div2,1,function(x) length(which(x>0)))
 
 # These should all be TRUE (14 sites):
 table(sr_dat$sp_rich==rich.all)
+
+# save.image("04_workspaces/rarity_gradient.RData")
 
 # ----
 
@@ -139,11 +142,16 @@ sr_hl<-merge(sr_dat, high_low, by="site", all.x=T, all.y=F)
 # The original species richness should be the same as the highest calculation:
 table(sr_dat$sp_rich==sr_hl$hl41)
 
+# save.image("04_workspaces/rarity_gradient.RData")
+
 # ----
 
 # Model fire effect along rarity gradient ----
 
-# low to high:
+fireonly.pr<-data.frame(fire_cat = factor(levels(sum_dat$fire_cat),levels = levels(sum_dat$fire_cat)))
+
+#### low to high:
+
 lhs<-colnames(sr_lh)[grep("lh",colnames(sr_lh))]
 
 # model fire effect for each lh value
@@ -152,7 +160,9 @@ colSums(lhs_dat)
 
 head(sr_lh[,1:15], 3);dim(sr_lh)
 
+lh_coef<-list()
 lh_mods<-list()
+lh_pred<-list()
 
 lh_res<-data.frame(lh=lhs,total_sr=colSums(lhs_dat),AICc_fire=NA, AICc_null=NA)
 rownames(lh_res)<-1:nrow(lh_res)
@@ -160,6 +170,8 @@ rownames(lh_res)<-1:nrow(lh_res)
 for (i in 1:length(lhs)){
   
   resp.thisrun<-lhs[i]
+  
+  # fit models:
   m1_fire <- glm.nb(get(resp.thisrun)~fire_cat,data = sr_lh)
   m1_null <- glm.nb(get(resp.thisrun)~1,data = sr_lh)
   summary(m1_fire)
@@ -167,7 +179,30 @@ for (i in 1:length(lhs)){
   lh_res$AICc_fire[i]<-AICc(m1_fire)
   lh_res$AICc_null[i]<-AICc(m1_null)
   
-  lh_mods[[i]]<-summary(m1_fire)$coefficients
+  lh_coef[[i]]<-summary(m1_fire)$coefficients
+  lh_mods[[i]]<-m1_fire
+  
+  # predict
+  m1_pr<-predict(object = m1_fire, newdata = fireonly.pr,type = "link", se.fit = T)
+  m1_pr2<-data.frame(fireonly.pr)
+  m1_pr2$fit<-m1_pr$fit
+  m1_pr2$se<-m1_pr$se
+  m1_pr2$lci<-m1_pr$fit-(m1_pr$se*1.96)
+  m1_pr2$uci<-m1_pr$fit+(m1_pr$se*1.96)
+  
+  m1_pr2$lci85<-m1_pr$fit-(m1_pr$se*1.44)
+  m1_pr2$uci85<-m1_pr$fit+(m1_pr$se*1.44)
+  
+  # back-transform:
+  m1_pr2$fit<-exp(m1_pr2$fit)
+  m1_pr2$se<-exp(m1_pr2$se)
+  m1_pr2$lci<-exp(m1_pr2$lci)
+  m1_pr2$uci<-exp(m1_pr2$uci)
+  
+  m1_pr2$lci85<-exp(m1_pr2$lci85)
+  m1_pr2$uci85<-exp(m1_pr2$uci85)
+  
+  lh_pred[[i]]<-m1_pr2
   
 } # close run models
 
@@ -175,8 +210,8 @@ for (i in 1:length(lhs)){
 lh_res$delta<-lh_res$AICc_fire-lh_res$AICc_null
 head(lh_res,3); dim(lh_res)
 
+#### high to low:
 
-# high to low:
 hls<-colnames(sr_hl)[grep("hl",colnames(sr_hl))]
 
 # model fire effect for each lh value
@@ -185,7 +220,9 @@ colSums(hls_dat)
 
 head(sr_hl[,1:15], 3);dim(sr_hl)
 
+hl_coef<-list()
 hl_mods<-list()
+hl_pred<-list()
 
 hl_res<-data.frame(hl=hls,total_sr=colSums(hls_dat),AICc_fire=NA, AICc_null=NA)
 rownames(hl_res)<-1:nrow(hl_res)
@@ -193,6 +230,8 @@ rownames(hl_res)<-1:nrow(hl_res)
 for (i in 1:length(hls)){
   
   resp.thisrun<-hls[i]
+  
+  # fit models
   m1_fire <- glm.nb(get(resp.thisrun)~fire_cat,data = sr_hl)
   m1_null <- glm.nb(get(resp.thisrun)~1,data = sr_hl)
   summary(m1_fire)
@@ -200,13 +239,39 @@ for (i in 1:length(hls)){
   hl_res$AICc_fire[i]<-AICc(m1_fire)
   hl_res$AICc_null[i]<-AICc(m1_null)
   
-  hl_mods[[i]]<-summary(m1_fire)$coefficients
+  # store models in list:
+  hl_coef[[i]]<-summary(m1_fire)$coefficients
+  hl_mods[[i]]<-m1_fire
+  
+  # predict
+  m1_pr<-predict(object = m1_fire, newdata = fireonly.pr,type = "link", se.fit = T)
+  m1_pr2<-data.frame(fireonly.pr)
+  m1_pr2$fit<-m1_pr$fit
+  m1_pr2$se<-m1_pr$se
+  m1_pr2$lci<-m1_pr$fit-(m1_pr$se*1.96)
+  m1_pr2$uci<-m1_pr$fit+(m1_pr$se*1.96)
+  
+  m1_pr2$lci85<-m1_pr$fit-(m1_pr$se*1.44)
+  m1_pr2$uci85<-m1_pr$fit+(m1_pr$se*1.44)
+  
+  # back-transform:
+  m1_pr2$fit<-exp(m1_pr2$fit)
+  m1_pr2$se<-exp(m1_pr2$se)
+  m1_pr2$lci<-exp(m1_pr2$lci)
+  m1_pr2$uci<-exp(m1_pr2$uci)
+  
+  m1_pr2$lci85<-exp(m1_pr2$lci85)
+  m1_pr2$uci85<-exp(m1_pr2$uci85)
+  
+  hl_pred[[i]]<-m1_pr2
   
 } # close run models
 
 # Calculate Delta AICc
 hl_res$delta<-hl_res$AICc_fire-hl_res$AICc_null
 head(hl_res,3); dim(hl_res)
+
+# save.image("04_workspaces/rarity_gradient.RData")
 
 # ----
 
@@ -227,6 +292,84 @@ par(xpd=F)
 
 # ----
 
+# Plot model estimates:
+
+lh_pred
+hl_pred
+
+new.xlab2<-c("L","M","R")
+
+# low to high
+
+lh_pred
+head(lh_res); dim(lh_res)
+
+dev.new(width=7, height=9, dpi=80, pointsize=10, noRStudioGD = T)
+par(mfrow=c(7,6), mar=c(3,3,1,0), mgp=c(2.3,0.6,0), oma=c(2,2,1,1))
+
+for (i in 1:length(lhs)){
+
+  pred.thisrun<-lh_pred[[i]]
+  cis.thisrun<-pred.thisrun$se
+  
+  # Plot without CIs if se is Inf:
+  if("Inf" %in% cis.thisrun==T) plot(c(1:3),pred.thisrun$fit, xlim=c(0.5,3.5), pch=20, xaxt="n",ylab="",xlab="", las = 1, cex = 2.5)
+  
+  if("Inf" %in% cis.thisrun==F) {
+    plot(c(1:3),pred.thisrun$fit, xlim=c(0.5,3.5), pch=20, xaxt="n",ylim=c(min(pred.thisrun$lci),max(pred.thisrun$uci)),ylab="",xlab="", las = 1, cex = 2.5, type="n")
+  
+    arrows(c(1:3),pred.thisrun$lci85,c(1:3),pred.thisrun$uci85,length=0,lwd=4,col="grey20")
+    arrows(c(1:3),pred.thisrun$lci,c(1:3),pred.thisrun$uci,length=0.03,code=3,angle=90)
+    points(c(1:3),pred.thisrun$fit,cex = 2.5,pch=20)
+    axis(1,at=c(1:3),labels=F)
+    axis(1,at=c(1,2,3.15), cex.axis=1,labels=new.xlab2,tick=F)
+
+} # close plot with CIs
+
+  if (i == 19) mtext("Species Richness", side=2, line=3)
+  if (i == 39) mtext("Fire Category", side=1, line=3)
+  
+  if(lh_res$delta[i]<2) col.thisrun<-"darkgreen" else col.thisrun<-"black"
+
+  mtext(paste(label_ordinal()(i)," lowest",sep=""), side=3, line=0.1, adj=0, col=col.thisrun)
+  
+} # close plot low high
+
+# high to low
+
+hl_pred
+head(hl_res); dim(hl_res)
+
+dev.new(width=7, height=9, dpi=80, pointsize=10, noRStudioGD = T)
+par(mfrow=c(7,6), mar=c(3,3,1,0), mgp=c(2.3,0.6,0), oma=c(2,2,1,1))
+
+for (i in 1:length(lhs)){
+  
+  pred.thisrun<-hl_pred[[i]]
+  cis.thisrun<-pred.thisrun$se
+  
+  # Plot without CIs if se is Inf:
+  if("Inf" %in% cis.thisrun==T) plot(c(1:3),pred.thisrun$fit, xlim=c(0.5,3.5), pch=20, xaxt="n",ylab="",xlab="", las = 1, cex = 2.5)
+  
+  if("Inf" %in% cis.thisrun==F) {
+    plot(c(1:3),pred.thisrun$fit, xlim=c(0.5,3.5), pch=20, xaxt="n",ylim=c(min(pred.thisrun$lci),max(pred.thisrun$uci)),ylab="",xlab="", las = 1, cex = 2.5, type="n")
+    
+    arrows(c(1:3),pred.thisrun$lci85,c(1:3),pred.thisrun$uci85,length=0,lwd=4,col="grey20")
+    arrows(c(1:3),pred.thisrun$lci,c(1:3),pred.thisrun$uci,length=0.03,code=3,angle=90)
+    points(c(1:3),pred.thisrun$fit,cex = 2.5,pch=20)
+    axis(1,at=c(1:3),labels=F)
+    axis(1,at=c(1,2,3.15), cex.axis=1,labels=new.xlab2,tick=F)
+    
+  } # close plot with CIs
+  
+  if (i == 19) mtext("Species Richness", side=2, line=3)
+  if (i == 39) mtext("Fire Category", side=1, line=3)
+  
+  if(hl_res$delta[i]<2) col.thisrun<-"darkgreen" else col.thisrun<-"black"
+  
+  mtext(paste(label_ordinal()(i)," highest",sep=""), side=3, line=0.1, adj=0, col=col.thisrun)
+  
+} # close plot high low
 
 
 
