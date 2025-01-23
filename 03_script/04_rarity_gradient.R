@@ -279,7 +279,7 @@ head(hl_res,3); dim(hl_res)
 
 dev.new(width=6,height=4,dpi=70,pointsize=16, noRStudioGD = T)
 par(mfrow=c(1,1), mgp=c(2.2,0.8,0), mar=c(3.5,3.5,1,1), oma=c(0,0,0,7))
-plot(1:nrow(lh_res), lh_res$delta, type="l", xlab="Rarity gradient", ylab="", las=1)
+plot(1:nrow(lh_res), lh_res$delta, type="l", xlab="Number of species", ylab="", las=1)
 title(ylab=as.expression(bquote(Delta~"AICc")))
 lines(0:45,rep(2,46), col="red",lty=1, lwd=1.2)
 
@@ -292,7 +292,7 @@ par(xpd=F)
 
 # ----
 
-# Plot model estimates:
+# Plot model estimates ----
 
 lh_pred
 hl_pred
@@ -371,7 +371,7 @@ for (i in 1:length(lhs)){
   
 } # close plot high low
 
-
+# ----
 
 
 # Box plots of raw data:
