@@ -275,6 +275,38 @@ head(hl_res,3); dim(hl_res)
 
 # ----
 
+# Sequential correlation ----
+
+# From Lennon et al. 2011: we correlated (Pearson product-moment) each of these sub-assemblage richness patterns with that of the full assemblage, giving two series of correlation coefficients (one for each of the common to rare and rare to common rankings)
+
+head(sr_lh[,1:10],3); dim(sr_lh)
+head(sr_hl[,1:10],3); dim(sr_hl)
+
+# defined above:
+lhs
+hls
+head(lhs_dat[,1:10],3); dim(lhs_dat)
+head(hls_dat[,1:10],3); dim(hls_dat)
+
+# low to high:
+
+lhs_cor<-unlist(apply(lhs_dat,MARGIN = 2,function(x) cor.test(sr_lh$sp_rich, x)))
+# lhs_cor[grep("estimate.cor",names(lhs_cor))]
+
+lh_cor<-data.frame(lh=lhs,lh_cor=as.numeric(lhs_cor[grep("estimate.cor",names(lhs_cor))]))
+head(lh_cor,3); dim(lh_cor)
+
+# high to low:
+
+hls_cor<-unlist(apply(hls_dat,MARGIN = 2,function(x) cor.test(sr_hl$sp_rich, x)))
+
+hl_cor<-data.frame(hl=hls,hl_cor=as.numeric(hls_cor[grep("estimate.cor",names(hls_cor))]))
+head(hl_cor,3); dim(hl_cor)
+
+# save.image("04_workspaces/rarity_gradient.RData")
+
+# ----
+
 # Plot delta AICc ----
 
 dev.new(width=6,height=4,dpi=70,pointsize=16, noRStudioGD = T)
@@ -289,6 +321,19 @@ lines(1:nrow(hl_res), hl_res$delta, col="cornflowerblue",lwd=1.2)
 par(xpd=NA)
 legend(x=44,y=8, title = "Species added", legend = c("Low to high", "High to low"), lwd = 1.2, col = c("black","cornflowerblue"), bty = "n", title.adj=0)
 par(xpd=F)
+
+
+head(lh_cor,3); dim(lh_cor)
+head(hl_cor,3); dim(hl_cor)
+
+# plot correlation
+dev.new(width=6,height=4,dpi=70,pointsize=16, noRStudioGD = T)
+par(mfrow=c(1,1), mgp=c(2.2,0.8,0), mar=c(3.5,3.5,1,1), oma=c(0,0,0,7))
+plot(1:nrow(lh_res), lh_res$delta, type="l", xlab="Number of species", ylab="", las=1)
+title(ylab=as.expression(bquote(Delta~"AICc")))
+lines(0:45,rep(2,46), col="red",lty=1, lwd=1.2)
+
+
 
 # ----
 
