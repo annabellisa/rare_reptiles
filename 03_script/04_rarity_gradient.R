@@ -305,6 +305,18 @@ head(hl_cor,3); dim(hl_cor)
 
 # save.image("04_workspaces/rarity_gradient.RData")
 
+head(lh_cor,3); dim(lh_cor)
+head(hl_cor,3); dim(hl_cor)
+
+cor_both<-cbind(lh_cor,hl_cor)
+cor_both$diff<-cor_both$hl_cor-cor_both$lh_cor
+mean(cor_both$diff[3-17])
+head(cor_both,3); dim(cor_both)
+
+head(lh_res); dim(lh_res)
+lh_res[which(lh_res$delta<2),]
+
+
 # ----
 
 # Plot delta AICc ----
