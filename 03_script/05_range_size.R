@@ -137,8 +137,9 @@ title(xlab=expression(paste("Range size (million km"^2,")")),mgp=c(2.3,1,0))
 
 ct<-cor.test(sp.geo$range, sp.geo$Abundance)
 
-text(4500000,400,bquote(italic("r")^2*" = "~.(round(ct$estimate,2))), adj=0)
+text(4500000,400,bquote(italic("r")*" = "~.(round(ct$estimate,2))), adj=0)
 text(4500000,350,bquote(italic("p")*" = "~.(round(ct$p.value,2))), adj=0)
+
 
 
 
