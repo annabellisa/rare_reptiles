@@ -6,7 +6,7 @@
 
 # ---------- 04_rarity_gradient  ---------- #
 
-### Script authors: Annabel Smith & Amber Lim
+### Script authors: Annabel Smith
 
 # If starting fresh:
 # load("04_workspaces/analysed_data.RData"); rm(list = setdiff(ls(), c("sum_dat", "dat1","dat2", "sp_div","sp_div2","rel_abund2","sp_sum2")))

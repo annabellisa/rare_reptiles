@@ -6,7 +6,7 @@
 
 # ---------- 03_rarefaction  ---------- #
 
-### Script authors: Annabel Smith & Amber Lim
+### Script authors: Annabel Smith
 
 # Load and tidy workspace and remove everything except necessary objects:
 # load("04_workspaces/analysed_data.RData"); rm(list=setdiff(ls(), c("sum_dat","rare.data","sp_div2","sp_div_25","sp_div_5")))
