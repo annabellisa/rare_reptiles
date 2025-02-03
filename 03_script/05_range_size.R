@@ -116,4 +116,30 @@ head(trait.all[,1:5],2); dim(trait.all)
 
 
 
+# add abundance data:
+head(sp_sum2);dim(sp_sum2)
+head(sp.geo);dim(sp.geo)
+
+sp_sum3<-sp_sum2[,c("Species_Name","Abundance")]
+
+head(sp_sum3);dim(sp_sum3)
+
+table(sp_sum3$Species_Name %in% sp.geo$Species)
+
+sp.geo<-merge(sp.geo,sp_sum3, by.x="Species", by.y="Species_Name", all.x=T, all.y=F)
+sp.geo$range<-as.numeric(sp.geo$geoCaetano)
+
+dev.new(width=5,height=4,dpi=70,pointsize=16, noRStudioGD = T)
+par(mfrow=c(1,1), mgp=c(2.4,0.8,0), mar=c(3.5,3.5,1,1), oma=c(0,0,0,0))
+plot(sp.geo$range,sp.geo$Abundance,xaxt="n",xlab="", ylab="Abundance", las=1)
+axis(side=1, at=seq(min(sp.geo$range,na.rm=T),max(sp.geo$range,na.rm=T),length.out=6),labels=round(seq(min(sp.geo$range,na.rm=T),max(sp.geo$range,na.rm=T),length.out=6)/1000000,1))
+title(xlab=expression(paste("Range size (million km"^2,")")),mgp=c(2.3,1,0))
+
+ct<-cor.test(sp.geo$range, sp.geo$Abundance)
+
+text(4500000,400,bquote(italic("r")^2*" = "~.(round(ct$estimate,2))), adj=0)
+text(4500000,350,bquote(italic("p")*" = "~.(round(ct$p.value,2))), adj=0)
+
+
+
 
