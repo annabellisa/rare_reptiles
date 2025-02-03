@@ -83,13 +83,34 @@ sp.geo[which(sp.geo$Species=="Ramphotyphlops bituberculatus"),c("geoCaetano","ge
 
 head(sp.geo)
 
-sp.geo$newname<-NA
+sp.geo$newname<-sp.geo$Species
 sp.geo$newname[which(sp.geo$Species %in% no.match)]<-c("Suta spectabilis","Anilios bicolor","Anilios bituberculatus","Tympanocryptis lineata")
 
 # save.image("04_workspaces/range_size.RData")
 
+# Get Pogona range sizes
+# P. barbata, P. vittatus, P. minor
+
+sbase[which(sbase$"Species name (Binomial)" %in% c("Pogona barbata", "Pogona vitticeps", "Pogona minor")),c(1,suppressWarnings(grep("Geographic",colnames(sbase))))]
+
+sp.geo[which(sp.geo$Species=="Pogona spp"),c(2,3)]<-">1600000"
+
 # Get other potentially useful info:
 
+trait<-data.frame(Species=sp.geo$newname)
+trait<-trait[-which(trait$Species=="Pogona spp"),]
+trait<-data.frame(Species=c(trait,"Pogona barbata", "Pogona vitticeps", "Pogona minor"))
+trait<-data.frame(Species=trait[order(trait$Species),])
+
+table(trait$Species %in% sbase$"Species name (Binomial)")
+
+head(sbase[,1:5],2); dim(sbase)
+
+trait.all<-sbase[which(sbase$"Species name (Binomial)" %in% trait$Species),]
+head(trait.all[,1:5],2); dim(trait.all)
+
+# write.table(trait.all,file="trait.all.txt",quote=F,sep="\t",row.names=F)
+# write.table(sp.geo,file="sp.geo.txt",quote=F,sep="\t",row.names=F)
 
 # save.image("04_workspaces/range_size.RData")
 
