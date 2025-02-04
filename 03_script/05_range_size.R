@@ -104,17 +104,20 @@ trait<-data.frame(Species=trait[order(trait$Species),])
 
 table(trait$Species %in% sbase$"Species name (Binomial)")
 
-head(sbase[,1:5],2); dim(sbase)
-
 trait.all<-sbase[which(sbase$"Species name (Binomial)" %in% trait$Species),]
 head(trait.all[,1:5],2); dim(trait.all)
 
 # write.table(trait.all,file="trait.all.txt",quote=F,sep="\t",row.names=F)
 # write.table(sp.geo,file="sp.geo.txt",quote=F,sep="\t",row.names=F)
 
+# What's the average and range of distributions in the data set?
+
+head(sbase[,1:5],2); dim(sbase)
+head(sp.geo); dim(sp.geo)
+
+summary(as.numeric(sp.geo$geoCaetano))
+
 # save.image("04_workspaces/range_size.RData")
-
-
 
 # add abundance data:
 head(sp_sum2);dim(sp_sum2)
@@ -140,7 +143,26 @@ ct<-cor.test(sp.geo$range, sp.geo$Abundance)
 text(4500000,400,bquote(italic("r")*" = "~.(round(ct$estimate,2))), adj=0)
 text(4500000,350,bquote(italic("p")*" = "~.(round(ct$p.value,2))), adj=0)
 
+# What's the average range size of all reptiles? Roll et al. show a binomodal distribution for reptiles. Reproduce this here to explore. 
+
+head(sbase[,1:5],2); dim(sbase)
+colnames(sbase)[1:10]
+
+unique(sbase$"sub-order")
+
+sb<-sbase[,c(1:4,suppressWarnings(grep("Geographic",colnames(sbase))))]
+
+colnames(sb)[5:6]<-c("geoCaetano","geoIUCN")
+head(sb,2); dim(sb)
+
+dev.new(width=10,height=4,dpi=70,pointsize=16, noRStudioGD = T)
+par(mfrow=c(1,2), mgp=c(2.4,0.8,0), mar=c(3.5,3.5,1,1), oma=c(0,0,0,0))
+hist(log10(sb$geoCaetano))
+hist(log10(sb$geoIUCN))
+
+summary(sb$geoCaetano)
+summary(sb$geoIUCN)
 
 
-
+names(sort(-table(sb$geoCaetano)))[1]
 
