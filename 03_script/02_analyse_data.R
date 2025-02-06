@@ -1232,7 +1232,7 @@ title(xlab="Abundance", mgp=c(2,1,0))
 title(main="(c) Less than 20", mgp=c(2,1,0), adj = 0,font.main = 1, cex.main=0.95)
 
 lab3<-tail(sp_abund[sp_abund$total_abund<20,],2)
-lab3names<-c("Anilios bituberculatus","Anilios australis")
+lab3names<-c("Anilios bituberculatus","Anilios bicolor")
 text(lab3$total_abund-0.5,1.5,font=3,labels=lab3names,srt=90, adj=0, col="darkorange4", cex=0.8)
 
 hist(sp_abund$total_abund[sp_abund$total_abund<10], breaks=seq(0,10,by=1), main="", ylab="Number of species", xlab="",las=1, col="grey80", adj = 0)
