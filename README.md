@@ -1,6 +1,6 @@
-# Fire influences rarity and dominance in a reptile community
+# Hidden influence of fire on locally rare and cryptic reptile species
 
-R scripts for analysing the influence of fire on rarity and dominance in reptile communities
+R scripts for analysing the influence of fire on rarity and dominance in a reptile community
 
 # Latest Release (Archived)
 [![DOI](https://zenodo.org/badge/604401015.svg)](https://zenodo.org/doi/10.5281/zenodo.10202343)
