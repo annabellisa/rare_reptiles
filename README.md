@@ -15,7 +15,7 @@ R scripts for analysing the influence of fire on rarity and dominance in reptile
 
 04_workspaces: Saved workspaces
 
-05_results_graphs: Results tables and figures from analysis output
+05_results: Results tables and figures from analysis output
 
 ## Code Authors
 
@@ -23,7 +23,7 @@ Amber Lim and Annabel Smith (unless otherwise stated within script)
 
 ## Manuscript
 
-Lim A.S.Y., Smith A.L. (under review). Fire influences rarity and dominance in a reptile community.
+Smith A.L. & Lim A.S.Y. (under review). Hidden influence of fire on locally rare and cryptic reptile species.
 
 ## License
 
