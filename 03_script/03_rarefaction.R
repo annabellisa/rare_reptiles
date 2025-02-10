@@ -179,7 +179,7 @@ for (j in 1:length(assemb.q)){
 
 # plot legend:
 par(xpd=NA)
-legend(x=1600,y=max(y.lim.var), title = "Fire category", legend = c("Long","Medium","Recent"), pt.cex = 2, pch = c(20, 20, 20), bty = "n", title.adj=0,col=assemb.col)
+legend(x=1600,y=max(y.lim.var), title = "Fire category", legend = c("Long unburnt","Medium","Recently burnt"), pt.cex = 2, pch = c(20, 20, 20), bty = "n", title.adj=0,col=assemb.col)
 legend(x=1550,y=max(y.lim.var)-7, title = "", legend = unique(e_size$Method)[c(1,3)], lty = c(1,2), bty = "n", title.adj=0)
 par(xpd=F)
 
@@ -286,7 +286,7 @@ i=1
   
 # plot legend:
 par(xpd=NA)
-legend(x=320,y=1, title = "Fire category", legend = c("Long","Medium","Recent"), pt.cex = 2, pch = c(20, 20, 20), bty = "n", title.adj=0,col=assemb.col)
+legend(x=320,y=1, title = "Fire category", legend = c("Long unburnt","Medium","Recently burnt"), pt.cex = 2, pch = c(20, 20, 20), bty = "n", title.adj=0,col=assemb.col)
 legend(x=300,y=0.6, title = "", legend = unique(e_size$Method)[c(1,3)], lty = c(1,2), bty = "n", title.adj=0)
 par(xpd=F)
 
