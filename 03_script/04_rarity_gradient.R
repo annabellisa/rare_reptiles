@@ -316,21 +316,30 @@ head(cor_both,3); dim(cor_both)
 head(lh_res); dim(lh_res)
 lh_res[which(lh_res$delta<2),]
 
-
 # ----
+
+# Delta AICc results:
+head(lh_res,3); dim(lh_res)
+head(hl_res,3); dim(hl_res)
+
+# Correlation results:
+head(lh_cor,3); dim(lh_cor)
+head(hl_cor,3); dim(hl_cor)
+
 
 # Plot delta AICc ----
 
 dev.new(width=10,height=4,dpi=70,pointsize=16, noRStudioGD = T)
 par(mfrow=c(1,2), mgp=c(2.2,0.8,0), mar=c(3.5,3.5,1,1), oma=c(0,0,1,7))
-plot(1:nrow(lh_res), lh_res$delta, type="l", xlab="Number of species", ylab="", las=1)
+plot(1:nrow(lh_res), lh_res$delta, type="n", xlab="Number of species", ylab="", las=1)
+polygon(x=c(0:42,42:0),y=c(rep(0,43), rep(-2,43)), col="grey90", border=NA)
+polygon(x=c(0:42,42:0),y=c(rep(-2,43),rep(-3,43)), col="mediumaquamarine", border=NA)
+lines(1:nrow(lh_res), lh_res$delta, col="black",lwd=1.2)
 points(1:nrow(lh_res), lh_res$delta, pch=16, cex=0.5)
 title(ylab=as.expression(bquote(Delta~"AICc")))
-lines(0:45,rep(2,46), col="red",lty=1, lwd=1.2)
-
 lines(1:nrow(hl_res), hl_res$delta, col="cornflowerblue",lwd=1.2)
 points(1:nrow(hl_res), hl_res$delta, pch=16, cex=0.5,col="cornflowerblue")
-
+box()
 mtext(text="(a)", side = 3, line = 0.5, adj = 0, cex = 1)
 
 # plot correlation
@@ -338,7 +347,7 @@ mtext(text="(a)", side = 3, line = 0.5, adj = 0, cex = 1)
 head(lh_cor,3); dim(lh_cor)
 head(hl_cor,3); dim(hl_cor)
 
-plot(1:nrow(lh_cor), lh_cor$lh_cor, type="l", xlab="Number of species", ylab="", las=1)
+plot(1:nrow(lh_cor), lh_cor$lh_cor, type="l", xlab="Number of species", ylab="", las=1, ylim=c(min(lh_cor$lh_cor,hl_cor$hl_cor),max(lh_cor$lh_cor,hl_cor$hl_cor)))
 points(1:nrow(lh_cor), lh_cor$lh_cor, pch=16, cex=0.5)
 
 lines(1:nrow(hl_cor), hl_cor$hl_cor, col="cornflowerblue",lwd=1.2)
