@@ -326,7 +326,6 @@ head(hl_res,3); dim(hl_res)
 head(lh_cor,3); dim(lh_cor)
 head(hl_cor,3); dim(hl_cor)
 
-
 # Plot delta AICc ----
 
 dev.new(width=10,height=4,dpi=70,pointsize=16, noRStudioGD = T)
@@ -390,7 +389,15 @@ for (i in 1:length(lhs)){
   
   if("Inf" %in% cis.thisrun==F) {
     plot(c(1:3),pred.thisrun$fit, xlim=c(0.5,3.5), pch=20, xaxt="n",ylim=c(min(pred.thisrun$lci),max(pred.thisrun$uci)),ylab="",xlab="", las = 1, cex = 2.5, type="n")
-  
+    
+    xl<-par("usr")[1]
+    yb<-par("usr")[3]
+    xr<-par("usr")[2]
+    yt<-par("usr")[4]
+    
+    if(lh_res$delta[i]<0) rect(xl,yb,xr,yt, col="grey90")
+    if(lh_res$delta[i]< -2) rect(xl,yb,xr,yt, col="mediumaquamarine")
+    
     arrows(c(1:3),pred.thisrun$lci85,c(1:3),pred.thisrun$uci85,length=0,lwd=4,col="grey20")
     arrows(c(1:3),pred.thisrun$lci,c(1:3),pred.thisrun$uci,length=0.03,code=3,angle=90)
     points(c(1:3),pred.thisrun$fit,cex = 2.5,pch=20)
@@ -398,13 +405,13 @@ for (i in 1:length(lhs)){
     axis(1,at=c(1,2,3.15), cex.axis=1,labels=new.xlab2,tick=F)
 
 } # close plot with CIs
-
+  
   if (i == 19) mtext("Species Richness", side=2, line=3)
   if (i == 39) mtext("Fire Category", side=1, line=3)
   
-  if(lh_res$delta[i]<2) col.thisrun<-"darkgreen" else col.thisrun<-"black"
+  col.thisrun<-"black" 
 
-  mtext(paste(label_ordinal()(i)," lowest",sep=""), side=3, line=0.1, adj=0, col=col.thisrun)
+  mtext(paste(label_ordinal()(i)," lowest",sep=""), font=1,side=3, line=0.1, adj=0, col=col.thisrun)
   
 } # close plot low high
 
