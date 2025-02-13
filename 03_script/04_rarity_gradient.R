@@ -326,6 +326,12 @@ head(hl_res,3); dim(hl_res)
 head(lh_cor,3); dim(lh_cor)
 head(hl_cor,3); dim(hl_cor)
 
+# What is the range in species richness for low-high assemblages prior to adding the 17th least abundant?
+range(sr_lh[,which(colnames(sr_lh)=="lh1"):which(colnames(sr_lh)=="lh16")])
+
+# What is the total abundance of all species in low-high sub-assemblages prior to adding the 17th least abundant?
+sum(ab_dat$Abundance[1:16])
+
 # Plot delta AICc ----
 
 dev.new(width=10,height=4,dpi=70,pointsize=16, noRStudioGD = T)
