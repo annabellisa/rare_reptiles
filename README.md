@@ -23,7 +23,7 @@ Amber Lim and Annabel Smith (unless otherwise stated within script)
 
 ## Manuscript
 
-Smith A.L. & Lim A.S.Y. (under review). Hidden influence of fire on locally rare and cryptic reptile species.
+Smith AL, Lim ASY (2025). Hidden influence of fire on locally rare and cryptic reptile species. Ecology, accepted 17th April 2025.
 
 ## License
 
