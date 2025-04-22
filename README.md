@@ -19,7 +19,7 @@ R scripts for analysing the influence of fire on rarity and dominance in a repti
 
 ## Code Authors
 
-Amber Lim and Annabel Smith (unless otherwise stated within script)
+Annabel Smith and Amber Lim (unless otherwise stated within script)
 
 ## Manuscript
 
@@ -27,6 +27,6 @@ Smith AL, Lim ASY (2025). Hidden influence of fire on locally rare and cryptic r
 
 ## License
 
-The rare_reptiles project by Amber Lim and Annabel Smith is licensed under a Creative Commons Attribution-NonCommercial 4.0 International License.
+The rare_reptiles project by Annabel Smith and Amber Lim is licensed under a Creative Commons Attribution-NonCommercial 4.0 International License.
 
 Based on a work at https://github.com/annabellisa/rare_reptiles.
